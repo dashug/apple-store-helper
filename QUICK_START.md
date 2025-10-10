@@ -1,32 +1,69 @@
-# 🚀 快速开始 - 发布第一个版本
+# 🚀 快速开始 - 自动构建和发布
 
-## 立即发布版本（3 步完成）
+## ✨ 自动构建已启用！
 
-### 1️⃣ 创建版本标签
+现在**每次推送代码到 main 分支**都会：
+1. ✅ 自动构建所有平台的可执行文件
+2. ✅ 自动创建 Release（带日期的预发布版本）
+3. ✅ 自动上传所有构建产物
 
-在终端运行：
+## 🎯 两种发布方式
+
+### 方式 1: 自动构建版本（推荐日常使用）
+
+**只需推送代码即可**：
 
 ```bash
-cd /Users/even/Downloads/apple-store-helper-master
+# 修改代码后
+git add .
+git commit -m "你的提交信息"
+git push origin main
+```
 
-# 创建版本标签（可以修改版本号）
+然后自动触发构建，生成版本号如：`v2025.10.10-build.a29c0c5`
+
+### 方式 2: 正式发布版本（重大更新）
+
+**创建版本标签**：
+
+```bash
+# 创建正式版本标签
 git tag v1.0.1
 
-# 推送标签到 GitHub
+# 推送标签
 git push origin v1.0.1
 ```
 
-### 2️⃣ 等待构建完成
+生成版本号：`v1.0.1`（正式版本）
 
-- 打开浏览器访问：https://github.com/dashug/apple-store-helper/actions
-- 等待 5-10 分钟，所有构建完成会显示绿色 ✅
-- 如果失败显示红色 ❌，点击查看日志
+---
 
-### 3️⃣ 下载发布文件
+## 📊 版本区别
 
-- 访问：https://github.com/dashug/apple-store-helper/releases
-- 找到 `v1.0.1` 版本
-- 在 **Assets** 区域下载对应平台的文件
+| 类型 | 触发方式 | 版本号示例 | 标记 | 用途 |
+|------|---------|-----------|------|------|
+| 🚀 自动构建 | 推送代码 | `v2025.10.10-build.a29c0c5` | Pre-release | 日常测试 |
+| ⭐ 正式版本 | 推送标签 | `v1.0.1` | Release | 稳定发布 |
+
+---
+
+## 🔍 查看构建状态
+
+- **Actions**: https://github.com/dashug/apple-store-helper/actions
+- **Releases**: https://github.com/dashug/apple-store-helper/releases
+
+---
+
+## 💡 现在就试试！
+
+立即推送代码来触发第一次自动构建：
+
+```bash
+cd /Users/even/Downloads/apple-store-helper-master
+git push origin main
+```
+
+等待 5-10 分钟后访问 Releases 页面即可下载！
 
 ---
 
