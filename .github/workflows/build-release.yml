@@ -152,9 +152,19 @@ jobs:
         run: go install fyne.io/fyne/v2/cmd/fyne@latest
 
       - name: Build Linux amd64
+        env:
+          CGO_ENABLED: 1
+          GOOS: linux
+          GOARCH: amd64
         run: |
-          fyne package -os linux -name "apple-store-helper" -icon Icon.png
-          tar -czf Apple-Store-Helper-Linux-amd64.tar.gz "apple-store-helper"
+          go build -o "apple-store-helper" .
+          if [ -f "apple-store-helper" ]; then
+            tar -czf Apple-Store-Helper-Linux-amd64.tar.gz apple-store-helper
+            echo "✅ Linux build successful"
+          else
+            echo "❌ Linux build failed: executable not found"
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
