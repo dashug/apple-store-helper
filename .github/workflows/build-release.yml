@@ -67,6 +67,19 @@ jobs:
         with:
           go-version: '1.22'
 
+      - name: Setup MinGW-w64 for 32-bit
+        run: |
+          # 安装 MSYS2
+          choco install msys2 -y --no-progress
+          
+          # 初始化 MSYS2 并安装 32 位工具链
+          C:\tools\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+          C:\tools\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-i686-gcc mingw-w64-i686-pkg-config"
+          
+          # 添加到 PATH
+          echo "C:\tools\msys64\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        shell: pwsh
+
       - name: Install Fyne CLI
         run: go install fyne.io/fyne/v2/cmd/fyne@latest
 
@@ -75,12 +88,19 @@ jobs:
           CGO_ENABLED: 1
           GOOS: windows
           GOARCH: 386
+          CC: gcc
         run: |
+          # 确认使用正确的 gcc
+          gcc --version
+          
+          # 构建
           go build -o "Apple Store Helper.exe" -ldflags="-H windowsgui" .
+          
           if (Test-Path "Apple Store Helper.exe") {
             Compress-Archive -Path "Apple Store Helper.exe" -DestinationPath "Apple-Store-Helper-Windows-386.zip"
+            Write-Host "✅ Windows 386 build successful"
           } else {
-            Write-Error "Build failed: exe not found"
+            Write-Error "❌ Build failed: exe not found"
             exit 1
           }
         shell: pwsh
