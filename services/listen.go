@@ -192,12 +192,14 @@ func (s *listenService) groupByStore() map[string]bool {
 
 		queryStr := q.Encode()
 
-		// 中国大陆使用新的 retail/pickup-message 端点
+		// Apple 已全面更新 API 端点，所有地区都使用 retail/pickup-message
 		var baseURL string
 		if s.Area.ShortCode == "cn" {
+			// 中国大陆使用 .cn 域名
 			baseURL = "https://www.apple.com.cn/shop/retail/pickup-message"
 		} else {
-			baseURL = fmt.Sprintf("https://www.apple.com/%s/shop/fulfillment-messages", s.Area.ShortCode)
+			// 其他地区使用 .com 域名 + retail/pickup-message
+			baseURL = fmt.Sprintf("https://www.apple.com/%s/shop/retail/pickup-message", s.Area.ShortCode)
 		}
 
 		link := fmt.Sprintf("%s?%s", baseURL, queryStr)
