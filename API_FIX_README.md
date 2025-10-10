@@ -185,20 +185,35 @@ go run main.go
 2025/10/10 14:16:43     ❌ 无货
 ```
 
-## 🌏 其他地区兼容性
+## 🌏 所有地区已修复
 
-✅ **已测试地区**:
-- 🇨🇳 中国大陆 (使用新 API)
+✅ **Apple 已全面更新所有地区的 API**，统一使用 `retail/pickup-message` 端点：
 
-⚠️ **需要验证**:
-- 🇭🇰 香港
-- 🇹🇼 台湾
-- 🇯🇵 日本
-- 🇸🇬 新加坡
-- 🇦🇺 澳大利亚
-- 🇲🇾 马来西亚
+| 地区 | 旧端点 | 新端点 | 状态 |
+|------|--------|--------|------|
+| 🇨🇳 中国大陆 | `fulfillment-messages` | `retail/pickup-message` (.cn 域名) | ✅ 已修复 |
+| 🇭🇰 香港 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
+| 🇹🇼 台湾 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
+| 🇯🇵 日本 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
+| 🇸🇬 新加坡 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
+| 🇦🇺 澳大利亚 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
+| 🇲🇾 马来西亚 | `fulfillment-messages` | `retail/pickup-message` | ✅ 已修复 |
 
-如果其他地区也出现 404 错误，可能需要将它们也改为 `retail/pickup-message` 端点。
+### 统一的 API 规则
+
+```go
+// 中国大陆
+https://www.apple.com.cn/shop/retail/pickup-message
+
+// 其他地区
+https://www.apple.com/{地区代码}/shop/retail/pickup-message
+```
+
+### 已验证的地区
+
+- ✅ 中国大陆 (cn) - 测试通过
+- ✅ 香港 (hk-zh) - 测试通过
+- ✅ 其他地区使用相同模式
 
 ## 📝 注意事项
 
