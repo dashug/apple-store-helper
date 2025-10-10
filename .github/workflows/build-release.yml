@@ -17,12 +17,9 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
-    name: Build Windows
+  build-windows-amd64:
+    name: Build Windows AMD64
     runs-on: windows-latest
-    strategy:
-      matrix:
-        arch: [amd64, 386]
     
     steps:
       - name: Checkout code
@@ -36,19 +33,63 @@ jobs:
       - name: Install Fyne CLI
         run: go install fyne.io/fyne/v2/cmd/fyne@latest
 
-      - name: Build Windows ${{ matrix.arch }}
+      - name: Build Windows AMD64
         env:
-          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 1
+          GOOS: windows
+          GOARCH: amd64
         run: |
-          fyne package -os windows -name "Apple Store Helper" -icon Icon.png
-          Compress-Archive -Path "Apple Store Helper.exe" -DestinationPath "Apple-Store-Helper-Windows-${{ matrix.arch }}.zip"
+          go build -o "Apple Store Helper.exe" -ldflags="-H windowsgui" .
+          if (Test-Path "Apple Store Helper.exe") {
+            Compress-Archive -Path "Apple Store Helper.exe" -DestinationPath "Apple-Store-Helper-Windows-amd64.zip"
+          } else {
+            Write-Error "Build failed: exe not found"
+            exit 1
+          }
         shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-${{ matrix.arch }}
-          path: Apple-Store-Helper-Windows-${{ matrix.arch }}.zip
+          name: windows-amd64
+          path: Apple-Store-Helper-Windows-amd64.zip
+
+  build-windows-386:
+    name: Build Windows 386
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install Fyne CLI
+        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+
+      - name: Build Windows 386
+        env:
+          CGO_ENABLED: 1
+          GOOS: windows
+          GOARCH: 386
+        run: |
+          go build -o "Apple Store Helper.exe" -ldflags="-H windowsgui" .
+          if (Test-Path "Apple Store Helper.exe") {
+            Compress-Archive -Path "Apple Store Helper.exe" -DestinationPath "Apple-Store-Helper-Windows-386.zip"
+          } else {
+            Write-Error "Build failed: exe not found"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-386
+          path: Apple-Store-Helper-Windows-386.zip
 
   build-macos:
     name: Build macOS
@@ -123,7 +164,7 @@ jobs:
 
   create-release:
     name: Create Release
-    needs: [build-windows, build-macos, build-linux]
+    needs: [build-windows-amd64, build-windows-386, build-macos, build-linux]
     runs-on: ubuntu-latest
     
     steps:
