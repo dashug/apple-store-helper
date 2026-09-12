@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"image/color"
 	"log"
 	"net/url"
 	"runtime"
@@ -16,9 +17,11 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	fynetheme "fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
@@ -30,6 +33,20 @@ func main() {
 	initMP3Player()
 	initFyneApp()
 
+	view.Window.SetContent(buildUI())
+	view.Window.Resize(fyne.NewSize(1000, 800))
+	view.Window.CenterOnScreen()
+
+	// 监控类工具关掉窗口就退出是反直觉的，收进托盘后可以挂一整天
+	setupSystemTray()
+
+	services.Listen.Run()
+	view.Window.ShowAndRun()
+}
+
+// buildUI 组装主界面。
+// 拆成独立函数是为了让截图生成器复用同一套界面，避免截图与实际界面脱节。
+func buildUI() fyne.CanvasObject {
 	// 默认地区 (Default Area)
 	defaultArea := services.Listen.GetArea().Title
 
@@ -72,37 +89,40 @@ func main() {
 	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, intervalWidget)
 	refreshList()
 
+	// 五行共用一个 FormLayout，否则每行各自计算标签列宽，右侧控件起始位置会参差不齐
 	form := container.NewVBox(
 		widget.NewLabel(help),
-		container.New(layout.NewFormLayout(), widget.NewLabel("选择地区:"), areaWidget),
-		container.New(layout.NewFormLayout(), widget.NewLabel("选择门店:"), storeSelect.container),
-		container.New(layout.NewFormLayout(), widget.NewLabel("选择型号:"), productSelect.container),
-		container.New(layout.NewFormLayout(), widget.NewLabel("Bark 通知地址"), barkWidget),
-		container.New(layout.NewFormLayout(), widget.NewLabel("监听间隔:"), intervalWidget),
+		container.New(layout.NewFormLayout(),
+			widget.NewLabel("选择地区:"), areaWidget,
+		),
 
+		// 门店与型号并排，否则两个 150px 的多选框会把监听列表挤到只剩两行
+		container.NewGridWithColumns(2,
+			container.NewBorder(widget.NewLabel("选择门店（可多选）:"), nil, nil, nil, storeSelect.container),
+			container.NewBorder(widget.NewLabel("选择型号（可多选）:"), nil, nil, nil, productSelect.container),
+		),
+
+		container.New(layout.NewFormLayout(),
+			widget.NewLabel("Bark 通知地址:"), barkWidget,
+			widget.NewLabel("监听间隔:"), intervalWidget,
+		),
+
+		// 主操作与次要操作分两行，避免七个按钮挤在一行、窗口缩小时先挤坏
 		container.NewBorder(nil, nil,
 			createActionButtons(areaWidget, storeSelect, productSelect, barkWidget),
 			createControlButtons(),
 		),
+		createSecondaryButtons(),
 		warning,
 	)
 
 	// 列表放在中间，窗口拉大时由它占满剩余空间
-	view.Window.SetContent(container.NewBorder(
+	return container.NewBorder(
 		form,
 		createVersionLabel(),
 		nil, nil,
 		listenList,
-	))
-
-	view.Window.Resize(fyne.NewSize(1000, 800))
-	view.Window.CenterOnScreen()
-
-	// 监控类工具关掉窗口就退出是反直觉的，收进托盘后可以挂一整天
-	setupSystemTray()
-
-	services.Listen.Run()
-	view.Window.ShowAndRun()
+	)
 }
 
 // newListenList 构建监听列表。
@@ -123,12 +143,15 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			return len(rows)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(
-				widget.NewLabel("［状态］"),
-				widget.NewLabel("时间"),
-				widget.NewLabel("门店 型号"),
-				layout.NewSpacer(),
+			status := canvas.NewText("［状态］", fynetheme.Color(fynetheme.ColorNameForeground))
+			status.TextStyle.Bold = true
+
+			// 时间、门店、型号合并进同一个 Label。
+			// 拆成多个 Label 排在 HBox 里时，文字变长后不会重新布局，会互相重叠。
+			return container.NewBorder(nil, nil,
+				status,
 				widget.NewButton("删除", nil),
+				widget.NewLabel("详情"),
 			)
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
@@ -140,18 +163,29 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			row := rows[id]
 			mu.Unlock()
 
+			// Border 的 Objects 顺序为 [center, left, right]
 			items := obj.(*fyne.Container).Objects
-			items[0].(*widget.Label).SetText("［" + row.Status + "］")
-			items[1].(*widget.Label).SetText(row.Time.String())
 
-			info := row.Store.CityStoreName + "  " + row.Product.Title
+			info := items[0].(*widget.Label)
+			status := items[1].(*canvas.Text)
+			remove := items[2].(*widget.Button)
+
+			// 有货用绿色、未知用警示色，否则命中的那条混在几十行里不够显眼
+			status.Text = "［" + row.Status + "］"
+			status.Color = statusColor(row.Status)
+			status.Refresh()
+
+			text := row.Store.CityStoreName + "　" + row.Product.Title
 			if row.Detail != "" {
-				info += "  (" + row.Detail + ")"
+				text += "　(" + row.Detail + ")"
 			}
-			items[2].(*widget.Label).SetText(info)
+			if !row.Time.IsZero() {
+				text += "　" + row.Time.ToTimeString()
+			}
+			info.SetText(text)
 
 			key := row.Key
-			items[4].(*widget.Button).OnTapped = func() {
+			remove.OnTapped = func() {
 				services.Listen.Remove(key)
 				saveSettings(nil)
 			}
@@ -180,6 +214,20 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 	}
 
 	return list, warning, refresh
+}
+
+// statusColor 返回状态对应的颜色，取自主题以便跟随明暗模式
+func statusColor(status string) color.Color {
+	switch status {
+	case services.StatusInStock:
+		return fynetheme.Color(fynetheme.ColorNameSuccess)
+	case services.StatusUnknown:
+		return fynetheme.Color(fynetheme.ColorNameWarning)
+	case services.StatusOutStock:
+		return fynetheme.Color(fynetheme.ColorNameDisabled)
+	default:
+		return fynetheme.Color(fynetheme.ColorNameForeground)
+	}
 }
 
 // initLogging 让日志落盘。
@@ -350,8 +398,18 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 				log.Println("清除配置失败:", err)
 			}
 		}),
-		widget.NewButton("试听(有货提示音)", func() {
+	)
+}
+
+// createSecondaryButtons 次要操作。
+// 与「添加/清空/开始/暂停」分开，主行不至于挤到窗口一缩小就排不下。
+func createSecondaryButtons() *fyne.Container {
+	return container.NewHBox(
+		widget.NewButton("试听提示音", func() {
 			go services.Listen.AlertMp3()
+		}),
+		widget.NewButton("测试 Bark 通知", func() {
+			services.Listen.SendPushNotificationByBark("有货提醒（测试）", "此为测试提醒，点击通知将跳转到相关链接", "https://www.apple.com.cn/shop/bag")
 		}),
 		widget.NewButton("打开日志", func() {
 			dir, err := services.LogDir()
@@ -365,9 +423,7 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 				dialog.ShowInformation("日志位置", dir, view.Window)
 			}
 		}),
-		widget.NewButton("测试 Bark 通知", func() {
-			services.Listen.SendPushNotificationByBark("有货提醒（测试）", "此为测试提醒，点击通知将跳转到相关链接", "https://www.apple.com.cn/shop/bag")
-		}),
+		layout.NewSpacer(),
 	)
 }
 
@@ -375,10 +431,10 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 func createControlButtons() *fyne.Container {
 	return container.NewHBox(
 		widget.NewButton("开始", func() {
-			services.Listen.Status.Set(services.Running)
+			_ = services.Listen.Status.Set(services.Running)
 		}),
 		widget.NewButton("暂停", func() {
-			services.Listen.Status.Set(services.Pause)
+			_ = services.Listen.Status.Set(services.Pause)
 		}),
 		container.NewCenter(widget.NewLabel("状态:")),
 		container.NewCenter(widget.NewLabelWithData(services.Listen.Status)),
