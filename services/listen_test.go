@@ -35,7 +35,7 @@ func TestListenServiceConcurrentAccess(t *testing.T) {
 			case <-stop:
 				return
 			default:
-				svc.UpdateStatus(key, StatusOutStock)
+				svc.UpdateStatus(key, StatusOutStock, "")
 				svc.UpdateLogStr()
 				_ = svc.GetArea().ShortCode
 				_ = svc.GetBarkNotifyUrl()
@@ -76,7 +76,7 @@ func TestGetListenItemsReturnsSnapshot(t *testing.T) {
 // 监听项已被「清空」移除时，UpdateStatus 不应把空壳条目写回
 func TestUpdateStatusIgnoresRemovedItem(t *testing.T) {
 	svc := newListenService()
-	svc.UpdateStatus("不存在的 key", StatusOutStock)
+	svc.UpdateStatus("不存在的 key", StatusOutStock, "")
 
 	if got := len(svc.GetListenItems()); got != 0 {
 		t.Fatalf("不应写回已移除的条目，实际残留 %d 项", got)

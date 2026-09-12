@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -32,10 +33,21 @@ const (
 	StatusOutStock = "无货"
 	StatusInStock  = "有货"
 	StatusWait     = "等待"
+	// StatusUnknown 表示这一轮没能问出结果（被拦截、超时、结构变化等）。
+	// 它不等于无货 —— 把查询失败显示成「无货」会让用户以为真没货而放弃。
+	StatusUnknown = "未知"
 
 	Pause   = "暂停"
 	Running = "监听中"
 )
+
+// pickupPath 是当前可用的库存查询接口。
+//
+// 原先使用的 /shop/fulfillment-messages 现在对任意请求恒定返回 HTTP 541
+// 加一个拦截页，已完全不可用。/shop/retail/pickup-message 接受相同的
+// parts.N / store 参数，且 messageTypes.compact.storeSelectionEnabled
+// 的语义未变。
+const pickupPath = "shop/retail/pickup-message"
 
 var Listen = newListenService()
 
@@ -89,6 +101,17 @@ type ListenItem struct {
 	Product model.Product
 	Status  string
 	Time    carbon.DateTime
+
+	// Detail 是「未知」状态的原因，仅用于展示，不写入配置文件
+	Detail string `json:"-"`
+}
+
+// storeResult 是一次门店查询的结果。
+// err 非空时 skus 没有意义 —— 调用方必须把这些型号标记为「未知」而不是「无货」。
+type storeResult struct {
+	storeNumber string
+	skus        map[string]bool
+	err         error
 }
 
 func (s *listenService) Add(areaTitle string, storeTitle string, productTitle string) error {
@@ -164,23 +187,37 @@ func (s *listenService) UpdateLogStr() {
 // logText 拼接日志文本，调用方必须已持有 mu
 func (s *listenService) logText() string {
 	var str string
+	unknown := 0
 
 	for _, item := range s.items {
+		detail := ""
+		if item.Detail != "" {
+			detail = "  (" + item.Detail + ")"
+		}
+		if item.Status == StatusUnknown {
+			unknown++
+		}
 
 		str += fmt.Sprintf(
-			"[%s] %s %s %s %s",
+			"[%s] %s %s %s%s\n",
 			item.Status,
 			item.Time,
 			item.Store.CityStoreName,
 			item.Product.Title,
-			"\n",
+			detail,
 		)
+	}
+
+	// 全部查询不到结果时，监听结果整体不可信，必须显著提示，
+	// 否则用户会把一屏「未知」当成「都没货」
+	if unknown > 0 && unknown == len(s.items) {
+		str = "⚠️ 当前无法获取库存，以下结果均不可信（接口可能已变更或被限流）\n\n" + str
 	}
 
 	return str
 }
 
-func (s *listenService) UpdateStatus(uniqKey string, status string) {
+func (s *listenService) UpdateStatus(uniqKey string, status string, detail string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -192,6 +229,7 @@ func (s *listenService) UpdateStatus(uniqKey string, status string) {
 
 	item.Time = carbon.DateTime{Carbon: carbon.Now(carbon.Shanghai)}
 	item.Status = status
+	item.Detail = detail
 	s.items[uniqKey] = item
 }
 
@@ -218,15 +256,21 @@ func (s *listenService) tick() {
 		return
 	}
 
-	skus := s.groupByStore(items)
+	skus, failures := s.groupByStore(items)
 
 	for key, item := range items {
-		if !skus[item.Store.StoreNumber+"."+item.Product.Code] {
-			s.UpdateStatus(key, StatusOutStock)
+		// 查询失败的门店一律标记为「未知」，绝不能当成无货
+		if reason, failed := failures[item.Store.StoreNumber]; failed {
+			s.UpdateStatus(key, StatusUnknown, reason)
 			continue
 		}
 
-		s.UpdateStatus(key, StatusInStock)
+		if !skus[item.Store.StoreNumber+"."+item.Product.Code] {
+			s.UpdateStatus(key, StatusOutStock, "")
+			continue
+		}
+
+		s.UpdateStatus(key, StatusInStock, "")
 		s.Status.Set(Pause)
 
 		var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
@@ -246,8 +290,11 @@ func (s *listenService) tick() {
 	s.UpdateLogStr()
 }
 
-func (s *listenService) groupByStore(items map[string]ListenItem) map[string]bool {
+// groupByStore 按门店合并查询，返回各 SKU 的有货情况，
+// 以及查询失败的门店及其原因（门店号 -> 原因）
+func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bool, map[string]string) {
 	skus := map[string]bool{}
+	failures := map[string]string{}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -279,8 +326,9 @@ func (s *listenService) groupByStore(items map[string]ListenItem) map[string]boo
 		queryStr := q.Encode()
 
 		link := fmt.Sprintf(
-			"https://www.apple.com/%s/shop/fulfillment-messages?%s",
+			"https://www.apple.com/%s/%s?%s",
 			shortCode,
+			pickupPath,
 			queryStr,
 		)
 
@@ -289,47 +337,88 @@ func (s *listenService) groupByStore(items map[string]ListenItem) map[string]boo
 
 	count := len(reqs)
 	if count < 1 {
-		return skus
+		return skus, failures
 	}
 
-	ch := make(chan map[string]bool, count)
+	ch := make(chan storeResult, count)
 
-	for _, link := range reqs {
-		go s.getSkuByLink(ch, link)
+	for storeNumber, link := range reqs {
+		go func(storeNumber, link string) {
+			ch <- fetchStore(storeNumber, link)
+		}(storeNumber, link)
 	}
 
 	for i := 0; i < count; i++ {
-		for key, v := range <-ch {
+		res := <-ch
+		if res.err != nil {
+			log.Printf("查询门店 %s 失败: %v", res.storeNumber, res.err)
+			failures[res.storeNumber] = res.err.Error()
+			continue
+		}
+		for key, v := range res.skus {
 			skus[key] = v
 		}
 	}
 
-	return skus
+	return skus, failures
 }
 
-func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
-	skus := map[string]bool{}
+// fetchStore 查询单个门店的库存。
+//
+// 任何「问不出结果」的情况都通过 err 返回，调用方据此标记为「未知」。
+// 返回空结果而不报错，会让被拦截、超时、接口变更都伪装成「无货」。
+func fetchStore(storeNumber string, skUrl string) storeResult {
+	res := storeResult{storeNumber: storeNumber, skus: map[string]bool{}}
 
 	resp, body, errs := gorequest.New().
 		Get(skUrl).
 		Set("referer", "https://www.apple.com/shop/buy-iphone").
 		Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36").
-		Timeout(time.Second * 3).End()
+		Timeout(time.Second * 10).End()
+
 	if len(errs) > 0 {
-		log.Println(errs)
-		ch <- skus
-		return
+		res.err = fmt.Errorf("网络错误: %v", errs[0])
+		return res
 	}
 
-	log.Println(resp.Status, skUrl)
-	for _, result := range gjson.Get(body, "body.content.pickupMessage.stores").Array() {
-		for productCode, availability := range result.Get("partsAvailability").Map() {
-			uniqKey := fmt.Sprintf("%s.%s", result.Get("storeNumber").String(), productCode)
-			skus[uniqKey] = availability.Get("messageTypes.compact.storeSelectionEnabled").Bool()
+	if resp.StatusCode != http.StatusOK {
+		// 接口被拦截时会返回 HTTP 541 加一个 HTML 页面，
+		// 不检查状态码就解析，会把拦截页解析成「所有型号无货」
+		res.err = fmt.Errorf("接口返回 HTTP %d", resp.StatusCode)
+		return res
+	}
+
+	stores := gjson.Get(body, "body.stores")
+	if !stores.Exists() {
+		// 兼容旧版的嵌套结构，以防 Apple 把数据挪回去
+		stores = gjson.Get(body, "body.content.pickupMessage.stores")
+	}
+
+	if !stores.Exists() {
+		if msg := gjson.Get(body, "body.errorMessage").String(); msg != "" {
+			res.err = fmt.Errorf("接口报错: %s", msg)
+		} else {
+			res.err = errors.New("响应结构无法识别，接口可能已变更")
+		}
+		return res
+	}
+
+	found := false
+	for _, store := range stores.Array() {
+		for productCode, availability := range store.Get("partsAvailability").Map() {
+			uniqKey := fmt.Sprintf("%s.%s", store.Get("storeNumber").String(), productCode)
+			res.skus[uniqKey] = availability.Get("messageTypes.compact.storeSelectionEnabled").Bool()
+			found = true
 		}
 	}
 
-	ch <- skus
+	// 响应合法但一条库存都没有，同样属于问不出结果
+	if !found {
+		res.err = errors.New("响应中没有门店库存数据")
+		return res
+	}
+
+	return res
 }
 
 func (s *listenService) openBrowser(link string) {
