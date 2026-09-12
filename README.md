@@ -54,7 +54,7 @@ GOROOT 为 GO 安装目录，根据实际安装位置修改
 
 ## 使用方法
 
-1. 前往 [release](https://github.com/hteen/apple-store-helper/releases) 页面下载对应系统的程序，启动 
+1. 前往 [release](https://github.com/dashug/apple-store-helper/releases) 页面下载对应系统的程序，启动 
 2. 在 Apple 官网将需要购买的型号加入购物车
 3. 选择地区、门店和型号，点击`添加`按钮，将需要监听的型号添加到监听列表
 4. 点击`开始`按钮开始监听，检测到有货时会自动打开购物车页面
