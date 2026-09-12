@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
+	"runtime"
 	"sync"
 	"time"
 
@@ -24,6 +26,7 @@ import (
 
 // main 主函数 (Main function)
 func main() {
+	initLogging()
 	initMP3Player()
 	initFyneApp()
 
@@ -177,6 +180,19 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 	}
 
 	return list, warning, refresh
+}
+
+// initLogging 让日志落盘。
+// 双击启动 .app 时 stdout 不指向任何用户能看到的地方，不落盘等于没有日志。
+func initLogging() {
+	path, err := services.SetupLogging()
+	if err != nil {
+		log.Println("日志文件初始化失败:", err)
+		return
+	}
+
+	log.Printf("Apple Store Helper %s 启动 (%s/%s)，日志: %s",
+		common.VERSION, runtime.GOOS, runtime.GOARCH, path)
 }
 
 // initMP3Player 初始化 MP3 播放器 (Initialize MP3 player)
@@ -336,6 +352,18 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 		}),
 		widget.NewButton("试听(有货提示音)", func() {
 			go services.Listen.AlertMp3()
+		}),
+		widget.NewButton("打开日志", func() {
+			dir, err := services.LogDir()
+			if err != nil {
+				dialog.ShowError(err, view.Window)
+				return
+			}
+
+			if err := view.App.OpenURL(&url.URL{Scheme: "file", Path: dir}); err != nil {
+				// 打不开就把路径显示出来，至少用户能自己找过去
+				dialog.ShowInformation("日志位置", dir, view.Window)
+			}
 		}),
 		widget.NewButton("测试 Bark 通知", func() {
 			services.Listen.SendPushNotificationByBark("有货提醒（测试）", "此为测试提醒，点击通知将跳转到相关链接", "https://www.apple.com.cn/shop/bag")
