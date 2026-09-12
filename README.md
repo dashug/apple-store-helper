@@ -13,6 +13,15 @@
 * 代码不优雅, 注释不完善, review须谨慎
 * GUI框架 [fyne](https://github.com/fyne-io/fyne)
 
+### 更新界面截图
+README 顶部的截图由测试生成，不需要手动截屏：
+
+```shell script
+GEN_SCREENSHOT=1 go test -run TestGenerateScreenshot .
+```
+
+它渲染的就是 `buildUI` 组装的真实界面，界面改了重跑一次即可。
+
 ### 更新机型数据
 新机型发布后，`config/files/products_*.json` 需要重新抓取：
 
