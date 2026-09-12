@@ -471,6 +471,10 @@ func (s *listenService) tick() bool {
 		// fyne 要求图形操作在主运行时上下文执行，跨线程调用会破坏渲染状态，
 		// 表现为偶发花屏或崩溃 —— 恰好在命中有货这个最关键的时刻。
 		fyne.Do(func() {
+			// 窗口可能已收进托盘，命中时要让它重新出现，否则用户看不到提示
+			view.Window.Show()
+			view.Window.RequestFocus()
+
 			// 进入购物袋
 			s.openBrowser(bagUrl)
 
