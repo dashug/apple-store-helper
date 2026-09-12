@@ -66,10 +66,19 @@ func (s *storeService) ByAreaTitleForOptions(areaTitle string) []string {
 	return areas
 }
 
-func (s *storeService) GetStore(areaTitle string, storeTitle string) model.Store {
+func (s *storeService) GetStore(areaTitle string, storeTitle string) (model.Store, error) {
 	code := Area.Title2Code(areaTitle)
+	if code == "" {
+		return model.Store{}, fmt.Errorf("未知地区: %s", areaTitle)
+	}
 
-	return funk.Find(s.stores[code], func(x model.Store) bool {
+	// funk.Find 找不到时返回 nil，必须先判空再断言
+	found := funk.Find(s.stores[code], func(x model.Store) bool {
 		return x.CityStoreName == storeTitle
-	}).(model.Store)
+	})
+	if found == nil {
+		return model.Store{}, fmt.Errorf("未找到门店「%s」，门店列表可能已更新，请重新选择", storeTitle)
+	}
+
+	return found.(model.Store), nil
 }

@@ -24,7 +24,7 @@ func main() {
 	initFyneApp()
 
 	// 默认地区 (Default Area)
-	defaultArea := services.Listen.Area.Title
+	defaultArea := services.Listen.GetArea().Title
 
 	// 门店选择器 (Store Selector)
 	storeWidget := widget.NewSelect(services.Store.ByAreaTitleForOptions(defaultArea), nil)
@@ -35,8 +35,7 @@ func main() {
 	productWidget.PlaceHolder = "请选择 iPhone 型号"
 
 	// Bark 通知输入框
-	barkWidget := widget.NewEntry()
-	barkWidget.SetPlaceHolder("https://api.day.app/你的BarkKey")
+	barkWidget := newBarkWidget()
 
 	// 地区选择器 (Area Selector)
 	areaWidget := widget.NewRadioGroup(services.Area.ForOptions(), func(value string) {
@@ -51,7 +50,7 @@ func main() {
 		productWidget.Options = services.Product.ByAreaTitleForOptions(value)
 		productWidget.ClearSelected()
 
-		services.Listen.Area = services.Area.GetArea(value)
+		services.Listen.SetArea(services.Area.GetArea(value))
 		services.Listen.Clean()
 	})
 
@@ -88,6 +87,17 @@ func main() {
 	view.Window.ShowAndRun()
 }
 
+// newBarkWidget 创建 Bark 地址输入框
+// OnChanged 是 Bark 地址的唯一写入源：无论用户手动输入，还是 loadUserSettingsCache
+// 通过 SetText 恢复缓存，监听服务持有的地址都会同步更新
+func newBarkWidget() *widget.Entry {
+	barkWidget := widget.NewEntry()
+	barkWidget.SetPlaceHolder("https://api.day.app/你的BarkKey")
+	barkWidget.OnChanged = services.Listen.SetBarkNotifyUrl
+
+	return barkWidget
+}
+
 // initMP3Player 初始化 MP3 播放器 (Initialize MP3 player)
 func initMP3Player() {
 	SampleRate := beep.SampleRate(44100)
@@ -111,7 +121,7 @@ func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeWidget *widget.Se
 		services.Listen.SetListenItems(settings.ListenItems)
 		barkNotifyWidget.SetText(settings.BarkNotifyUrl)
 	} else {
-		areaWidget.SetSelected(services.Listen.Area.Title)
+		areaWidget.SetSelected(services.Listen.GetArea().Title)
 	}
 }
 
@@ -121,16 +131,21 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeWidget *widget.Sele
 		widget.NewButton("添加", func() {
 			if storeWidget.Selected == "" || productWidget.Selected == "" {
 				dialog.ShowError(errors.New("请选择门店和型号"), view.Window)
-			} else {
-				services.Listen.Add(areaWidget.Selected, storeWidget.Selected, productWidget.Selected, barkNotifyWidget.Text)
-				services.SaveSettings(services.UserSettings{
-					SelectedArea:    areaWidget.Selected,
-					SelectedStore:   storeWidget.Selected,
-					SelectedProduct: productWidget.Selected,
-					BarkNotifyUrl:   barkNotifyWidget.Text,
-					ListenItems:     services.Listen.GetListenItems(),
-				})
+				return
 			}
+
+			if err := services.Listen.Add(areaWidget.Selected, storeWidget.Selected, productWidget.Selected); err != nil {
+				dialog.ShowError(err, view.Window)
+				return
+			}
+
+			services.SaveSettings(services.UserSettings{
+				SelectedArea:    areaWidget.Selected,
+				SelectedStore:   storeWidget.Selected,
+				SelectedProduct: productWidget.Selected,
+				BarkNotifyUrl:   barkNotifyWidget.Text,
+				ListenItems:     services.Listen.GetListenItems(),
+			})
 		}),
 		widget.NewButton("清空", func() {
 			services.Listen.Clean()
@@ -140,7 +155,6 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeWidget *widget.Sele
 			go services.Listen.AlertMp3()
 		}),
 		widget.NewButton("测试 Bark 通知", func() {
-			services.Listen.BarkNotifyUrl = barkNotifyWidget.Text
 			services.Listen.SendPushNotificationByBark("有货提醒（测试）", "此为测试提醒，点击通知将跳转到相关链接", "https://www.apple.com.cn/shop/bag")
 		}),
 	)

@@ -29,8 +29,9 @@ go run main.go
 #### 手动打包
 ```shell script
 # Mac OS 环境下打包
-go install fyne.io/fyne/v2/cmd/fyne 
-go install github.com/fyne-io/fyne-cross
+# fyne CLI 已迁移，旧路径 fyne.io/fyne/v2/cmd/fyne 官方标记为 deprecated
+go install fyne.io/tools/cmd/fyne@latest
+go install github.com/fyne-io/fyne-cross@latest
 
 # 基础打包命令
 fyne-cross darwin -arch=amd64,arm64 -app-id=apple.store.helper -name="Apple Store Helper"

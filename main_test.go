@@ -1,0 +1,106 @@
+package main
+
+import (
+	"os"
+	"testing"
+
+	"fyne.io/fyne/v2/test"
+	"fyne.io/fyne/v2/widget"
+
+	"apple-store-helper/services"
+)
+
+// 构造 widget 需要文本测量能力，必须先有一个 fyne app
+func TestMain(m *testing.M) {
+	test.NewApp()
+	os.Exit(m.Run())
+}
+
+// chdirTemp 把工作目录切到临时目录，使 user_settings.json 的读写不污染项目
+func chdirTemp(t *testing.T) {
+	t.Helper()
+
+	old, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(t.TempDir()); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Chdir(old) })
+}
+
+func newTestWidgets() (*widget.RadioGroup, *widget.Select, *widget.Select, *widget.Entry) {
+	area := services.Listen.GetArea().Title
+
+	return widget.NewRadioGroup(services.Area.ForOptions(), nil),
+		widget.NewSelect(services.Store.ByAreaTitleForOptions(area), nil),
+		widget.NewSelect(services.Product.ByAreaTitleForOptions(area), nil),
+		newBarkWidget()
+}
+
+// 重启后从缓存恢复的 Bark 地址必须同步到监听服务，
+// 否则直接点「开始」命中有货时不会推送
+func TestBarkUrlRestoredFromSettings(t *testing.T) {
+	chdirTemp(t)
+
+	const wantUrl = "https://api.day.app/restored-key"
+
+	if err := services.SaveSettings(services.UserSettings{
+		SelectedArea:  "中国大陆",
+		BarkNotifyUrl: wantUrl,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	services.Listen.SetBarkNotifyUrl("")
+
+	areaWidget, storeWidget, productWidget, barkWidget := newTestWidgets()
+	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget)
+
+	if got := barkWidget.Text; got != wantUrl {
+		t.Errorf("输入框未恢复\n期望: %s\n实际: %s", wantUrl, got)
+	}
+	if got := services.Listen.GetBarkNotifyUrl(); got != wantUrl {
+		t.Errorf("监听服务未拿到恢复的 Bark 地址\n期望: %s\n实际: %s", wantUrl, got)
+	}
+}
+
+// 用户改动输入框后，即使不点「添加」，监听服务也应使用新地址
+func TestBarkUrlSyncsOnEdit(t *testing.T) {
+	services.Listen.SetBarkNotifyUrl("")
+
+	barkWidget := newBarkWidget()
+
+	barkWidget.SetText("https://api.day.app/first")
+	if got := services.Listen.GetBarkNotifyUrl(); got != "https://api.day.app/first" {
+		t.Fatalf("首次输入未同步，实际: %q", got)
+	}
+
+	barkWidget.SetText("https://api.day.app/second")
+	if got := services.Listen.GetBarkNotifyUrl(); got != "https://api.day.app/second" {
+		t.Fatalf("修改后未同步，实际: %q", got)
+	}
+
+	barkWidget.SetText("")
+	if got := services.Listen.GetBarkNotifyUrl(); got != "" {
+		t.Fatalf("清空后未同步，实际: %q", got)
+	}
+}
+
+// 没有缓存文件时走默认分支，不应崩溃，也不应残留 Bark 地址
+func TestLoadSettingsWithoutCacheFile(t *testing.T) {
+	chdirTemp(t)
+
+	services.Listen.SetBarkNotifyUrl("")
+
+	areaWidget, storeWidget, productWidget, barkWidget := newTestWidgets()
+	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget)
+
+	if got := services.Listen.GetBarkNotifyUrl(); got != "" {
+		t.Errorf("无缓存时 Bark 地址应为空，实际: %q", got)
+	}
+	if areaWidget.Selected != services.Listen.GetArea().Title {
+		t.Errorf("无缓存时应选中默认地区，实际: %q", areaWidget.Selected)
+	}
+}

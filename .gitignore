@@ -2,3 +2,7 @@ fyne-cross
 .idea
 user_settings.json
 data
+dist
+build
+*.app
+*.exe
