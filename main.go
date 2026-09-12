@@ -94,6 +94,10 @@ func main() {
 
 	view.Window.Resize(fyne.NewSize(1000, 800))
 	view.Window.CenterOnScreen()
+
+	// 监控类工具关掉窗口就退出是反直觉的，收进托盘后可以挂一整天
+	setupSystemTray()
+
 	services.Listen.Run()
 	view.Window.ShowAndRun()
 }
