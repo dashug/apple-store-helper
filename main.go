@@ -156,13 +156,20 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 		rows = services.Listen.SortedRows()
 		mu.Unlock()
 
-		if services.Listen.AllUnknown() {
-			warning.Show()
-		} else {
-			warning.Hide()
-		}
+		unreliable := services.Listen.AllUnknown()
 
-		list.Refresh()
+		// 这个回调会被监听 goroutine 调用，图形操作必须回到主运行时上下文。
+		// fyne.Do 在主线程上调用同样安全：应用尚未启动时直接执行，
+		// 启动后则排入主循环队列（队列无界，不会阻塞）。
+		fyne.Do(func() {
+			if unreliable {
+				warning.Show()
+			} else {
+				warning.Hide()
+			}
+
+			list.Refresh()
+		})
 	}
 
 	return list, warning, refresh

@@ -465,14 +465,22 @@ func (s *listenService) tick() bool {
 		s.Status.Set(Pause)
 
 		var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
-		// 进入购物袋
-		s.openBrowser(bagUrl)
 		msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
-		dialog.ShowInformation("匹配成功", msg, view.Window)
-		view.App.SendNotification(&fyne.Notification{
-			Title:   "有货提醒",
-			Content: msg,
+
+		// 以下都是图形操作，而这里处在监听 goroutine 中。
+		// fyne 要求图形操作在主运行时上下文执行，跨线程调用会破坏渲染状态，
+		// 表现为偶发花屏或崩溃 —— 恰好在命中有货这个最关键的时刻。
+		fyne.Do(func() {
+			// 进入购物袋
+			s.openBrowser(bagUrl)
+
+			dialog.ShowInformation("匹配成功", msg, view.Window)
+			view.App.SendNotification(&fyne.Notification{
+				Title:   "有货提醒",
+				Content: msg,
+			})
 		})
+
 		go s.AlertMp3()
 		go s.SendPushNotificationByBark("有货提醒", msg, bagUrl)
 		break
@@ -649,7 +657,9 @@ func (s *listenService) AlertMp3() {
 	reader := bytes.NewReader(theme.Mp3().Content())
 	streamer, _, err := mp3.Decode(io.NopCloser(reader))
 	if err != nil {
-		panic(err)
+		// 本函数总是以 go 调用，panic 会带崩整个程序
+		log.Println("提示音解码失败:", err)
+		return
 	}
 	defer streamer.Close()
 
