@@ -1,6 +1,6 @@
 # Apple Store 预约助手
 
-## 支持 iPhone 17 系列
+## 支持 iPhone 18 Pro / Pro Max、iPhone Duo、iPhone Air、iPhone 17 / 17e
 
 ![UI](screenshot.png)
 
@@ -12,6 +12,18 @@
 ## 关于开发
 * 代码不优雅, 注释不完善, review须谨慎
 * GUI框架 [fyne](https://github.com/fyne-io/fyne)
+
+### 更新机型数据
+新机型发布后，`config/files/products_*.json` 需要重新抓取：
+
+```shell script
+python3 scripts/fetch_products.py             # 全部地区
+python3 scripts/fetch_products.py --dry-run   # 只看结果，不写文件
+```
+
+数据源是各地区购买页内嵌的 `productSelectionData`。若购买页地址有变动，
+修改脚本顶部的 `SLUGS` 即可；可用的购买页可以从各地区的
+`/shop/buy-iphone` 页面中找到。
 
 ### 运行
 ```shell script
