@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"fyne.io/fyne/v2/test"
@@ -16,9 +17,16 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// chdirTemp 把工作目录切到临时目录，使 user_settings.json 的读写不污染项目
-func chdirTemp(t *testing.T) {
+// isolateSettings 把配置目录与工作目录都指向临时目录。
+// 配置现在存放在用户配置目录下，不隔离的话测试会读写使用者真实的配置。
+func isolateSettings(t *testing.T) {
 	t.Helper()
+
+	// os.UserConfigDir 在各平台读取的环境变量
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
+	t.Setenv("AppData", filepath.Join(home, "AppData"))
 
 	old, err := os.Getwd()
 	if err != nil {
@@ -42,7 +50,7 @@ func newTestWidgets() (*widget.RadioGroup, *widget.Select, *widget.Select, *widg
 // 重启后从缓存恢复的 Bark 地址必须同步到监听服务，
 // 否则直接点「开始」命中有货时不会推送
 func TestBarkUrlRestoredFromSettings(t *testing.T) {
-	chdirTemp(t)
+	isolateSettings(t)
 
 	const wantUrl = "https://api.day.app/restored-key"
 
@@ -90,7 +98,7 @@ func TestBarkUrlSyncsOnEdit(t *testing.T) {
 
 // 没有缓存文件时走默认分支，不应崩溃，也不应残留 Bark 地址
 func TestLoadSettingsWithoutCacheFile(t *testing.T) {
-	chdirTemp(t)
+	isolateSettings(t)
 
 	services.Listen.SetBarkNotifyUrl("")
 
