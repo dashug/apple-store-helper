@@ -6,6 +6,7 @@ import (
 	"apple-store-helper/theme"
 	"apple-store-helper/view"
 	"errors"
+	"log"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -139,17 +140,21 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeWidget *widget.Sele
 				return
 			}
 
-			services.SaveSettings(services.UserSettings{
+			if err := services.SaveSettings(services.UserSettings{
 				SelectedArea:    areaWidget.Selected,
 				SelectedStore:   storeWidget.Selected,
 				SelectedProduct: productWidget.Selected,
 				BarkNotifyUrl:   barkNotifyWidget.Text,
 				ListenItems:     services.Listen.GetListenItems(),
-			})
+			}); err != nil {
+				log.Println("保存配置失败:", err)
+			}
 		}),
 		widget.NewButton("清空", func() {
 			services.Listen.Clean()
-			services.ClearSettings()
+			if err := services.ClearSettings(); err != nil {
+				log.Println("清除配置失败:", err)
+			}
 		}),
 		widget.NewButton("试听(有货提示音)", func() {
 			go services.Listen.AlertMp3()
