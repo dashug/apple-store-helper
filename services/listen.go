@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -36,19 +37,51 @@ const (
 	Running = "监听中"
 )
 
-var Listen = listenService{
-	items:  map[string]ListenItem{},
-	Status: binding.NewString(),
-	Area:   model.Areas[0],
-	Logs:   widget.NewLabel(""),
+var Listen = newListenService()
+
+func newListenService() *listenService {
+	return &listenService{
+		items:  map[string]ListenItem{},
+		Status: binding.NewString(),
+		area:   model.Areas[0],
+		Logs:   widget.NewLabel(""),
+	}
 }
 
+// listenService 的可变状态同时被 UI 线程和监听 goroutine 访问，一律经 mu 保护。
+// 取值/赋值请走 GetXxx / SetXxx，不要直接读写字段。
 type listenService struct {
+	mu            sync.RWMutex
 	items         map[string]ListenItem
-	Status        binding.String
-	Area          model.Area
-	Logs          *widget.Label
-	BarkNotifyUrl string
+	area          model.Area
+	barkNotifyUrl string
+
+	Status binding.String
+	Logs   *widget.Label
+}
+
+func (s *listenService) GetArea() model.Area {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.area
+}
+
+func (s *listenService) SetArea(area model.Area) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.area = area
+}
+
+func (s *listenService) SetBarkNotifyUrl(notifyUrl string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.barkNotifyUrl = notifyUrl
+}
+
+func (s *listenService) GetBarkNotifyUrl() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.barkNotifyUrl
 }
 
 type ListenItem struct {
@@ -58,13 +91,21 @@ type ListenItem struct {
 	Time    carbon.DateTime
 }
 
-func (s *listenService) Add(areaTitle string, storeTitle string, productTitle string, barkNotifyUrl string) {
+func (s *listenService) Add(areaTitle string, storeTitle string, productTitle string) error {
 
-	store := Store.GetStore(areaTitle, storeTitle)
-	product := Product.GetProduct(areaTitle, productTitle)
+	store, err := Store.GetStore(areaTitle, storeTitle)
+	if err != nil {
+		return err
+	}
+
+	product, err := Product.GetProduct(areaTitle, productTitle)
+	if err != nil {
+		return err
+	}
 
 	uniqKey := store.StoreNumber + "." + product.Code
 
+	s.mu.Lock()
 	if s.items[uniqKey].Store.StoreNumber == "" {
 		s.items[uniqKey] = ListenItem{
 			Store:   store,
@@ -72,26 +113,56 @@ func (s *listenService) Add(areaTitle string, storeTitle string, productTitle st
 			Status:  StatusWait,
 		}
 	}
+	text := s.logText()
+	s.mu.Unlock()
 
-	s.BarkNotifyUrl = barkNotifyUrl
-	s.UpdateLogStr()
+	s.Logs.SetText(text)
+	return nil
 }
 
 func (s *listenService) Clean() {
+	s.mu.Lock()
 	s.items = map[string]ListenItem{}
+	s.mu.Unlock()
+
 	s.UpdateLogStr()
 }
 
 func (s *listenService) SetListenItems(items map[string]ListenItem) {
-	s.items = items
+	s.mu.Lock()
+	// 拷贝一份，避免与调用方共享底层 map
+	s.items = make(map[string]ListenItem, len(items))
+	for k, v := range items {
+		s.items[k] = v
+	}
+	s.mu.Unlock()
+
 	s.UpdateLogStr()
 }
 
+// GetListenItems 返回快照，调用方可以安全地遍历或序列化
 func (s *listenService) GetListenItems() map[string]ListenItem {
-	return s.items
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	items := make(map[string]ListenItem, len(s.items))
+	for k, v := range s.items {
+		items[k] = v
+	}
+
+	return items
 }
 
 func (s *listenService) UpdateLogStr() {
+	s.mu.RLock()
+	text := s.logText()
+	s.mu.RUnlock()
+
+	s.Logs.SetText(text)
+}
+
+// logText 拼接日志文本，调用方必须已持有 mu
+func (s *listenService) logText() string {
 	var str string
 
 	for _, item := range s.items {
@@ -106,11 +177,19 @@ func (s *listenService) UpdateLogStr() {
 		)
 	}
 
-	s.Logs.SetText(str)
+	return str
 }
 
 func (s *listenService) UpdateStatus(uniqKey string, status string) {
-	item := s.items[uniqKey]
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// 可能已被「清空」移除，此时不要再写回
+	item, ok := s.items[uniqKey]
+	if !ok {
+		return
+	}
+
 	item.Time = carbon.DateTime{Carbon: carbon.Now(carbon.Shanghai)}
 	item.Status = status
 	s.items[uniqKey] = item
@@ -121,42 +200,53 @@ func (s *listenService) Run() {
 
 	go func() {
 		for {
-			if stats, ok := s.Status.Get(); ok == nil && stats == Running && len(s.items) > 0 {
-				skus := s.groupByStore()
-
-				for key, item := range s.items {
-					status := skus[item.Store.StoreNumber+"."+item.Product.Code]
-
-					if status {
-						s.UpdateStatus(key, StatusInStock)
-						s.Status.Set(Pause)
-
-						var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.Area.ShortCode)
-						// 进入购物袋
-						s.openBrowser(bagUrl)
-						msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
-						dialog.ShowInformation("匹配成功", msg, view.Window)
-						view.App.SendNotification(&fyne.Notification{
-							Title:   "有货提醒",
-							Content: msg,
-						})
-						go s.AlertMp3()
-						go s.SendPushNotificationByBark("有货提醒", msg, bagUrl)
-						break
-					} else {
-						s.UpdateStatus(key, StatusOutStock)
-					}
-				}
-
-				s.UpdateLogStr()
-			}
-
+			s.tick()
 			time.Sleep(time.Millisecond * 500)
 		}
 	}()
 }
 
-func (s *listenService) groupByStore() map[string]bool {
+// tick 执行一轮库存检查
+func (s *listenService) tick() {
+	if status, err := s.Status.Get(); err != nil || status != Running {
+		return
+	}
+
+	// 整轮使用同一份快照，避免与 UI 线程的增删并发
+	items := s.GetListenItems()
+	if len(items) == 0 {
+		return
+	}
+
+	skus := s.groupByStore(items)
+
+	for key, item := range items {
+		if !skus[item.Store.StoreNumber+"."+item.Product.Code] {
+			s.UpdateStatus(key, StatusOutStock)
+			continue
+		}
+
+		s.UpdateStatus(key, StatusInStock)
+		s.Status.Set(Pause)
+
+		var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
+		// 进入购物袋
+		s.openBrowser(bagUrl)
+		msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
+		dialog.ShowInformation("匹配成功", msg, view.Window)
+		view.App.SendNotification(&fyne.Notification{
+			Title:   "有货提醒",
+			Content: msg,
+		})
+		go s.AlertMp3()
+		go s.SendPushNotificationByBark("有货提醒", msg, bagUrl)
+		break
+	}
+
+	s.UpdateLogStr()
+}
+
+func (s *listenService) groupByStore(items map[string]ListenItem) map[string]bool {
 	skus := map[string]bool{}
 
 	defer func() {
@@ -168,9 +258,11 @@ func (s *listenService) groupByStore() map[string]bool {
 	group := map[string][]ListenItem{}
 	reqs := map[string]string{}
 
-	for _, item := range s.items {
+	for _, item := range items {
 		group[item.Store.StoreNumber] = append(group[item.Store.StoreNumber], item)
 	}
+
+	shortCode := s.GetArea().ShortCode
 
 	for storeNumber, items := range group {
 
@@ -188,7 +280,7 @@ func (s *listenService) groupByStore() map[string]bool {
 
 		link := fmt.Sprintf(
 			"https://www.apple.com/%s/shop/fulfillment-messages?%s",
-			s.Area.ShortCode,
+			shortCode,
 			queryStr,
 		)
 
@@ -289,17 +381,34 @@ func (s *listenService) AlertMp3() {
 	<-done
 }
 
+// barkClient 使用独立 client，默认 client 无超时，网络挂起时会永久占住 goroutine
+var barkClient = &http.Client{Timeout: 10 * time.Second}
+
 func (s *listenService) SendPushNotificationByBark(title string, content string, bagUrl string) {
 
-	if len(s.BarkNotifyUrl) <= 0 {
+	baseUrl := strings.TrimRight(strings.TrimSpace(s.GetBarkNotifyUrl()), "/")
+	if baseUrl == "" {
 		return
 	}
 
-	apiUrl := fmt.Sprintf("%s/%s/%s?url=%s", strings.TrimRight(s.BarkNotifyUrl, "/"), title, content, bagUrl)
+	// 标题与内容会出现在 URL path 中，必须转义
+	apiUrl := fmt.Sprintf(
+		"%s/%s/%s?%s",
+		baseUrl,
+		url.PathEscape(title),
+		url.PathEscape(content),
+		url.Values{"url": []string{bagUrl}}.Encode(),
+	)
 
-	response, err := http.Get(apiUrl)
+	// 推送失败不应影响监听本身，记录日志即可
+	response, err := barkClient.Get(apiUrl)
 	if err != nil {
-		panic(err)
+		log.Println("Bark 通知发送失败:", err)
+		return
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		log.Println("Bark 通知返回异常状态:", response.Status)
+	}
 }
