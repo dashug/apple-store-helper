@@ -332,26 +332,6 @@ func (s *listenService) getSkuByLink(ch chan map[string]bool, skUrl string) {
 	ch <- skus
 }
 
-// 型号对应预约地址
-//func (s *listenService) model2Url(productType string) string {
-//	// https://www.apple.com.cn/shop/buy-iphone/iphone-16
-//	// https://www.apple.com.cn/shop/buy-iphone/iphone-16-pro
-//
-//	var t string
-//	switch productType {
-//	case "iphone16promax", "iphone16pro":
-//		t = "iphone-16-pro"
-//	case "iphone16":
-//		t = "iphone-16"
-//	}
-//
-//	return fmt.Sprintf(
-//		"https://www.apple.com/%s/shop/buy-iphone/%s",
-//		s.Area.ShortCode,
-//		t,
-//	)
-//}
-
 func (s *listenService) openBrowser(link string) {
 	parse, err := url.Parse(link)
 	if err != nil {
