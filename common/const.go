@@ -1,3 +1,3 @@
 package common
 
-const VERSION = "dev"
+var VERSION = "dev"

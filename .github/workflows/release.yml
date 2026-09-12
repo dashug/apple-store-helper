@@ -1,0 +1,205 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: 测试
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...
+
+  meta:
+    name: 解析版本
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+      semver: ${{ steps.v.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="$GITHUB_REF_NAME"
+          else
+            TAG="dev-$(git rev-parse --short HEAD)"
+          fi
+
+          # fyne 的 --app-version 只接受 x / x.y / x.y.z
+          SEMVER="${TAG#v}"
+          [[ "$SEMVER" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]] || SEMVER="0.0.0"
+
+          echo "tag=$TAG"       >> "$GITHUB_OUTPUT"
+          echo "semver=$SEMVER" >> "$GITHUB_OUTPUT"
+          echo "版本: $TAG (app-version=$SEMVER)"
+
+  build-darwin:
+    name: 构建 macOS (universal)
+    needs: [test, meta]
+    runs-on: macos-latest
+    env:
+      TAG: ${{ needs.meta.outputs.tag }}
+      SEMVER: ${{ needs.meta.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: 安装 fyne CLI
+        run: |
+          go install fyne.io/tools/cmd/fyne@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: 写入版本号
+        # fyne package 不支持 --ldflags，统一改写源文件注入版本
+        run: |
+          printf 'package common\n\nvar VERSION = "%s"\n' "$TAG" > common/const.go
+          cat common/const.go
+
+      - name: 构建 universal 二进制
+        # macOS SDK 自带两个架构的 slice，arm64 runner 可直接交叉编译 amd64，
+        # 再用 lipo 合成 universal，一个包同时覆盖 Intel 与 Apple Silicon
+        run: |
+          mkdir -p build dist
+          CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 \
+            go build -o build/ash-arm64 .
+          CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
+            CGO_CFLAGS="-arch x86_64" CGO_LDFLAGS="-arch x86_64" \
+            go build -o build/ash-amd64 .
+          lipo -create -output "build/Apple Store Helper" build/ash-arm64 build/ash-amd64
+          lipo -info "build/Apple Store Helper"
+
+      - name: 打包并签名 .app
+        # darwin 目标下 fyne package 会复用 --executable 指定的二进制，universal 得以保留
+        run: |
+          fyne package --target darwin \
+            --executable "build/Apple Store Helper" \
+            --name "Apple Store Helper" \
+            --app-id apple.store.helper \
+            --app-version "$SEMVER" \
+            --icon Icon.png
+          xattr -cr "Apple Store Helper.app"
+          codesign --force --deep --sign - "Apple Store Helper.app"
+          codesign -dv "Apple Store Helper.app"
+          ditto -c -k --sequesterRsrc --keepParent "Apple Store Helper.app" \
+            "dist/Apple-Store-Helper-${TAG}-macos-universal.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal
+          path: dist/*.zip
+          if-no-files-found: error
+
+  build-windows:
+    name: 构建 Windows (${{ matrix.arch }})
+    needs: [test, meta]
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.meta.outputs.tag }}
+      SEMVER: ${{ needs.meta.outputs.semver }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            cc: x86_64-w64-mingw32-gcc
+          - arch: "386"
+            cc: i686-w64-mingw32-gcc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: 安装 mingw-w64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64 libgl1-mesa-dev xorg-dev
+
+      - name: 安装 fyne CLI
+        run: |
+          go install fyne.io/tools/cmd/fyne@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: 写入版本号
+        run: |
+          printf 'package common\n\nvar VERSION = "%s"\n' "$TAG" > common/const.go
+          cat common/const.go
+
+      - name: 打包 exe
+        # windows 目标下 fyne package 会忽略 --executable 自行重编译，
+        # 因此这里不预编译，直接让它用 mingw 构建
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=1 GOARCH=${{ matrix.arch }} CC=${{ matrix.cc }} \
+            fyne package --target windows \
+              --name "Apple Store Helper" \
+              --app-id apple.store.helper \
+              --app-version "$SEMVER" \
+              --icon Icon.png
+          file "Apple Store Helper.exe"
+          zip -j "dist/Apple-Store-Helper-${TAG}-windows-${{ matrix.arch }}.zip" "Apple Store Helper.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.arch }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  release:
+    name: 发布 Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-darwin, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - run: ls -lh artifacts
+
+      - name: 创建 Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/*.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Release $GITHUB_REF_NAME" \
+            --notes "$(cat <<'NOTES'
+          ## 下载
+
+          | 系统 | 文件 |
+          | --- | --- |
+          | macOS (Intel + Apple Silicon 通用) | `*-macos-universal.zip` |
+          | Windows 64 位 | `*-windows-amd64.zip` |
+          | Windows 32 位 | `*-windows-386.zip` |
+
+          ## macOS 首次打开
+
+          安装包已做 ad-hoc 签名，但从浏览器下载仍会被隔离属性拦下，解压后执行：
+
+          ```shell
+          xattr -cr "Apple Store Helper.app"
+          ```
+
+          之后双击即可运行。
+          NOTES
+          )"
