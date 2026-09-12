@@ -37,7 +37,15 @@ func (s *areaService) ProductsByCode(local string) []model.Product {
 		}
 	}
 
-	return products
+	if len(products) == 0 {
+		return products
+	}
+
+	// 日本站的购买页会把同一 SKU 重复列出（货号完全相同），
+	// 不去重的话下拉框里每个型号会出现多个无法区分的同名项
+	return funk.UniqBy(products, func(x model.Product) string {
+		return x.Code
+	}).([]model.Product)
 }
 
 func (s *areaService) ForOptions() []string {
