@@ -38,6 +38,7 @@ func main() {
 	productSelect.SetOptions(services.Product.ByAreaTitleForOptions(defaultArea))
 
 	barkWidget := newBarkWidget()
+	intervalWidget := newIntervalWidget()
 
 	// 地区选择器 (Area Selector)
 	areaWidget := widget.NewRadioGroup(services.Area.ForOptions(), func(value string) {
@@ -65,7 +66,7 @@ func main() {
 3. 点击“开始”开始监听，检测到有货时会自动打开购物车页面
 `
 
-	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget)
+	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, intervalWidget)
 	refreshList()
 
 	form := container.NewVBox(
@@ -74,6 +75,7 @@ func main() {
 		container.New(layout.NewFormLayout(), widget.NewLabel("选择门店:"), storeSelect.container),
 		container.New(layout.NewFormLayout(), widget.NewLabel("选择型号:"), productSelect.container),
 		container.New(layout.NewFormLayout(), widget.NewLabel("Bark 通知地址"), barkWidget),
+		container.New(layout.NewFormLayout(), widget.NewLabel("监听间隔:"), intervalWidget),
 
 		container.NewBorder(nil, nil,
 			createActionButtons(areaWidget, storeSelect, productSelect, barkWidget),
@@ -179,6 +181,62 @@ func initFyneApp() {
 	view.Window = view.App.NewWindow("Apple Store Helper")
 }
 
+// intervalOptions 轮询间隔的可选项。
+//
+// 间隔越短，有货后越早发现；但请求越密也越容易被 Apple 限流，而限流的
+// 结果是全部显示「未知」—— 恰好在最需要结果的时刻拿不到结果。
+var intervalOptions = []struct {
+	label   string
+	seconds int
+}{
+	{"2 秒（激进）", 2},
+	{"5 秒（推荐）", 5},
+	{"10 秒", 10},
+	{"30 秒（保守）", 30},
+}
+
+func intervalLabels() []string {
+	labels := make([]string, 0, len(intervalOptions))
+	for _, opt := range intervalOptions {
+		labels = append(labels, opt.label)
+	}
+	return labels
+}
+
+func secondsFromLabel(label string) int {
+	for _, opt := range intervalOptions {
+		if opt.label == label {
+			return opt.seconds
+		}
+	}
+	return int(services.DefaultInterval / time.Second)
+}
+
+func labelFromSeconds(seconds int) string {
+	for _, opt := range intervalOptions {
+		if opt.seconds == seconds {
+			return opt.label
+		}
+	}
+	return labelFromSeconds(int(services.DefaultInterval / time.Second))
+}
+
+// newIntervalWidget 创建轮询间隔选择器。
+//
+// 回调在设置默认值之后才挂上：否则构造控件本身就会触发一次保存，
+// 让「尚未保存过配置」的状态无法成立。
+func newIntervalWidget() *widget.Select {
+	intervalWidget := widget.NewSelect(intervalLabels(), nil)
+	intervalWidget.SetSelected(labelFromSeconds(int(services.DefaultInterval / time.Second)))
+
+	intervalWidget.OnChanged = func(label string) {
+		services.Listen.SetInterval(time.Duration(secondsFromLabel(label)) * time.Second)
+		saveSettings(nil)
+	}
+
+	return intervalWidget
+}
+
 // newBarkWidget 创建 Bark 地址输入框
 // OnChanged 是 Bark 地址的唯一写入源：无论用户手动输入，还是 loadUserSettingsCache
 // 通过 SetText 恢复缓存，监听服务持有的地址都会同步更新
@@ -197,6 +255,7 @@ func saveSettings(settings *services.UserSettings) {
 		current = *settings
 	}
 	current.ListenItems = services.Listen.GetListenItems()
+	current.PollIntervalSeconds = int(services.Listen.GetInterval() / time.Second)
 
 	if err := services.SaveSettings(current); err != nil {
 		log.Println("保存配置失败:", err)
@@ -204,7 +263,7 @@ func saveSettings(settings *services.UserSettings) {
 }
 
 // 加载用户设置缓存 (Load user settings cache)
-func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry) {
+func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, intervalWidget *widget.Select) {
 	settings, err := services.LoadSettings()
 	if err != nil {
 		areaWidget.SetSelected(services.Listen.GetArea().Title)
@@ -216,6 +275,14 @@ func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSele
 	productSelect.Select(settings.SelectedProduct)
 	services.Listen.SetListenItems(settings.ListenItems)
 	barkNotifyWidget.SetText(settings.BarkNotifyUrl)
+
+	// 旧配置文件没有这个字段，此时保持默认间隔。
+	// 直接赋值而不用 SetSelected，避免恢复配置的动作反过来触发一次保存。
+	if settings.PollIntervalSeconds > 0 {
+		services.Listen.SetInterval(time.Duration(settings.PollIntervalSeconds) * time.Second)
+		intervalWidget.Selected = labelFromSeconds(settings.PollIntervalSeconds)
+		intervalWidget.Refresh()
+	}
 }
 
 // 创建动作按钮 (Create action buttons)
