@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"sort"
@@ -21,7 +22,6 @@ import (
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/golang-module/carbon"
-	"github.com/parnurzeal/gorequest"
 	"github.com/tidwall/gjson"
 
 	"apple-store-helper/model"
@@ -49,13 +49,54 @@ const (
 // 的语义未变。
 const pickupPath = "shop/retail/pickup-message"
 
+const (
+	// DefaultInterval 是两轮库存检查之间的基础间隔。
+	//
+	// 原先固定 500ms，对 Apple 接口过于激进：门店越多，单位时间内的
+	// 请求越密，高峰期正是最容易被限流的时候，而限流的结果就是一屏
+	// 「未知」—— 恰好在最需要准确结果的时刻失去准确结果。
+	DefaultInterval = 5 * time.Second
+
+	// MinInterval 是允许设置的最小间隔
+	MinInterval = 2 * time.Second
+
+	// maxBackoff 是连续失败后的退避上限
+	maxBackoff = 5 * time.Minute
+
+	// jitterRatio 是叠加在间隔上的随机抖动比例。
+	// 固定周期会让多个用户的请求逐渐对齐到同一时刻，反而更容易触发限流。
+	jitterRatio = 0.25
+
+	// maxConcurrentRequests 限制同时在飞的请求数。
+	// 原先所有门店一次性并发，盯二十家门店就会瞬间打出二十个连接。
+	maxConcurrentRequests = 4
+
+	// pausedPollInterval 是暂停状态下的空转间隔，只为及时响应「开始」
+	pausedPollInterval = 200 * time.Millisecond
+)
+
+// pickupBaseURL 是站点根地址，测试中会被替换成本地服务
+var pickupBaseURL = "https://www.apple.com"
+
+// pickupClient 复用连接。
+// 原先每次请求都新建客户端，意味着每轮、每个门店都要重新握手一次 TLS。
+var pickupClient = &http.Client{
+	Timeout: 10 * time.Second,
+	Transport: &http.Transport{
+		MaxIdleConns:        32,
+		MaxIdleConnsPerHost: 8,
+		IdleConnTimeout:     90 * time.Second,
+	},
+}
+
 var Listen = newListenService()
 
 func newListenService() *listenService {
 	return &listenService{
-		items:  map[string]ListenItem{},
-		Status: binding.NewString(),
-		area:   model.Areas[0],
+		items:    map[string]ListenItem{},
+		Status:   binding.NewString(),
+		area:     model.Areas[0],
+		interval: DefaultInterval,
 	}
 }
 
@@ -68,6 +109,10 @@ type listenService struct {
 	barkNotifyUrl string
 
 	Status binding.String
+
+	// interval 是基础轮询间隔，failures 是连续失败轮次（用于退避）
+	interval time.Duration
+	failures int
 
 	// onChange 在监听列表发生变化后被调用，供界面刷新列表。
 	// 只在 UI 初始化时设置一次，读写仍受 mu 保护。
@@ -322,22 +367,84 @@ func (s *listenService) Run() {
 
 	go func() {
 		for {
-			s.tick()
-			time.Sleep(time.Millisecond * 500)
+			if status, err := s.Status.Get(); err != nil || status != Running {
+				time.Sleep(pausedPollInterval)
+				continue
+			}
+
+			failed := s.tick()
+			time.Sleep(s.nextDelay(failed))
 		}
 	}()
 }
 
-// tick 执行一轮库存检查
-func (s *listenService) tick() {
+// SetInterval 设置基础轮询间隔，低于 MinInterval 的取值会被抬到下限
+func (s *listenService) SetInterval(d time.Duration) {
+	if d < MinInterval {
+		d = MinInterval
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.interval = d
+}
+
+func (s *listenService) GetInterval() time.Duration {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.interval
+}
+
+// nextDelay 计算下一轮的等待时间。
+//
+// 成功则回到基础间隔；连续失败时指数退避，避免在接口已经不可用或
+// 正在限流我们的时候继续以原频率敲门。无论哪种情况都叠加抖动。
+func (s *listenService) nextDelay(failed bool) time.Duration {
+	s.mu.Lock()
+	if failed {
+		s.failures++
+	} else {
+		s.failures = 0
+	}
+	failures := s.failures
+	base := s.interval
+	s.mu.Unlock()
+
+	delay := base
+	if failures > 0 {
+		shift := failures - 1
+		if shift > 16 {
+			shift = 16
+		}
+		delay = base * time.Duration(1<<shift)
+		if delay > maxBackoff || delay <= 0 {
+			delay = maxBackoff
+		}
+	}
+
+	return withJitter(delay)
+}
+
+// withJitter 给间隔叠加 ±jitterRatio 的随机抖动
+func withJitter(d time.Duration) time.Duration {
+	if d <= 0 {
+		return d
+	}
+
+	delta := float64(d) * jitterRatio
+	return time.Duration(float64(d) - delta + rand.Float64()*2*delta)
+}
+
+// tick 执行一轮库存检查，返回本轮是否有门店查询失败（用于退避）
+func (s *listenService) tick() bool {
 	if status, err := s.Status.Get(); err != nil || status != Running {
-		return
+		return false
 	}
 
 	// 整轮使用同一份快照，避免与 UI 线程的增删并发
 	items := s.GetListenItems()
 	if len(items) == 0 {
-		return
+		return false
 	}
 
 	skus, failures := s.groupByStore(items)
@@ -372,6 +479,8 @@ func (s *listenService) tick() {
 	}
 
 	s.notifyChange()
+
+	return len(failures) > 0
 }
 
 // groupByStore 按门店合并查询，返回各 SKU 的有货情况，
@@ -410,7 +519,8 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 		queryStr := q.Encode()
 
 		link := fmt.Sprintf(
-			"https://www.apple.com/%s/%s?%s",
+			"%s/%s/%s?%s",
+			pickupBaseURL,
 			shortCode,
 			pickupPath,
 			queryStr,
@@ -425,9 +535,14 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 	}
 
 	ch := make(chan storeResult, count)
+	sem := make(chan struct{}, maxConcurrentRequests)
 
 	for storeNumber, link := range reqs {
 		go func(storeNumber, link string) {
+			// 限制同时在飞的请求数，门店多时不至于瞬间打出几十个连接
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
 			ch <- fetchStore(storeNumber, link)
 		}(storeNumber, link)
 	}
@@ -454,16 +569,27 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 func fetchStore(storeNumber string, skUrl string) storeResult {
 	res := storeResult{storeNumber: storeNumber, skus: map[string]bool{}}
 
-	resp, body, errs := gorequest.New().
-		Get(skUrl).
-		Set("referer", "https://www.apple.com/shop/buy-iphone").
-		Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36").
-		Timeout(time.Second * 10).End()
-
-	if len(errs) > 0 {
-		res.err = fmt.Errorf("网络错误: %v", errs[0])
+	req, err := http.NewRequest(http.MethodGet, skUrl, nil)
+	if err != nil {
+		res.err = fmt.Errorf("请求构造失败: %w", err)
 		return res
 	}
+	req.Header.Set("referer", "https://www.apple.com/shop/buy-iphone")
+	req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+
+	resp, err := pickupClient.Do(req)
+	if err != nil {
+		res.err = fmt.Errorf("网络错误: %w", err)
+		return res
+	}
+	defer resp.Body.Close()
+
+	raw, err := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
+	if err != nil {
+		res.err = fmt.Errorf("读取响应失败: %w", err)
+		return res
+	}
+	body := string(raw)
 
 	if resp.StatusCode != http.StatusOK {
 		// 接口被拦截时会返回 HTTP 541 加一个 HTML 页面，
@@ -521,7 +647,7 @@ func (s *listenService) openBrowser(link string) {
 
 func (s *listenService) AlertMp3() {
 	reader := bytes.NewReader(theme.Mp3().Content())
-	streamer, _, err := mp3.Decode(ioutil.NopCloser(reader))
+	streamer, _, err := mp3.Decode(io.NopCloser(reader))
 	if err != nil {
 		panic(err)
 	}

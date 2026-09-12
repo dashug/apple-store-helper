@@ -21,6 +21,9 @@ type UserSettings struct {
 	SelectedProduct string                `json:"selected_product"`
 	BarkNotifyUrl   string                `json:"bark_notify_url"`
 	ListenItems     map[string]ListenItem `json:"listen_items"`
+
+	// PollIntervalSeconds 为 0 表示沿用默认间隔（兼容旧配置文件）
+	PollIntervalSeconds int `json:"poll_interval_seconds"`
 }
 
 // settingsPath 返回配置文件的绝对路径
