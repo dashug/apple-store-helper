@@ -1,0 +1,117 @@
+name: Update product data
+
+on:
+  schedule:
+    # 每天 UTC 01:00（北京时间 09:00）
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    name: 刷新机型数据
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 检查是否出现未收录的新机型
+        id: check
+        run: |
+          set +e
+          python3 scripts/fetch_products.py --check-new > /tmp/check.log 2>&1
+          code=$?
+          set -e
+
+          cat /tmp/check.log
+          echo "new_models=$code" >> "$GITHUB_OUTPUT"
+
+          # 退出码 2 表示发现未收录的购买页，1 表示抓取出错
+          if [ "$code" = "1" ]; then
+            echo "::error::检查新机型时出错，见上方日志"
+            exit 1
+          fi
+
+      - name: 刷新机型数据
+        run: python3 scripts/fetch_products.py
+
+      - name: 检查数据是否有变化
+        id: diff
+        run: |
+          if git diff --quiet -- config/files/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "机型数据无变化"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- config/files/ | tee /tmp/diff.log
+          fi
+
+      - name: 提交并开 PR
+        if: steps.diff.outputs.changed == 'true' || steps.check.outputs.new_models == '2'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="chore/product-data"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 固定分支，避免每天堆积新分支
+          git checkout -B "$BRANCH"
+          git add config/files/
+
+          if git diff --cached --quiet; then
+            echo "没有数据变化需要提交"
+          else
+            git commit -m "chore: 更新机型数据（自动抓取）"
+            git push -f -u origin "$BRANCH"
+          fi
+
+          {
+            echo "本 PR 由定时任务自动生成，数据来自各地区购买页内嵌的 \`productSelectionData\`。"
+            echo
+
+            if [ "${{ steps.diff.outputs.changed }}" = "true" ]; then
+              echo "## 数据变化"
+              echo
+              echo '```'
+              cat /tmp/diff.log
+              echo '```'
+              echo
+            else
+              echo "机型数据本身无变化。"
+              echo
+            fi
+
+            if [ "${{ steps.check.outputs.new_models }}" = "2" ]; then
+              echo "## 发现未收录的购买页"
+              echo
+              echo '```'
+              cat /tmp/check.log
+              echo '```'
+              echo
+              echo "**需要人工决定**：要监控就加进 \`scripts/fetch_products.py\` 的 \`SLUGS\`，"
+              echo "不需要就加进 \`IGNORED_SLUGS\`。仅靠本次自动刷新不会纳入这些机型。"
+              echo
+            fi
+
+            echo "---"
+            echo
+            echo "合并前请确认 CI 的 \`测试\` 任务通过 —— 其中的 \`TestProductDataParsesForAllAreas\`"
+            echo "会校验抓取到的数据能被正确解析成格式完整、货号唯一的型号列表。"
+          } > /tmp/body.md
+
+          if gh pr list --head "$BRANCH" --state open --json number --jq 'length' | grep -q '^0$'; then
+            gh pr create --base master --head "$BRANCH" \
+              --title "chore: 更新机型数据" --body-file /tmp/body.md
+          else
+            echo "已有开启的 PR，分支已更新"
+            PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+            gh pr comment "$PR" --body-file /tmp/body.md
+          fi

@@ -18,6 +18,7 @@ window.PRODUCT_SELECTION_BOOTSTRAP.productSelectionData，
 import argparse
 import json
 import pathlib
+import re
 import sys
 import time
 import urllib.error
@@ -48,6 +49,14 @@ UA = (
     "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 KEY = "productSelectionData:"
+BUY_INDEX = "shop/buy-iphone"
+
+# 索引页上并非机型的链接
+NOT_A_MODEL = {"carrier-offers"}
+
+# 明确不纳入监控的购买页。上一代机型供货充足，不是这个工具的目标，
+# 列在这里是为了让每日检查不必反复报告它们。
+IGNORED_SLUGS = {"iphone-16"}
 OUT_DIR = pathlib.Path(__file__).resolve().parent.parent / "config" / "files"
 
 
@@ -90,14 +99,88 @@ def families(data):
     return sorted({p.get("familyType") for p in data.get("products", [])})
 
 
+def discover_slugs(short):
+    """从 /shop/buy-iphone 索引页列出当前在售的购买页"""
+    html = fetch(f"https://www.apple.com/{short}/{BUY_INDEX}")
+    found = set(re.findall(r"/shop/buy-iphone/([a-z0-9][a-z0-9-]*)", html))
+    return sorted(found - NOT_A_MODEL)
+
+
+def is_real_buy_page(short, slug):
+    """确认这个 slug 真的是一个可用的购买页
+
+    索引页会残留已下架机型的链接（实测 jp 索引页一度列出 iphone-17-pro，
+    而该页面实际 301）。不做这一步校验，每日检查就会周期性误报。
+    """
+    try:
+        html = fetch(f"https://www.apple.com/{short}/{BUY_INDEX}/{slug}")
+    except Exception:
+        return False
+    return KEY in html
+
+
+def check_new(areas):
+    """报告 Apple 站点上有、但 SLUGS 未收录的购买页
+
+    新机型的购买页会先出现在索引页上，这一步让它当天就被发现，
+    而不是等用户反馈「监控列表里没有新机型」。
+    """
+    known = set(SLUGS) | IGNORED_SLUGS
+    missing = {}
+
+    for locale, short in areas:
+        try:
+            slugs = discover_slugs(short)
+        except Exception as e:
+            print(f"  {locale}: 索引页读取失败 {e}")
+            continue
+
+        candidates = [s for s in slugs if s not in known]
+
+        # 逐个校验，滤掉索引页上的陈旧链接
+        confirmed = []
+        for slug in candidates:
+            if is_real_buy_page(short, slug):
+                confirmed.append(slug)
+            else:
+                print(f"  {locale}: {slug} 在索引页出现但不是有效购买页，忽略")
+            time.sleep(0.5)
+
+        if confirmed:
+            missing[locale] = confirmed
+
+        note = f"，未收录 {confirmed}" if confirmed else ""
+        print(f"  {locale}: {len(slugs)} 个购买页{note}")
+
+    if missing:
+        merged = sorted({s for v in missing.values() for s in v})
+        print()
+        print(f"发现未收录的购买页: {' '.join(merged)}")
+        print("确认需要监控的话，把它们加进 scripts/fetch_products.py 的 SLUGS；")
+        print("确认不需要（例如上一代机型），加进 IGNORED_SLUGS。")
+        return 2
+
+    print("\n没有未收录的购买页。")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--locale", action="append", help="只处理指定地区，可重复")
     ap.add_argument("--dry-run", action="store_true", help="只报告，不写文件")
     ap.add_argument("--delay", type=float, default=1.0, help="请求间隔秒数")
+    ap.add_argument(
+        "--check-new",
+        action="store_true",
+        help="只检查是否出现了 SLUGS 未收录的购买页，退出码 2 表示发现新机型",
+    )
     args = ap.parse_args()
 
     areas = [a for a in AREAS if not args.locale or a[0] in args.locale]
+
+    if args.check_new:
+        print("检查未收录的购买页：")
+        return check_new(areas)
     failed = False
 
     for locale, short in areas:

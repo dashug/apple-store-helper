@@ -22,8 +22,20 @@ python3 scripts/fetch_products.py --dry-run   # 只看结果，不写文件
 ```
 
 数据源是各地区购买页内嵌的 `productSelectionData`。若购买页地址有变动，
-修改脚本顶部的 `SLUGS` 即可；可用的购买页可以从各地区的
-`/shop/buy-iphone` 页面中找到。
+修改脚本顶部的 `SLUGS` 即可。
+
+检查是否出现了尚未收录的新机型：
+
+```shell script
+python3 scripts/fetch_products.py --check-new
+```
+
+它会扫描各地区的 `/shop/buy-iphone` 索引页，并逐个验证候选页面确实是有效
+购买页（索引页会残留已下架机型的链接）。确认要监控的加进 `SLUGS`，确认不
+需要的加进 `IGNORED_SLUGS`。
+
+以上两件事每天由 [`update-products.yml`](.github/workflows/update-products.yml)
+自动执行：数据有变化或发现未收录机型时会自动提交 PR，等待人工确认后合并。
 
 ### 运行
 ```shell script
