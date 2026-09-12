@@ -114,26 +114,27 @@ func TestFetchStoreReportsNetworkError(t *testing.T) {
 	}
 }
 
-// 全部查不到结果时，日志顶部必须有显著告警，
+// 全部查不到结果时，界面必须能给出整体告警，
 // 否则用户会把一屏「未知」当成「都没货」
-func TestLogShowsWarningWhenAllUnknown(t *testing.T) {
+func TestAllUnknownReportsUnreliable(t *testing.T) {
 	svc := newListenService()
 	svc.SetListenItems(map[string]ListenItem{"R683.MJYH4CH/A": testItem()})
 	svc.UpdateStatus("R683.MJYH4CH/A", StatusUnknown, "接口返回 HTTP 541")
 
-	svc.mu.RLock()
-	text := svc.logText()
-	svc.mu.RUnlock()
-
-	if !strings.Contains(text, "不可信") {
-		t.Errorf("全部未知时应有整体告警，实际:\n%s", text)
+	if !svc.AllUnknown() {
+		t.Error("全部未知时应判定为整体不可信")
 	}
-	if !strings.Contains(text, "HTTP 541") {
-		t.Errorf("应显示未知的具体原因，实际:\n%s", text)
+
+	rows := svc.SortedRows()
+	if len(rows) != 1 {
+		t.Fatalf("应有 1 行，实际 %d", len(rows))
+	}
+	if !strings.Contains(rows[0].Detail, "HTTP 541") {
+		t.Errorf("应保留未知的具体原因，实际: %q", rows[0].Detail)
 	}
 }
 
-func TestLogHasNoWarningWhenSomeKnown(t *testing.T) {
+func TestNotAllUnknownWhenSomeKnown(t *testing.T) {
 	svc := newListenService()
 	svc.SetListenItems(map[string]ListenItem{
 		"R683.MJYH4CH/A": testItem(),
@@ -142,11 +143,14 @@ func TestLogHasNoWarningWhenSomeKnown(t *testing.T) {
 	svc.UpdateStatus("R683.MJYH4CH/A", StatusUnknown, "超时")
 	svc.UpdateStatus("R409.MJTC4CH/A", StatusOutStock, "")
 
-	svc.mu.RLock()
-	text := svc.logText()
-	svc.mu.RUnlock()
+	if svc.AllUnknown() {
+		t.Error("仍有可信结果时不应判定为整体不可信")
+	}
+}
 
-	if strings.Contains(text, "不可信") {
-		t.Error("仍有可信结果时不应显示整体告警")
+// 空列表不应被当成「整体不可信」，否则刚启动就弹告警
+func TestAllUnknownIsFalseWhenEmpty(t *testing.T) {
+	if newListenService().AllUnknown() {
+		t.Error("空列表不应判定为不可信")
 	}
 }

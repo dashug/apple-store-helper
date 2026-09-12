@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -16,7 +17,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/widget"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
@@ -56,7 +56,6 @@ func newListenService() *listenService {
 		items:  map[string]ListenItem{},
 		Status: binding.NewString(),
 		area:   model.Areas[0],
-		Logs:   widget.NewLabel(""),
 	}
 }
 
@@ -69,7 +68,94 @@ type listenService struct {
 	barkNotifyUrl string
 
 	Status binding.String
-	Logs   *widget.Label
+
+	// onChange 在监听列表发生变化后被调用，供界面刷新列表。
+	// 只在 UI 初始化时设置一次，读写仍受 mu 保护。
+	onChange func()
+}
+
+// ListenRow 是展示用的一行。Key 用于定位与删除。
+type ListenRow struct {
+	ListenItem
+	Key string
+}
+
+// SetOnChange 注册列表变化的回调
+func (s *listenService) SetOnChange(fn func()) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.onChange = fn
+}
+
+// statusRank 决定行的排序优先级：
+// 有货最前，其次是需要留意的「未知」，最后才是明确无货的
+func statusRank(status string) int {
+	switch status {
+	case StatusInStock:
+		return 0
+	case StatusUnknown:
+		return 1
+	case StatusWait:
+		return 2
+	default:
+		return 3
+	}
+}
+
+// SortedRows 返回展示用的有序快照。
+// 顺序必须稳定，否则列表会在每轮刷新时乱跳，用户根本点不中删除按钮。
+func (s *listenService) SortedRows() []ListenRow {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	rows := make([]ListenRow, 0, len(s.items))
+	for key, item := range s.items {
+		rows = append(rows, ListenRow{ListenItem: item, Key: key})
+	}
+
+	sort.Slice(rows, func(i, j int) bool {
+		ri, rj := statusRank(rows[i].Status), statusRank(rows[j].Status)
+		if ri != rj {
+			return ri < rj
+		}
+		if rows[i].Store.CityStoreName != rows[j].Store.CityStoreName {
+			return rows[i].Store.CityStoreName < rows[j].Store.CityStoreName
+		}
+		if rows[i].Product.Title != rows[j].Product.Title {
+			return rows[i].Product.Title < rows[j].Product.Title
+		}
+		return rows[i].Key < rows[j].Key
+	})
+
+	return rows
+}
+
+// AllUnknown 表示这一轮所有监听项都没问出结果，整体不可信
+func (s *listenService) AllUnknown() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	if len(s.items) == 0 {
+		return false
+	}
+	for _, item := range s.items {
+		if item.Status != StatusUnknown {
+			return false
+		}
+	}
+	return true
+}
+
+// Remove 删除单个监听项。此前只能整体「清空」，加错一条就得全部重来。
+func (s *listenService) Remove(key string) {
+	s.mu.Lock()
+	delete(s.items, key)
+	fn := s.onChange
+	s.mu.Unlock()
+
+	if fn != nil {
+		fn()
+	}
 }
 
 func (s *listenService) GetArea() model.Area {
@@ -114,33 +200,61 @@ type storeResult struct {
 	err         error
 }
 
+// Add 添加单个监听项
 func (s *listenService) Add(areaTitle string, storeTitle string, productTitle string) error {
+	_, err := s.AddMany(areaTitle, []string{storeTitle}, []string{productTitle})
+	return err
+}
 
-	store, err := Store.GetStore(areaTitle, storeTitle)
-	if err != nil {
-		return err
+// AddMany 批量添加「所选门店 × 所选型号」的全部组合，返回新增条数。
+//
+// 先把门店与型号全部解析完再写入：只要有一个解析不出来就整体失败，
+// 避免用户以为加了 20 条、实际只加进去 12 条。
+func (s *listenService) AddMany(areaTitle string, storeTitles []string, productTitles []string) (int, error) {
+	stores := make([]model.Store, 0, len(storeTitles))
+	for _, title := range storeTitles {
+		store, err := Store.GetStore(areaTitle, title)
+		if err != nil {
+			return 0, err
+		}
+		stores = append(stores, store)
 	}
 
-	product, err := Product.GetProduct(areaTitle, productTitle)
-	if err != nil {
-		return err
+	products := make([]model.Product, 0, len(productTitles))
+	for _, title := range productTitles {
+		product, err := Product.GetProduct(areaTitle, title)
+		if err != nil {
+			return 0, err
+		}
+		products = append(products, product)
 	}
 
-	uniqKey := store.StoreNumber + "." + product.Code
+	added := 0
 
 	s.mu.Lock()
-	if s.items[uniqKey].Store.StoreNumber == "" {
-		s.items[uniqKey] = ListenItem{
-			Store:   store,
-			Product: product,
-			Status:  StatusWait,
+	for _, store := range stores {
+		for _, product := range products {
+			uniqKey := store.StoreNumber + "." + product.Code
+			// 已在监听中的组合不重复添加，也不重置它的状态
+			if s.items[uniqKey].Store.StoreNumber != "" {
+				continue
+			}
+			s.items[uniqKey] = ListenItem{
+				Store:   store,
+				Product: product,
+				Status:  StatusWait,
+			}
+			added++
 		}
 	}
-	text := s.logText()
+	fn := s.onChange
 	s.mu.Unlock()
 
-	s.Logs.SetText(text)
-	return nil
+	if fn != nil {
+		fn()
+	}
+
+	return added, nil
 }
 
 func (s *listenService) Clean() {
@@ -148,7 +262,7 @@ func (s *listenService) Clean() {
 	s.items = map[string]ListenItem{}
 	s.mu.Unlock()
 
-	s.UpdateLogStr()
+	s.notifyChange()
 }
 
 func (s *listenService) SetListenItems(items map[string]ListenItem) {
@@ -160,7 +274,7 @@ func (s *listenService) SetListenItems(items map[string]ListenItem) {
 	}
 	s.mu.Unlock()
 
-	s.UpdateLogStr()
+	s.notifyChange()
 }
 
 // GetListenItems 返回快照，调用方可以安全地遍历或序列化
@@ -176,45 +290,15 @@ func (s *listenService) GetListenItems() map[string]ListenItem {
 	return items
 }
 
-func (s *listenService) UpdateLogStr() {
+// notifyChange 通知界面刷新列表。回调在锁外执行，避免 UI 刷新与监听线程互等。
+func (s *listenService) notifyChange() {
 	s.mu.RLock()
-	text := s.logText()
+	fn := s.onChange
 	s.mu.RUnlock()
 
-	s.Logs.SetText(text)
-}
-
-// logText 拼接日志文本，调用方必须已持有 mu
-func (s *listenService) logText() string {
-	var str string
-	unknown := 0
-
-	for _, item := range s.items {
-		detail := ""
-		if item.Detail != "" {
-			detail = "  (" + item.Detail + ")"
-		}
-		if item.Status == StatusUnknown {
-			unknown++
-		}
-
-		str += fmt.Sprintf(
-			"[%s] %s %s %s%s\n",
-			item.Status,
-			item.Time,
-			item.Store.CityStoreName,
-			item.Product.Title,
-			detail,
-		)
+	if fn != nil {
+		fn()
 	}
-
-	// 全部查询不到结果时，监听结果整体不可信，必须显著提示，
-	// 否则用户会把一屏「未知」当成「都没货」
-	if unknown > 0 && unknown == len(s.items) {
-		str = "⚠️ 当前无法获取库存，以下结果均不可信（接口可能已变更或被限流）\n\n" + str
-	}
-
-	return str
 }
 
 func (s *listenService) UpdateStatus(uniqKey string, status string, detail string) {
@@ -287,7 +371,7 @@ func (s *listenService) tick() {
 		break
 	}
 
-	s.UpdateLogStr()
+	s.notifyChange()
 }
 
 // groupByStore 按门店合并查询，返回各 SKU 的有货情况，

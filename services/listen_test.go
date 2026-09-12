@@ -36,7 +36,7 @@ func TestListenServiceConcurrentAccess(t *testing.T) {
 				return
 			default:
 				svc.UpdateStatus(key, StatusOutStock, "")
-				svc.UpdateLogStr()
+				svc.notifyChange()
 				_ = svc.GetArea().ShortCode
 				_ = svc.GetBarkNotifyUrl()
 			}
