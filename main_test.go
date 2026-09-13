@@ -67,7 +67,7 @@ func TestBarkUrlRestoredFromSettings(t *testing.T) {
 	services.Listen.SetBarkNotifyUrl("")
 
 	areaWidget, storeWidget, productWidget, barkWidget := newTestWidgets()
-	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget, newIntervalWidget())
+	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget, newNotifyWidget(), newIntervalWidget())
 
 	if got := barkWidget.Text; got != wantUrl {
 		t.Errorf("输入框未恢复\n期望: %s\n实际: %s", wantUrl, got)
@@ -106,7 +106,7 @@ func TestLoadSettingsWithoutCacheFile(t *testing.T) {
 	services.Listen.SetBarkNotifyUrl("")
 
 	areaWidget, storeWidget, productWidget, barkWidget := newTestWidgets()
-	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget, newIntervalWidget())
+	loadUserSettingsCache(areaWidget, storeWidget, productWidget, barkWidget, newNotifyWidget(), newIntervalWidget())
 
 	if got := services.Listen.GetBarkNotifyUrl(); got != "" {
 		t.Errorf("无缓存时 Bark 地址应为空，实际: %q", got)

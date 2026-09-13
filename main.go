@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -58,6 +59,7 @@ func buildUI() fyne.CanvasObject {
 	productSelect.SetOptions(services.Product.ByAreaTitleForOptions(defaultArea))
 
 	barkWidget := newBarkWidget()
+	notifyWidget := newNotifyWidget()
 	intervalWidget := newIntervalWidget()
 
 	// 地区选择器 (Area Selector)
@@ -86,7 +88,7 @@ func buildUI() fyne.CanvasObject {
 3. 点击“开始”开始监听，检测到有货时会自动打开购物车页面
 `
 
-	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, intervalWidget)
+	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, notifyWidget, intervalWidget)
 	refreshList()
 
 	// 五行共用一个 FormLayout，否则每行各自计算标签列宽，右侧控件起始位置会参差不齐
@@ -104,6 +106,7 @@ func buildUI() fyne.CanvasObject {
 
 		container.New(layout.NewFormLayout(),
 			widget.NewLabel("Bark 通知地址:"), barkWidget,
+			widget.NewLabel("其他通知地址:"), notifyWidget,
 			widget.NewLabel("监听间隔:"), intervalWidget,
 		),
 
@@ -312,6 +315,19 @@ func newIntervalWidget() *widget.Select {
 	return intervalWidget
 }
 
+// newNotifyWidget 创建其他通知渠道的地址输入框。
+//
+// Bark 只覆盖 iOS。这里按地址自动识别 Server酱、企业微信、Telegram，
+// 其余一律按通用 Webhook（POST 一个 JSON）处理。
+func newNotifyWidget() *widget.Entry {
+	notifyWidget := widget.NewMultiLineEntry()
+	notifyWidget.SetPlaceHolder("每行一个，支持 Server酱 / 企业微信 / Telegram / 通用 Webhook")
+	notifyWidget.SetMinRowsVisible(3)
+	notifyWidget.OnChanged = services.Listen.SetNotifyUrls
+
+	return notifyWidget
+}
+
 // newBarkWidget 创建 Bark 地址输入框
 // OnChanged 是 Bark 地址的唯一写入源：无论用户手动输入，还是 loadUserSettingsCache
 // 通过 SetText 恢复缓存，监听服务持有的地址都会同步更新
@@ -331,6 +347,7 @@ func saveSettings(settings *services.UserSettings) {
 	}
 	current.ListenItems = services.Listen.GetListenItems()
 	current.PollIntervalSeconds = int(services.Listen.GetInterval() / time.Second)
+	current.NotifyUrls = services.Listen.GetNotifyUrls()
 
 	if err := services.SaveSettings(current); err != nil {
 		log.Println("保存配置失败:", err)
@@ -338,7 +355,7 @@ func saveSettings(settings *services.UserSettings) {
 }
 
 // 加载用户设置缓存 (Load user settings cache)
-func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, intervalWidget *widget.Select) {
+func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, notifyWidget *widget.Entry, intervalWidget *widget.Select) {
 	settings, err := services.LoadSettings()
 	if err != nil {
 		areaWidget.SetSelected(services.Listen.GetArea().Title)
@@ -350,6 +367,7 @@ func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSele
 	productSelect.Select(settings.SelectedProduct)
 	services.Listen.SetListenItems(settings.ListenItems)
 	barkNotifyWidget.SetText(settings.BarkNotifyUrl)
+	notifyWidget.SetText(settings.NotifyUrls)
 
 	// 旧配置文件没有这个字段，此时保持默认间隔。
 	// 直接赋值而不用 SetSelected，避免恢复配置的动作反过来触发一次保存。
@@ -408,8 +426,34 @@ func createSecondaryButtons() *fyne.Container {
 		widget.NewButton("试听提示音", func() {
 			go services.Listen.AlertMp3()
 		}),
-		widget.NewButton("测试 Bark 通知", func() {
-			services.Listen.SendPushNotificationByBark("有货提醒（测试）", "此为测试提醒，点击通知将跳转到相关链接", "https://www.apple.com.cn/shop/bag")
+		widget.NewButton("测试通知", func() {
+			if len(services.Listen.NotifyTargets()) == 0 {
+				dialog.ShowInformation("测试通知", "尚未配置任何通知地址", view.Window)
+				return
+			}
+
+			// 放到后台发送，逐条汇报结果 ——
+			// 原先点了没有任何反馈，配错地址要到真正命中有货时才会发现
+			go func() {
+				results := services.Listen.Notify(services.Notification{
+					Title:   "有货提醒（测试）",
+					Content: "此为测试提醒，点击通知将跳转到相关链接",
+					URL:     "https://www.apple.com.cn/shop/bag",
+				})
+
+				var report strings.Builder
+				for _, r := range results {
+					if r.Err != nil {
+						fmt.Fprintf(&report, "✗ %s：%v\n", r.Channel, r.Err)
+					} else {
+						fmt.Fprintf(&report, "✓ %s：已发送\n", r.Channel)
+					}
+				}
+
+				fyne.Do(func() {
+					dialog.ShowInformation("测试通知结果", report.String(), view.Window)
+				})
+			}()
 		}),
 		widget.NewButton("打开日志", func() {
 			dir, err := services.LogDir()
