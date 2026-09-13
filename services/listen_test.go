@@ -115,18 +115,21 @@ func TestGetProductUnknownReturnsError(t *testing.T) {
 	}
 }
 
-// 网络不可达时只记日志，不能让整个程序崩溃
-func TestBarkNetworkErrorDoesNotPanic(t *testing.T) {
+// 网络不可达时只记日志并返回错误，不能让整个程序崩溃
+func TestNotifyNetworkErrorDoesNotPanic(t *testing.T) {
 	svc := newListenService()
 	svc.SetBarkNotifyUrl("http://127.0.0.1:1/bark-key")
 
 	defer func() {
 		if r := recover(); r != nil {
-			t.Fatalf("Bark 推送失败不应 panic: %v", r)
+			t.Fatalf("推送失败不应 panic: %v", r)
 		}
 	}()
 
-	svc.SendPushNotificationByBark("有货提醒", "测试", "https://www.apple.com/cn/shop/bag")
+	results := svc.Notify(Notification{Title: "有货提醒", Content: "测试", URL: "https://www.apple.com/cn/shop/bag"})
+	if len(results) != 1 || results[0].Err == nil {
+		t.Errorf("网络不可达时应返回错误，实际 %+v", results)
+	}
 }
 
 // 未填写 Bark 地址（含只输了空白）时应直接跳过，不发请求
@@ -140,7 +143,7 @@ func TestBarkEmptyUrlIsNoop(t *testing.T) {
 	svc := newListenService()
 	for _, notifyUrl := range []string{"", "   ", "\t\n"} {
 		svc.SetBarkNotifyUrl(notifyUrl)
-		svc.SendPushNotificationByBark("有货提醒", "测试", "https://www.apple.com/cn/shop/bag")
+		svc.Notify(Notification{Title: "有货提醒", Content: "测试", URL: "https://www.apple.com/cn/shop/bag"})
 	}
 
 	if hits != 0 {
@@ -168,7 +171,7 @@ func TestBarkEscapesTitleAndContent(t *testing.T) {
 
 	svc := newListenService()
 	svc.SetBarkNotifyUrl(srv.URL + "/bark-key/")
-	svc.SendPushNotificationByBark(title, content, bagUrl)
+	svc.Notify(Notification{Title: title, Content: content, URL: bagUrl})
 	<-done
 
 	if want := "/bark-key/" + title + "/" + content; gotPath != want {

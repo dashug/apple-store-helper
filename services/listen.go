@@ -107,6 +107,7 @@ type listenService struct {
 	items         map[string]ListenItem
 	area          model.Area
 	barkNotifyUrl string
+	notifyUrls    string
 
 	Status binding.String
 
@@ -225,6 +226,55 @@ func (s *listenService) GetBarkNotifyUrl() string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.barkNotifyUrl
+}
+
+// SetNotifyUrls 设置除 Bark 之外的通知地址，每行一个
+func (s *listenService) SetNotifyUrls(raw string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.notifyUrls = raw
+}
+
+func (s *listenService) GetNotifyUrls() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.notifyUrls
+}
+
+// NotifyTargets 返回全部已配置的通知地址。
+//
+// Bark 保留独立字段：它支持自建，按域名识别会把自建地址误判成普通 Webhook，
+// 因此不与其他渠道混在一起。
+func (s *listenService) NotifyTargets() []NotifyTarget {
+	s.mu.RLock()
+	bark := strings.TrimSpace(s.barkNotifyUrl)
+	extra := s.notifyUrls
+	s.mu.RUnlock()
+
+	var targets []NotifyTarget
+	if bark != "" {
+		// 显式标注为 Bark：自建 Bark 的域名不是 day.app，靠识别会被误判
+		targets = append(targets, NotifyTarget{URL: bark, Channel: ChannelBark})
+	}
+
+	return append(targets, splitTargets(extra)...)
+}
+
+// Notify 向所有已配置的渠道发送提醒，逐条返回结果。
+// 逐条返回是为了让界面能指出是哪个渠道失败了。
+func (s *listenService) Notify(n Notification) []NotifyResult {
+	targets := s.NotifyTargets()
+	results := make([]NotifyResult, 0, len(targets))
+
+	for _, target := range targets {
+		result := sendOne(target, n)
+		if result.Err != nil {
+			log.Printf("%s 通知发送失败: %v", result.Channel, result.Err)
+		}
+		results = append(results, result)
+	}
+
+	return results
 }
 
 type ListenItem struct {
@@ -486,7 +536,7 @@ func (s *listenService) tick() bool {
 		})
 
 		go s.AlertMp3()
-		go s.SendPushNotificationByBark("有货提醒", msg, bagUrl)
+		go s.Notify(Notification{Title: "有货提醒", Content: msg, URL: bagUrl})
 		break
 	}
 
@@ -672,36 +722,4 @@ func (s *listenService) AlertMp3() {
 		done <- true
 	})))
 	<-done
-}
-
-// barkClient 使用独立 client，默认 client 无超时，网络挂起时会永久占住 goroutine
-var barkClient = &http.Client{Timeout: 10 * time.Second}
-
-func (s *listenService) SendPushNotificationByBark(title string, content string, bagUrl string) {
-
-	baseUrl := strings.TrimRight(strings.TrimSpace(s.GetBarkNotifyUrl()), "/")
-	if baseUrl == "" {
-		return
-	}
-
-	// 标题与内容会出现在 URL path 中，必须转义
-	apiUrl := fmt.Sprintf(
-		"%s/%s/%s?%s",
-		baseUrl,
-		url.PathEscape(title),
-		url.PathEscape(content),
-		url.Values{"url": []string{bagUrl}}.Encode(),
-	)
-
-	// 推送失败不应影响监听本身，记录日志即可
-	response, err := barkClient.Get(apiUrl)
-	if err != nil {
-		log.Println("Bark 通知发送失败:", err)
-		return
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		log.Println("Bark 通知返回异常状态:", response.Status)
-	}
 }

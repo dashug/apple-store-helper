@@ -16,11 +16,15 @@ const (
 var configDirFn = os.UserConfigDir
 
 type UserSettings struct {
-	SelectedArea    string                `json:"selected_area"`
-	SelectedStore   string                `json:"selected_store"`
-	SelectedProduct string                `json:"selected_product"`
-	BarkNotifyUrl   string                `json:"bark_notify_url"`
-	ListenItems     map[string]ListenItem `json:"listen_items"`
+	SelectedArea    string `json:"selected_area"`
+	SelectedStore   string `json:"selected_store"`
+	SelectedProduct string `json:"selected_product"`
+	BarkNotifyUrl   string `json:"bark_notify_url"`
+
+	// NotifyUrls 是除 Bark 之外的通知地址，每行一个
+	NotifyUrls string `json:"notify_urls"`
+
+	ListenItems map[string]ListenItem `json:"listen_items"`
 
 	// PollIntervalSeconds 为 0 表示沿用默认间隔（兼容旧配置文件）
 	PollIntervalSeconds int `json:"poll_interval_seconds"`

@@ -125,6 +125,23 @@ GOROOT 为 GO 安装目录，根据实际安装位置修改
 被限流时所有型号会显示`未知`，恰好在最需要结果的时刻拿不到结果。
 连续查询失败时程序会自动退避，恢复正常后立即回到设定的间隔。
 
+### 通知渠道
+除 Bark 外，`其他通知地址`支持每行填一个地址，按地址自动识别渠道：
+
+| 渠道 | 地址形式 |
+| --- | --- |
+| Server酱 | `https://sctapi.ftqq.com/<KEY>.send` |
+| 企业微信群机器人 | `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<KEY>` |
+| Telegram | `https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>` |
+| 通用 Webhook | 其余地址，POST 一个含 `title` / `content` / `url` 的 JSON |
+
+以 `#` 开头的行会被忽略，可用来做备注。
+
+`Bark 通知地址`保持独立字段：Bark 支持自建，自建地址的域名不是 `day.app`，
+放进自动识别会被误判成通用 Webhook。
+
+点`测试通知`会向所有已配置的地址各发一条，并逐条显示成功或失败原因。
+
 ### 有货时推送通知到 iOS 设备
 1. App Store 下载并安装 App 「Bark」，并允许「Bark」进行推送
 2. 打开「Bark」，复制应用中代表你自己设备的地址（格式如` https://api.day.app/xxxxxxxxx `），粘贴至本应用的`Bark 通知地址`栏
