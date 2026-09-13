@@ -43,7 +43,19 @@ python3 scripts/fetch_products.py --check-new
 购买页（索引页会残留已下架机型的链接）。确认要监控的加进 `SLUGS`，确认不
 需要的加进 `IGNORED_SLUGS`。
 
-以上两件事每天由 [`update-products.yml`](.github/workflows/update-products.yml)
+### 更新门店数据
+门店会开设与关闭，这份数据同样需要更新：
+
+```shell script
+python3 scripts/fetch_stores.py             # 写入文件
+python3 scripts/fetch_stores.py --dry-run   # 只看增减，不写文件
+```
+
+数据源是零售店列表页 Next.js 数据中的 `props.pageProps.storeList`，一次请求即可
+拿到全部地区。注意脚本固定使用 `apple.com.cn` 入口：入口域名决定港澳地区返回的
+语言变体，`apple.com` 给的是 `en_HK`，本项目需要的 `zh_HK` 只有 `.cn` 入口才有。
+
+以上几件事每天由 [`update-data.yml`](.github/workflows/update-data.yml)
 自动执行：数据有变化或发现未收录机型时会自动提交 PR，等待人工确认后合并。
 
 ### 运行

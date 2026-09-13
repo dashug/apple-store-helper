@@ -1,4 +1,4 @@
-name: Update product data
+name: Update data
 
 on:
   schedule:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   refresh:
-    name: 刷新机型数据
+    name: 刷新机型与门店数据
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +40,9 @@ jobs:
 
       - name: 刷新机型数据
         run: python3 scripts/fetch_products.py
+
+      - name: 刷新门店数据
+        run: python3 scripts/fetch_stores.py | tee /tmp/stores.log
 
       - name: 检查数据是否有变化
         id: diff
@@ -69,7 +72,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "没有数据变化需要提交"
           else
-            git commit -m "chore: 更新机型数据（自动抓取）"
+            git commit -m "chore: 更新机型与门店数据（自动抓取）"
             git push -f -u origin "$BRANCH"
           fi
 
@@ -84,8 +87,14 @@ jobs:
               cat /tmp/diff.log
               echo '```'
               echo
+              echo "### 门店增减"
+              echo
+              echo '```'
+              cat /tmp/stores.log
+              echo '```'
+              echo
             else
-              echo "机型数据本身无变化。"
+              echo "机型与门店数据均无变化。"
               echo
             fi
 
@@ -103,13 +112,14 @@ jobs:
 
             echo "---"
             echo
-            echo "合并前请确认 CI 的 \`测试\` 任务通过 —— 其中的 \`TestProductDataParsesForAllAreas\`"
-            echo "会校验抓取到的数据能被正确解析成格式完整、货号唯一的型号列表。"
+            echo "合并前请确认 CI 的 \`测试\` 任务通过 —— 其中的"
+            echo "\`TestProductDataParsesForAllAreas\` 与 \`TestStoreDataParsesForAllAreas\`"
+            echo "会校验抓取到的数据能被正确解析成可用的型号与门店列表。"
           } > /tmp/body.md
 
           if gh pr list --head "$BRANCH" --state open --json number --jq 'length' | grep -q '^0$'; then
             gh pr create --base master --head "$BRANCH" \
-              --title "chore: 更新机型数据" --body-file /tmp/body.md
+              --title "chore: 更新机型与门店数据" --body-file /tmp/body.md
           else
             echo "已有开启的 PR，分支已更新"
             PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
