@@ -22,6 +22,16 @@ GEN_SCREENSHOT=1 go test -run TestGenerateScreenshot .
 
 它渲染的就是 `buildUI` 组装的真实界面，界面改了重跑一次即可。
 
+### 更新图标
+`Icon.svg` 是图标源文件，`Icon.png` 由它生成：
+
+```shell script
+rsvg-convert -w 1024 -h 1024 Icon.svg -o Icon.png
+```
+
+打包与托盘都使用 `Icon.png`。改动后建议在 16px 下确认仍可辨认 —— 托盘图标
+只有这么大，细节在这个尺寸会全部消失。
+
 ### 更新机型数据
 新机型发布后，`config/files/products_*.json` 需要重新抓取：
 
