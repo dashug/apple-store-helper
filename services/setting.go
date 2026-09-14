@@ -34,6 +34,11 @@ type UserSettings struct {
 	WindowHeight int `json:"window_height"`
 }
 
+// SettingsPath 返回配置文件的绝对路径，供界面与命令行提示用户
+func SettingsPath() (string, error) {
+	return settingsPath()
+}
+
 // settingsPath 返回配置文件的绝对路径
 //
 // 不能使用相对路径：macOS 下从访达双击 .app 启动时工作目录是 /，

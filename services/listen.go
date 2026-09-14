@@ -711,6 +711,12 @@ func (s *listenService) tick() bool {
 	return len(failures) > 0
 }
 
+// RunOnce 执行一轮检查并返回本轮是否有门店查询失败。
+// 供命令行的单次模式使用：配合 cron 时不需要常驻进程。
+func (s *listenService) RunOnce() bool {
+	return s.tick()
+}
+
 // LastCheck 返回上一轮检查完成的时间，零值表示尚未完成过任何一轮
 func (s *listenService) LastCheck() carbon.DateTime {
 	s.mu.RLock()

@@ -97,6 +97,34 @@ export PATH=$PATH:$GOPATH/bin
 ```
 GOROOT 为 GO 安装目录，根据实际安装位置修改
 
+## 命令行版
+`apple-store-cli` 不依赖图形环境，可以在服务器上长期挂着；命中有货时通过
+配置的通知渠道提醒。静态编译，丢进任何 Linux 机器都能直接跑，不需要安装
+`libGL` / `libX11`。
+
+```shell script
+# 先看有哪些地区、门店与型号
+apple-store-cli --list-areas
+apple-store-cli --area 中国大陆 --list-stores
+apple-store-cli --area 中国大陆 --list-products
+
+# 盯上海两家店的一个型号，命中时推送到 Bark
+apple-store-cli --area 中国大陆 \
+  --store 上海-环球港 --store 上海-南京东路 \
+  --product "iphone18pro - 黑色 - 256gb" \
+  --notify https://api.day.app/你的BarkKey
+
+# 只查一轮就退出，便于配合 cron
+apple-store-cli --area 中国大陆 --store 上海-环球港 \
+  --product "iphone18pro - 黑色 - 256gb" --once
+```
+
+不指定 `--store` / `--product` 时会读取配置文件，因此在图形版里配好之后，
+把配置文件拷到服务器即可直接运行。
+
+从 [release](https://github.com/dashug/apple-store-helper/releases) 下载
+`apple-store-cli-*` 对应平台的包。
+
 ## 使用方法
 
 1. 前往 [release](https://github.com/dashug/apple-store-helper/releases) 页面下载对应系统的程序，启动 

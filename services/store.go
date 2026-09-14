@@ -72,6 +72,12 @@ func (s *storeService) GetStore(areaTitle string, storeTitle string) (model.Stor
 		return model.Store{}, fmt.Errorf("未知地区: %s", areaTitle)
 	}
 
+	// 门店表是懒加载的。图形版在构建下拉框时顺带填充了它，命令行没有这一步，
+	// 不在这里兜底就会得到「未找到门店」——而门店其实是存在的。
+	if len(s.stores[code]) == 0 {
+		s.ByArea(Area.GetArea(areaTitle))
+	}
+
 	// funk.Find 找不到时返回 nil，必须先判空再断言
 	found := funk.Find(s.stores[code], func(x model.Store) bool {
 		return x.CityStoreName == storeTitle
