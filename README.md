@@ -9,6 +9,25 @@
 * *提前登录*
 * *提前将需要购买的型号加入购物车，检测有货会打开购物车页面，需要在购物车页面手动选择门店*
 
+## 下载
+前往 [release](https://github.com/dashug/apple-store-helper/releases/latest) 页面，
+按用途选择：
+
+| 用途 | 下载 |
+| --- | --- |
+| macOS 图形版 | `Apple-Store-Helper-*-macos-universal.zip`（Intel 与 Apple Silicon 通用） |
+| Windows 图形版 | `Apple-Store-Helper-*-windows-amd64.zip`，32 位系统用 `-386` |
+| 服务器长期运行 | `apple-store-cli-*-linux-amd64.zip`（静态二进制，约 3 MB，无需桌面环境） |
+| 其他平台的命令行版 | `apple-store-cli-*` 中对应 `linux-arm64` / `darwin-*` / `windows-amd64` 的包 |
+
+macOS 首次打开若被拦下（安装包做了 ad-hoc 签名，但下载会带隔离属性）：
+
+```shell script
+xattr -cr "Apple Store Helper.app"
+```
+
+各版本的具体变更见 release 页面对应 tag 的说明。
+
 ## 关于开发
 * 代码不优雅, 注释不完善, review须谨慎
 * GUI框架 [fyne](https://github.com/fyne-io/fyne)
@@ -122,12 +141,11 @@ apple-store-cli --area 中国大陆 --store 上海-环球港 \
 不指定 `--store` / `--product` 时会读取配置文件，因此在图形版里配好之后，
 把配置文件拷到服务器即可直接运行。
 
-从 [release](https://github.com/dashug/apple-store-helper/releases) 下载
-`apple-store-cli-*` 对应平台的包。
+下载见上面的[下载](#下载)一节。
 
 ## 使用方法
 
-1. 前往 [release](https://github.com/dashug/apple-store-helper/releases) 页面下载对应系统的程序，启动 
+1. 按上面[下载](#下载)一节取得对应平台的程序并启动
 2. 在 Apple 官网将需要购买的型号加入购物车
 3. 选择地区、门店和型号，点击`添加`按钮，将需要监听的型号添加到监听列表
 4. 点击`开始`按钮开始监听，检测到有货时会自动打开购物车页面
