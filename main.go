@@ -455,6 +455,9 @@ func createSecondaryButtons() *fyne.Container {
 				})
 			}()
 		}),
+		widget.NewButton("有货记录", func() {
+			showHistoryDialog()
+		}),
 		widget.NewButton("打开日志", func() {
 			dir, err := services.LogDir()
 			if err != nil {

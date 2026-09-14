@@ -16,6 +16,9 @@ import (
 // 命中有货时会弹窗、发系统通知、打开购物袋，而 tick 运行在监听 goroutine 中。
 // 这是整个程序里最关键也最少被走到的一条路径，这里完整跑一遍。
 func TestTickHandlesInStockFromGoroutine(t *testing.T) {
+	// 命中会写入有货记录，不隔离的话会写进使用者真实的配置目录
+	withTempConfigDir(t)
+
 	test.NewApp()
 	view.App = fyne.CurrentApp()
 	view.Window = view.App.NewWindow("test")
@@ -71,10 +74,24 @@ func TestTickHandlesInStockFromGoroutine(t *testing.T) {
 	if status != Pause {
 		t.Errorf("命中后应暂停，实际 %q", status)
 	}
+
+	// 命中必须被记进有货记录，否则「该盯哪家店」的判断依据就丢了
+	entries, err := LoadHistory()
+	if err != nil {
+		t.Fatalf("读取有货记录失败: %v", err)
+	}
+	if len(entries) != 1 {
+		t.Fatalf("命中应产生 1 条记录，实际 %d", len(entries))
+	}
+	if entries[0].Store != "上海-环球港" {
+		t.Errorf("记录的门店不对: %q", entries[0].Store)
+	}
 }
 
 // 查询失败时不应标记为无货，也不应弹窗
 func TestTickMarksUnknownOnFailure(t *testing.T) {
+	withTempConfigDir(t)
+
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(541)
 		_, _ = w.Write([]byte("<!doctype html><html><body>blocked</body></html>"))

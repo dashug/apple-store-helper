@@ -514,6 +514,10 @@ func (s *listenService) tick() bool {
 		s.UpdateStatus(key, StatusInStock, "")
 		s.Status.Set(Pause)
 
+		// 记录这次命中。程序看到的每一轮结果原本都直接丢掉了，
+		// 而「哪家店什么时候出过货」是别处拿不到的信息。
+		RecordInStock(s.GetArea().Title, item)
+
 		var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
 		msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
 
