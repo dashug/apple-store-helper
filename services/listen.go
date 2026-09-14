@@ -138,8 +138,12 @@ func (s *listenService) SetOnChange(fn func()) {
 	s.onChange = fn
 }
 
+// StatusDisabled 是停用项的展示文案。
+// 停用项不再被查询，沿用旧状态会显示成「无货」，那是过期且误导的信息。
+const StatusDisabled = "已停用"
+
 // statusRank 决定行的排序优先级：
-// 有货最前，其次是需要留意的「未知」，最后才是明确无货的
+// 有货最前，其次是需要留意的「未知」，停用的沉到最后 —— 它们不在监听中
 func statusRank(status string) int {
 	switch status {
 	case StatusInStock:
@@ -148,9 +152,19 @@ func statusRank(status string) int {
 		return 1
 	case StatusWait:
 		return 2
+	case StatusDisabled:
+		return 4
 	default:
 		return 3
 	}
+}
+
+// DisplayStatus 返回该行应显示的状态
+func (r ListenRow) DisplayStatus() string {
+	if r.Disabled {
+		return StatusDisabled
+	}
+	return r.Status
 }
 
 // SortedRows 返回展示用的有序快照。
@@ -169,7 +183,7 @@ func (s *listenService) SortedRows() []ListenRow {
 	}
 
 	sort.Slice(rows, func(i, j int) bool {
-		ri, rj := statusRank(rows[i].Status), statusRank(rows[j].Status)
+		ri, rj := statusRank(rows[i].DisplayStatus()), statusRank(rows[j].DisplayStatus())
 		if ri != rj {
 			return ri < rj
 		}
@@ -194,7 +208,7 @@ func (s *listenService) AllUnknown() bool {
 	seen := false
 
 	for _, item := range s.items {
-		if item.Area != area {
+		if item.Area != area || item.Disabled {
 			continue
 		}
 		seen = true
@@ -204,6 +218,21 @@ func (s *listenService) AllUnknown() bool {
 	}
 
 	return seen
+}
+
+// SetDisabled 停用或恢复单个监听项
+func (s *listenService) SetDisabled(key string, disabled bool) {
+	s.mu.Lock()
+	if item, ok := s.items[key]; ok {
+		item.Disabled = disabled
+		s.items[key] = item
+	}
+	fn := s.onChange
+	s.mu.Unlock()
+
+	if fn != nil {
+		fn()
+	}
 }
 
 // Remove 删除单个监听项。此前只能整体「清空」，加错一条就得全部重来。
@@ -301,6 +330,10 @@ type ListenItem struct {
 	Product model.Product
 	Status  string
 	Time    carbon.DateTime
+
+	// Disabled 表示暂时不监听这一项。
+	// 此前只能删除，想暂时不盯某家店就得删了重加，等于丢掉配置。
+	Disabled bool `json:"disabled"`
 
 	// Area 是该监听项所属地区。
 	// 各地区的列表分开保存，切换地区只是切换显示与监听的范围，
@@ -431,6 +464,38 @@ func (s *listenService) GetListenItems() map[string]ListenItem {
 	return items
 }
 
+// ActiveCount 返回当前地区正在监听的项数（不含停用）
+func (s *listenService) ActiveCount() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	area := s.area.Title
+	count := 0
+	for _, item := range s.items {
+		if item.Area == area && !item.Disabled {
+			count++
+		}
+	}
+
+	return count
+}
+
+// DisabledCount 返回当前地区被停用的项数
+func (s *listenService) DisabledCount() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	area := s.area.Title
+	count := 0
+	for _, item := range s.items {
+		if item.Area == area && item.Disabled {
+			count++
+		}
+	}
+
+	return count
+}
+
 // CurrentAreaItems 返回当前地区的监听项快照
 func (s *listenService) CurrentAreaItems() map[string]ListenItem {
 	s.mu.RLock()
@@ -555,7 +620,13 @@ func (s *listenService) tick() bool {
 
 	// 整轮使用同一份快照，避免与 UI 线程的增删并发。
 	// 只取当前地区：其他地区的货号在本地区的接口上查不到。
-	items := s.CurrentAreaItems()
+	items := map[string]ListenItem{}
+	for key, item := range s.CurrentAreaItems() {
+		if item.Disabled {
+			continue
+		}
+		items[key] = item
+	}
 	if len(items) == 0 {
 		return false
 	}
