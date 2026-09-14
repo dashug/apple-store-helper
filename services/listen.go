@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -15,18 +14,10 @@ import (
 	"sync"
 	"time"
 
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/data/binding"
-	"fyne.io/fyne/v2/dialog"
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/mp3"
-	"github.com/faiface/beep/speaker"
 	"github.com/golang-module/carbon"
 	"github.com/tidwall/gjson"
 
 	"apple-store-helper/model"
-	"apple-store-helper/theme"
-	"apple-store-helper/view"
 )
 
 const (
@@ -94,7 +85,7 @@ var Listen = newListenService()
 func newListenService() *listenService {
 	return &listenService{
 		items:    map[string]ListenItem{},
-		Status:   binding.NewString(),
+		status:   Pause,
 		area:     model.Areas[0],
 		interval: DefaultInterval,
 	}
@@ -109,7 +100,10 @@ type listenService struct {
 	barkNotifyUrl string
 	notifyUrls    string
 
-	Status binding.String
+	// status 是监听状态。此前用 fyne 的 data binding，那让 services 绑死在
+	// GUI 上 —— 链接了 fyne 的二进制在裸服务器上会因为缺 libGL/libX11
+	// 根本起不来，无法做 headless 运行。
+	status string
 
 	// interval 是基础轮询间隔，failures 是连续失败轮次（用于退避）
 	interval time.Duration
@@ -120,6 +114,9 @@ type listenService struct {
 	// 用户只能盯着列表里的时间列变化来判断。
 	lastCheck carbon.DateTime
 
+	// onInStock 在命中有货时被调用，由调用方决定如何呈现
+	onInStock func(InStockEvent)
+
 	// onChange 在监听列表发生变化后被调用，供界面刷新列表。
 	// 只在 UI 初始化时设置一次，读写仍受 mu 保护。
 	onChange func()
@@ -129,6 +126,41 @@ type listenService struct {
 type ListenRow struct {
 	ListenItem
 	Key string
+}
+
+// SetStatus 设置监听状态并通知界面刷新
+func (s *listenService) SetStatus(status string) {
+	s.mu.Lock()
+	changed := s.status != status
+	s.status = status
+	s.mu.Unlock()
+
+	if changed {
+		s.notifyChange()
+	}
+}
+
+func (s *listenService) GetStatus() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.status
+}
+
+// InStockEvent 描述一次命中。
+//
+// 弹窗、打开购物袋、播放提示音都是界面行为，交由调用方处理：
+// GUI 注册自己的实现，命令行注册打印日志的实现，services 本身不碰 GUI。
+type InStockEvent struct {
+	Item    ListenItem
+	Message string
+	BagURL  string
+}
+
+// SetOnInStock 注册命中时的处理
+func (s *listenService) SetOnInStock(fn func(InStockEvent)) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.onInStock = fn
 }
 
 // SetOnChange 注册列表变化的回调
@@ -540,11 +572,11 @@ func (s *listenService) UpdateStatus(uniqKey string, status string, detail strin
 }
 
 func (s *listenService) Run() {
-	s.Status.Set(Pause)
+	s.SetStatus(Pause)
 
 	go func() {
 		for {
-			if status, err := s.Status.Get(); err != nil || status != Running {
+			if s.GetStatus() != Running {
 				time.Sleep(pausedPollInterval)
 				continue
 			}
@@ -614,7 +646,7 @@ func withJitter(d time.Duration) time.Duration {
 
 // tick 执行一轮库存检查，返回本轮是否有门店查询失败（用于退避）
 func (s *listenService) tick() bool {
-	if status, err := s.Status.Get(); err != nil || status != Running {
+	if s.GetStatus() != Running {
 		return false
 	}
 
@@ -646,34 +678,26 @@ func (s *listenService) tick() bool {
 		}
 
 		s.UpdateStatus(key, StatusInStock, "")
-		s.Status.Set(Pause)
+		s.SetStatus(Pause)
 
 		// 记录这次命中。程序看到的每一轮结果原本都直接丢掉了，
 		// 而「哪家店什么时候出过货」是别处拿不到的信息。
 		RecordInStock(s.GetArea().Title, item)
 
-		var bagUrl = fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
+		bagUrl := fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
 		msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
 
-		// 以下都是图形操作，而这里处在监听 goroutine 中。
-		// fyne 要求图形操作在主运行时上下文执行，跨线程调用会破坏渲染状态，
-		// 表现为偶发花屏或崩溃 —— 恰好在命中有货这个最关键的时刻。
-		fyne.Do(func() {
-			// 窗口可能已收进托盘，命中时要让它重新出现，否则用户看不到提示
-			view.Window.Show()
-			view.Window.RequestFocus()
+		// 呈现方式交给调用方：GUI 弹窗并打开购物袋，命令行打印日志。
+		// services 不再直接触碰 GUI，否则无法在无桌面环境运行。
+		s.mu.RLock()
+		onInStock := s.onInStock
+		s.mu.RUnlock()
 
-			// 进入购物袋
-			s.openBrowser(bagUrl)
+		if onInStock != nil {
+			onInStock(InStockEvent{Item: item, Message: msg, BagURL: bagUrl})
+		}
 
-			dialog.ShowInformation("匹配成功", msg, view.Window)
-			view.App.SendNotification(&fyne.Notification{
-				Title:   "有货提醒",
-				Content: msg,
-			})
-		})
-
-		go s.AlertMp3()
+		// 推送与界面无关，各形态都需要
 		go s.Notify(Notification{Title: "有货提醒", Content: msg, URL: bagUrl})
 		break
 	}
@@ -840,35 +864,4 @@ func fetchStore(storeNumber string, skUrl string) storeResult {
 	}
 
 	return res
-}
-
-func (s *listenService) openBrowser(link string) {
-	parse, err := url.Parse(link)
-	if err != nil {
-		dialog.ShowError(err, view.Window)
-		return
-	}
-
-	err = view.App.OpenURL(parse)
-	if err != nil {
-		dialog.ShowError(err, view.Window)
-		return
-	}
-}
-
-func (s *listenService) AlertMp3() {
-	reader := bytes.NewReader(theme.Mp3().Content())
-	streamer, _, err := mp3.Decode(io.NopCloser(reader))
-	if err != nil {
-		// 本函数总是以 go 调用，panic 会带崩整个程序
-		log.Println("提示音解码失败:", err)
-		return
-	}
-	defer streamer.Close()
-
-	done := make(chan bool)
-	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
-		done <- true
-	})))
-	<-done
 }

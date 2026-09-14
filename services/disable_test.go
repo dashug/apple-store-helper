@@ -100,9 +100,7 @@ func TestDisabledItemIsNotQueried(t *testing.T) {
 
 	svc := newListenService()
 	keys := addTwo(t, svc)
-	if err := svc.Status.Set(Running); err != nil {
-		t.Fatal(err)
-	}
+	svc.SetStatus(Running)
 
 	// 两项都启用：两个门店各查一次
 	svc.tick()
@@ -143,9 +141,7 @@ func TestAllDisabledSkipsRound(t *testing.T) {
 
 	svc := newListenService()
 	keys := addTwo(t, svc)
-	if err := svc.Status.Set(Running); err != nil {
-		t.Fatal(err)
-	}
+	svc.SetStatus(Running)
 
 	for _, key := range keys {
 		svc.SetDisabled(key, true)

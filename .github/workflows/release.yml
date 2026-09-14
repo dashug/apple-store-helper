@@ -26,6 +26,16 @@ jobs:
       - run: go vet ./...
       - run: go test -race -count=1 ./...
 
+      - name: 校验 services 不依赖图形库
+        # services 一旦重新引入 fyne，链接出来的二进制在无桌面环境会因为
+        # 缺 libGL / libX11 起不来，headless 运行就没了。这里当场拦住。
+        run: |
+          if go list -deps ./services/ | grep -E 'fyne|faiface/beep'; then
+            echo "::error::services 不应依赖图形或音频库，上面是引入的包"
+            exit 1
+          fi
+          echo "services 无图形依赖"
+
   meta:
     name: 解析版本
     runs-on: ubuntu-latest

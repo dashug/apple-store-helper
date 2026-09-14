@@ -20,7 +20,6 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	fynetheme "fyne.io/fyne/v2/theme"
@@ -90,6 +89,9 @@ func buildUI() fyne.CanvasObject {
 		refreshList()
 		fyne.Do(refreshStatus)
 	})
+
+	// 命中有货时的弹窗、打开购物袋、提示音由界面层提供
+	services.Listen.SetOnInStock(handleInStock)
 
 	help := `1. 在 Apple 官网将需要购买的型号加入购物车
 2. 勾选地区、门店与型号（都可多选），点击“添加”批量加入监听列表
@@ -556,7 +558,7 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 func createSecondaryButtons() *fyne.Container {
 	return container.NewHBox(
 		widget.NewButton("试听提示音", func() {
-			go services.Listen.AlertMp3()
+			go alertMp3()
 		}),
 		widget.NewButton("测试通知", func() {
 			if len(services.Listen.NotifyTargets()) == 0 {
@@ -614,12 +616,7 @@ func createControlButtons() (*fyne.Container, func()) {
 	statusLabel := widget.NewLabel("")
 
 	update := func() {
-		status, err := services.Listen.Status.Get()
-		if err != nil {
-			status = "?"
-		}
-
-		text := fmt.Sprintf("%s · %d 项", status, services.Listen.ActiveCount())
+		text := fmt.Sprintf("%s · %d 项", services.Listen.GetStatus(), services.Listen.ActiveCount())
 		if disabled := services.Listen.DisabledCount(); disabled > 0 {
 			text += fmt.Sprintf("（%d 已停用）", disabled)
 		}
@@ -631,15 +628,12 @@ func createControlButtons() (*fyne.Container, func()) {
 	}
 	update()
 
-	// 「开始 / 暂停」不经过监听列表变化，需要单独监听状态本身
-	services.Listen.Status.AddListener(binding.NewDataListener(update))
-
 	return container.NewHBox(
 		widget.NewButton("开始", func() {
-			_ = services.Listen.Status.Set(services.Running)
+			services.Listen.SetStatus(services.Running)
 		}),
 		widget.NewButton("暂停", func() {
-			_ = services.Listen.Status.Set(services.Pause)
+			services.Listen.SetStatus(services.Pause)
 		}),
 		container.NewCenter(widget.NewLabel("状态:")),
 		container.NewCenter(statusLabel),
