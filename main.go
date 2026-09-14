@@ -75,8 +75,9 @@ func buildUI() fyne.CanvasObject {
 		productSelect.SetOptions(services.Product.ByAreaTitleForOptions(value))
 		productSelect.ClearSelection()
 
+		// 只切换地区，不再清空监听列表 ——
+		// 各地区的列表分开保存，切回来即可恢复
 		services.Listen.SetArea(services.Area.GetArea(value))
-		services.Listen.Clean()
 	})
 	areaWidget.Horizontal = true
 

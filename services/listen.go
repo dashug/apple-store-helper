@@ -154,8 +154,12 @@ func (s *listenService) SortedRows() []ListenRow {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	area := s.area.Title
 	rows := make([]ListenRow, 0, len(s.items))
 	for key, item := range s.items {
+		if item.Area != area {
+			continue
+		}
 		rows = append(rows, ListenRow{ListenItem: item, Key: key})
 	}
 
@@ -181,15 +185,20 @@ func (s *listenService) AllUnknown() bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	if len(s.items) == 0 {
-		return false
-	}
+	area := s.area.Title
+	seen := false
+
 	for _, item := range s.items {
+		if item.Area != area {
+			continue
+		}
+		seen = true
 		if item.Status != StatusUnknown {
 			return false
 		}
 	}
-	return true
+
+	return seen
 }
 
 // Remove 删除单个监听项。此前只能整体「清空」，加错一条就得全部重来。
@@ -210,10 +219,15 @@ func (s *listenService) GetArea() model.Area {
 	return s.area
 }
 
+// SetArea 切换当前地区。
+// 各地区的监听列表分开保存，切换只改变显示与监听的范围，不会清空任何一边。
 func (s *listenService) SetArea(area model.Area) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	s.area = area
+	s.mu.Unlock()
+
+	// 可见的监听项随之变化，通知界面刷新
+	s.notifyChange()
 }
 
 func (s *listenService) SetBarkNotifyUrl(notifyUrl string) {
@@ -283,6 +297,11 @@ type ListenItem struct {
 	Status  string
 	Time    carbon.DateTime
 
+	// Area 是该监听项所属地区。
+	// 各地区的列表分开保存，切换地区只是切换显示与监听的范围，
+	// 不再清空 —— 误点一下地区就丢掉全部配置，且不可恢复。
+	Area string `json:"area"`
+
 	// Detail 是「未知」状态的原因，仅用于展示，不写入配置文件
 	Detail string `json:"-"`
 }
@@ -338,6 +357,7 @@ func (s *listenService) AddMany(areaTitle string, storeTitles []string, productT
 				Store:   store,
 				Product: product,
 				Status:  StatusWait,
+				Area:    areaTitle,
 			}
 			added++
 		}
@@ -352,7 +372,23 @@ func (s *listenService) AddMany(areaTitle string, storeTitles []string, productT
 	return added, nil
 }
 
+// Clean 清空当前地区的监听列表。
+// 只清当前地区：界面上显示的就是这一部分，清掉看不见的其他地区会让人意外。
 func (s *listenService) Clean() {
+	s.mu.Lock()
+	area := s.area.Title
+	for key, item := range s.items {
+		if item.Area == area {
+			delete(s.items, key)
+		}
+	}
+	s.mu.Unlock()
+
+	s.notifyChange()
+}
+
+// CleanAll 清空全部地区，供「清空」之外的场景使用
+func (s *listenService) CleanAll() {
 	s.mu.Lock()
 	s.items = map[string]ListenItem{}
 	s.mu.Unlock()
@@ -365,6 +401,10 @@ func (s *listenService) SetListenItems(items map[string]ListenItem) {
 	// 拷贝一份，避免与调用方共享底层 map
 	s.items = make(map[string]ListenItem, len(items))
 	for k, v := range items {
+		// 旧配置文件里没有 Area 字段，归入当前地区，否则升级后列表会整个消失
+		if v.Area == "" {
+			v.Area = s.area.Title
+		}
 		s.items[k] = v
 	}
 	s.mu.Unlock()
@@ -372,7 +412,8 @@ func (s *listenService) SetListenItems(items map[string]ListenItem) {
 	s.notifyChange()
 }
 
-// GetListenItems 返回快照，调用方可以安全地遍历或序列化
+// GetListenItems 返回全部地区的快照，用于持久化。
+// 监听与展示请用 CurrentAreaItems —— 否则会把其他地区的型号拿去当前地区查询。
 func (s *listenService) GetListenItems() map[string]ListenItem {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -380,6 +421,22 @@ func (s *listenService) GetListenItems() map[string]ListenItem {
 	items := make(map[string]ListenItem, len(s.items))
 	for k, v := range s.items {
 		items[k] = v
+	}
+
+	return items
+}
+
+// CurrentAreaItems 返回当前地区的监听项快照
+func (s *listenService) CurrentAreaItems() map[string]ListenItem {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	area := s.area.Title
+	items := map[string]ListenItem{}
+	for k, v := range s.items {
+		if v.Area == area {
+			items[k] = v
+		}
 	}
 
 	return items
@@ -491,8 +548,9 @@ func (s *listenService) tick() bool {
 		return false
 	}
 
-	// 整轮使用同一份快照，避免与 UI 线程的增删并发
-	items := s.GetListenItems()
+	// 整轮使用同一份快照，避免与 UI 线程的增删并发。
+	// 只取当前地区：其他地区的货号在本地区的接口上查不到。
+	items := s.CurrentAreaItems()
 	if len(items) == 0 {
 		return false
 	}
