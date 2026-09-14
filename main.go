@@ -152,7 +152,7 @@ func filterRows(rows []services.ListenRow, filter string) []services.ListenRow {
 
 	out := make([]services.ListenRow, 0, len(rows))
 	for _, row := range rows {
-		if row.Status == filter {
+		if row.DisplayStatus() == filter {
 			out = append(out, row)
 		}
 	}
@@ -171,7 +171,14 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 	warning.Hide()
 
 	filterSelect := widget.NewSelect(
-		[]string{filterAll, services.StatusInStock, services.StatusUnknown, services.StatusOutStock, services.StatusWait},
+		[]string{
+			filterAll,
+			services.StatusInStock,
+			services.StatusUnknown,
+			services.StatusOutStock,
+			services.StatusWait,
+			services.StatusDisabled,
+		},
 		nil,
 	)
 	filterSelect.Selected = filterAll
@@ -192,7 +199,10 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			// 拆成多个 Label 排在 HBox 里时，文字变长后不会重新布局，会互相重叠。
 			return container.NewBorder(nil, nil,
 				status,
-				widget.NewButton("删除", nil),
+				container.NewHBox(
+					widget.NewButton("停用", nil),
+					widget.NewButton("删除", nil),
+				),
 				widget.NewLabel("详情"),
 			)
 		},
@@ -210,11 +220,15 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 
 			info := items[0].(*widget.Label)
 			status := items[1].(*canvas.Text)
-			remove := items[2].(*widget.Button)
+			buttons := items[2].(*fyne.Container).Objects
+			toggle := buttons[0].(*widget.Button)
+			remove := buttons[1].(*widget.Button)
 
-			// 有货用绿色、未知用警示色，否则命中的那条混在几十行里不够显眼
-			status.Text = "［" + row.Status + "］"
-			status.Color = statusColor(row.Status)
+			// 有货用绿色、未知用警示色，否则命中的那条混在几十行里不够显眼。
+			// 停用项显示「已停用」而不是旧状态 —— 它不再被查询，旧状态是过期信息。
+			display := row.DisplayStatus()
+			status.Text = "［" + display + "］"
+			status.Color = statusColor(display)
 			status.Refresh()
 
 			text := row.Store.CityStoreName + "　" + row.Product.Title
@@ -227,6 +241,18 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			info.SetText(text)
 
 			key := row.Key
+			disabled := row.Disabled
+
+			if disabled {
+				toggle.SetText("启用")
+			} else {
+				toggle.SetText("停用")
+			}
+			toggle.OnTapped = func() {
+				services.Listen.SetDisabled(key, !disabled)
+				saveSettings(nil)
+			}
+
 			remove.OnTapped = func() {
 				services.Listen.Remove(key)
 				saveSettings(nil)
@@ -322,7 +348,7 @@ func statusColor(status string) color.Color {
 		return fynetheme.Color(fynetheme.ColorNameSuccess)
 	case services.StatusUnknown:
 		return fynetheme.Color(fynetheme.ColorNameWarning)
-	case services.StatusOutStock:
+	case services.StatusOutStock, services.StatusDisabled:
 		return fynetheme.Color(fynetheme.ColorNameDisabled)
 	default:
 		return fynetheme.Color(fynetheme.ColorNameForeground)
@@ -593,7 +619,10 @@ func createControlButtons() (*fyne.Container, func()) {
 			status = "?"
 		}
 
-		text := fmt.Sprintf("%s · %d 项", status, len(services.Listen.CurrentAreaItems()))
+		text := fmt.Sprintf("%s · %d 项", status, services.Listen.ActiveCount())
+		if disabled := services.Listen.DisabledCount(); disabled > 0 {
+			text += fmt.Sprintf("（%d 已停用）", disabled)
+		}
 		if last := services.Listen.LastCheck(); !last.IsZero() {
 			text += " · 上轮 " + last.ToTimeString()
 		}
