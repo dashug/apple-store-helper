@@ -43,9 +43,7 @@ func TestTickHandlesInStockFromGoroutine(t *testing.T) {
 			Status:  StatusWait,
 		},
 	})
-	if err := svc.Status.Set(Running); err != nil {
-		t.Fatal(err)
-	}
+	svc.SetStatus(Running)
 
 	// 在 goroutine 中执行，与生产环境一致
 	done := make(chan bool, 1)
@@ -67,10 +65,7 @@ func TestTickHandlesInStockFromGoroutine(t *testing.T) {
 	}
 
 	// 命中后应自动暂停，避免反复弹窗
-	status, err := svc.Status.Get()
-	if err != nil {
-		t.Fatal(err)
-	}
+	status := svc.GetStatus()
 	if status != Pause {
 		t.Errorf("命中后应暂停，实际 %q", status)
 	}
@@ -113,9 +108,7 @@ func TestTickMarksUnknownOnFailure(t *testing.T) {
 			Status:  StatusWait,
 		},
 	})
-	if err := svc.Status.Set(Running); err != nil {
-		t.Fatal(err)
-	}
+	svc.SetStatus(Running)
 
 	done := make(chan bool, 1)
 	go func() { done <- svc.tick() }()

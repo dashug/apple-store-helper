@@ -33,10 +33,10 @@ func setupSystemTray() bool {
 		fyne.NewMenuItem("显示主窗口", showMainWindow),
 		fyne.NewMenuItemSeparator(),
 		fyne.NewMenuItem("开始监听", func() {
-			_ = services.Listen.Status.Set(services.Running)
+			services.Listen.SetStatus(services.Running)
 		}),
 		fyne.NewMenuItem("暂停监听", func() {
-			_ = services.Listen.Status.Set(services.Pause)
+			services.Listen.SetStatus(services.Pause)
 		}),
 	))
 

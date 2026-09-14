@@ -110,10 +110,7 @@ func fillSampleItems(t *testing.T) {
 		defer close(done)
 
 		// 真实启动时 Run 会把状态置为「暂停」
-		if err := services.Listen.Status.Set(services.Pause); err != nil {
-			t.Error(err)
-			return
-		}
+		services.Listen.SetStatus(services.Pause)
 		services.Listen.SetListenItems(items)
 	}()
 	<-done
