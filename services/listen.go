@@ -115,6 +115,11 @@ type listenService struct {
 	interval time.Duration
 	failures int
 
+	// lastCheck 是上一轮检查完成的时间。
+	// 界面此前只有「暂停 / 监听中」，看不出程序是否还在正常轮转，
+	// 用户只能盯着列表里的时间列变化来判断。
+	lastCheck carbon.DateTime
+
 	// onChange 在监听列表发生变化后被调用，供界面刷新列表。
 	// 只在 UI 初始化时设置一次，读写仍受 mu 保护。
 	onChange func()
@@ -602,9 +607,20 @@ func (s *listenService) tick() bool {
 		break
 	}
 
+	s.mu.Lock()
+	s.lastCheck = carbon.DateTime{Carbon: carbon.Now(carbon.Shanghai)}
+	s.mu.Unlock()
+
 	s.notifyChange()
 
 	return len(failures) > 0
+}
+
+// LastCheck 返回上一轮检查完成的时间，零值表示尚未完成过任何一轮
+func (s *listenService) LastCheck() carbon.DateTime {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.lastCheck
 }
 
 // groupByStore 按门店合并查询，返回各 SKU 的有货情况，
