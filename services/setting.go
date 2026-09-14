@@ -28,6 +28,10 @@ type UserSettings struct {
 
 	// PollIntervalSeconds 为 0 表示沿用默认间隔（兼容旧配置文件）
 	PollIntervalSeconds int `json:"poll_interval_seconds"`
+
+	// WindowWidth / WindowHeight 为 0 表示使用默认尺寸
+	WindowWidth  int `json:"window_width"`
+	WindowHeight int `json:"window_height"`
 }
 
 // settingsPath 返回配置文件的绝对路径

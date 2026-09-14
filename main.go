@@ -20,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	fynetheme "fyne.io/fyne/v2/theme"
@@ -35,7 +36,7 @@ func main() {
 	initFyneApp()
 
 	view.Window.SetContent(buildUI())
-	view.Window.Resize(fyne.NewSize(1000, 800))
+	view.Window.Resize(restoreWindowSize())
 	view.Window.CenterOnScreen()
 
 	// 监控类工具关掉窗口就退出是反直觉的，收进托盘后可以挂一整天
@@ -82,7 +83,13 @@ func buildUI() fyne.CanvasObject {
 	areaWidget.Horizontal = true
 
 	listenList, warning, refreshList := newListenList()
-	services.Listen.SetOnChange(refreshList)
+	controls, refreshStatus := createControlButtons()
+
+	// 列表与状态栏一起刷新：项数和上轮时间都随监听结果变化
+	services.Listen.SetOnChange(func() {
+		refreshList()
+		fyne.Do(refreshStatus)
+	})
 
 	help := `1. 在 Apple 官网将需要购买的型号加入购物车
 2. 勾选地区、门店与型号（都可多选），点击“添加”批量加入监听列表
@@ -114,7 +121,7 @@ func buildUI() fyne.CanvasObject {
 		// 主操作与次要操作分两行，避免七个按钮挤在一行、窗口缩小时先挤坏
 		container.NewBorder(nil, nil,
 			createActionButtons(areaWidget, storeSelect, productSelect, barkWidget),
-			createControlButtons(),
+			controls,
 		),
 		createSecondaryButtons(),
 		warning,
@@ -133,12 +140,43 @@ func buildUI() fyne.CanvasObject {
 //
 // 返回列表控件、整体告警条，以及刷新函数 —— 刷新函数会被监听 goroutine
 // 调用，因此行数据需要加锁保护。
+// filterAll 表示不筛选
+const filterAll = "全部"
+
+// filterRows 只影响展示，不影响监听范围 ——
+// 几十行时用户只关心「有货 / 未知」这两类，其余是噪声
+func filterRows(rows []services.ListenRow, filter string) []services.ListenRow {
+	if filter == filterAll {
+		return rows
+	}
+
+	out := make([]services.ListenRow, 0, len(rows))
+	for _, row := range rows {
+		if row.Status == filter {
+			out = append(out, row)
+		}
+	}
+
+	return out
+}
+
 func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
-	var mu sync.Mutex
+	var (
+		mu     sync.Mutex
+		filter = filterAll
+	)
 	rows := services.Listen.SortedRows()
 
 	warning := widget.NewLabel("⚠️ 当前无法获取库存，下列结果均不可信（接口可能已变更或被限流）")
 	warning.Hide()
+
+	filterSelect := widget.NewSelect(
+		[]string{filterAll, services.StatusInStock, services.StatusUnknown, services.StatusOutStock, services.StatusWait},
+		nil,
+	)
+	filterSelect.Selected = filterAll
+
+	filterHint := widget.NewLabel("")
 
 	list := widget.NewList(
 		func() int {
@@ -197,8 +235,11 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 	)
 
 	refresh := func() {
+		all := services.Listen.SortedRows()
+
 		mu.Lock()
-		rows = services.Listen.SortedRows()
+		rows = filterRows(all, filter)
+		shown, total := len(rows), len(all)
 		mu.Unlock()
 
 		unreliable := services.Listen.AllUnknown()
@@ -213,11 +254,65 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 				warning.Hide()
 			}
 
+			// 筛选掉多少要说清楚，否则用户会以为监听项丢了
+			if shown == total {
+				filterHint.SetText("")
+			} else {
+				filterHint.SetText(fmt.Sprintf("（%d / %d 项）", shown, total))
+			}
+
 			list.Refresh()
 		})
 	}
 
-	return list, warning, refresh
+	filterSelect.OnChanged = func(value string) {
+		mu.Lock()
+		filter = value
+		mu.Unlock()
+
+		refresh()
+	}
+
+	panel := container.NewBorder(
+		container.NewHBox(widget.NewLabel("筛选:"), filterSelect, filterHint),
+		nil, nil, nil,
+		list,
+	)
+
+	return panel, warning, refresh
+}
+
+const (
+	defaultWindowWidth  = 1000
+	defaultWindowHeight = 800
+
+	// 低于此尺寸界面会挤成一团，恢复成一条缝还不如用默认值
+	minWindowWidth  = 720
+	minWindowHeight = 540
+)
+
+// restoreWindowSize 读取上次的窗口尺寸，缺失或过小时回落到默认值
+func restoreWindowSize() fyne.Size {
+	settings, err := services.LoadSettings()
+	if err != nil {
+		return fyne.NewSize(defaultWindowWidth, defaultWindowHeight)
+	}
+
+	width, height := float32(settings.WindowWidth), float32(settings.WindowHeight)
+	if width < minWindowWidth || height < minWindowHeight {
+		return fyne.NewSize(defaultWindowWidth, defaultWindowHeight)
+	}
+
+	return fyne.NewSize(width, height)
+}
+
+// currentWindowSize 返回当前窗口尺寸，窗口尚未创建时返回零值
+func currentWindowSize() fyne.Size {
+	if view.Window == nil {
+		return fyne.Size{}
+	}
+
+	return view.Window.Canvas().Size()
 }
 
 // statusColor 返回状态对应的颜色，取自主题以便跟随明暗模式
@@ -350,6 +445,12 @@ func saveSettings(settings *services.UserSettings) {
 	current.PollIntervalSeconds = int(services.Listen.GetInterval() / time.Second)
 	current.NotifyUrls = services.Listen.GetNotifyUrls()
 
+	// 过小的尺寸不记，避免把异常状态存下来
+	if size := currentWindowSize(); size.Width >= minWindowWidth && size.Height >= minWindowHeight {
+		current.WindowWidth = int(size.Width)
+		current.WindowHeight = int(size.Height)
+	}
+
 	if err := services.SaveSettings(current); err != nil {
 		log.Println("保存配置失败:", err)
 	}
@@ -403,6 +504,10 @@ func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect
 				SelectedProduct: products[0],
 				BarkNotifyUrl:   barkNotifyWidget.Text,
 			})
+
+			// 清空勾选：否则那些勾还留在界面上，不知道算不算数
+			storeSelect.ClearSelection()
+			productSelect.ClearSelection()
 
 			skipped := len(stores)*len(products) - added
 			msg := fmt.Sprintf("已添加 %d 项", added)
@@ -475,8 +580,31 @@ func createSecondaryButtons() *fyne.Container {
 	)
 }
 
-// 创建控制按钮 (Create control buttons)
-func createControlButtons() *fyne.Container {
+// createControlButtons 返回控制按钮与状态显示，以及状态刷新函数。
+//
+// 状态此前只有「暂停 / 监听中」，看不出程序是否还在正常轮转 ——
+// 用户只能盯着列表里的时间列变化来判断。现在直接给出项数与上轮完成时间。
+func createControlButtons() (*fyne.Container, func()) {
+	statusLabel := widget.NewLabel("")
+
+	update := func() {
+		status, err := services.Listen.Status.Get()
+		if err != nil {
+			status = "?"
+		}
+
+		text := fmt.Sprintf("%s · %d 项", status, len(services.Listen.CurrentAreaItems()))
+		if last := services.Listen.LastCheck(); !last.IsZero() {
+			text += " · 上轮 " + last.ToTimeString()
+		}
+
+		statusLabel.SetText(text)
+	}
+	update()
+
+	// 「开始 / 暂停」不经过监听列表变化，需要单独监听状态本身
+	services.Listen.Status.AddListener(binding.NewDataListener(update))
+
 	return container.NewHBox(
 		widget.NewButton("开始", func() {
 			_ = services.Listen.Status.Set(services.Running)
@@ -485,8 +613,8 @@ func createControlButtons() *fyne.Container {
 			_ = services.Listen.Status.Set(services.Pause)
 		}),
 		container.NewCenter(widget.NewLabel("状态:")),
-		container.NewCenter(widget.NewLabelWithData(services.Listen.Status)),
-	)
+		container.NewCenter(statusLabel),
+	), update
 }
 
 // createVersionLabel 创建版本标签 (Create version label)

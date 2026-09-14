@@ -42,6 +42,9 @@ func setupSystemTray() bool {
 
 	var notifyOnce sync.Once
 	view.Window.SetCloseIntercept(func() {
+		// 收进托盘是最常见的「用完了」动作，顺手记下窗口尺寸
+		saveSettings(nil)
+
 		view.Window.Hide()
 
 		// 只提示一次。不提示的话，用户会以为已经退出，
