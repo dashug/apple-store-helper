@@ -1,0 +1,87 @@
+name: API health
+
+on:
+  schedule:
+    # 每天 UTC 01:30（北京时间 09:30），与数据更新任务错开
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: 接口健康检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - name: 检查库存接口
+        id: check
+        run: |
+          set +e
+          LIVE_CHECK=1 go test -count=1 -v -run TestLiveEndpointHealth ./services/ > /tmp/health.log 2>&1
+          code=$?
+          set -e
+
+          cat /tmp/health.log
+
+          if [ "$code" -eq 0 ]; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 失败时提 issue
+        if: steps.check.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="库存接口健康检查失败"
+
+          {
+            echo "每日接口健康检查未通过。程序很可能已经无法正确判断库存。"
+            echo
+            echo "**这类故障不会自己显现**：接口被拦截或改版时，如果代码不检查状态码，"
+            echo "拦截页会被解析成「所有型号无货」，界面一片正常却全是错的。"
+            echo "本项目曾因此失效过一整段时间。"
+            echo
+            echo "检查输出："
+            echo
+            echo '```'
+            tail -60 /tmp/health.log
+            echo '```'
+            echo
+            echo "运行记录：$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > /tmp/body.md
+
+          # 已有未关闭的同名 issue 时追加评论，避免每天刷一个新的
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file /tmp/body.md
+            echo "已在 issue #$EXISTING 追加评论"
+          else
+            gh issue create --title "$TITLE" --body-file /tmp/body.md
+          fi
+
+      - name: 恢复后关闭 issue
+        if: steps.check.outputs.failed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="库存接口健康检查失败"
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" --comment "接口已恢复，本次检查通过。"
+            echo "已关闭 issue #$EXISTING"
+          else
+            echo "接口正常"
+          fi

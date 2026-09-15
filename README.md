@@ -153,6 +153,20 @@ rsvg-convert -w 1024 -h 1024 Icon.svg -o Icon.png
 打包与托盘都使用 `Icon.png`。改动后建议在 16px 下确认仍可辨认 —— 托盘图标
 只有这么大，细节在这个尺寸会全部消失。
 
+### 接口健康检查
+库存接口失效时不会自己显现：被拦截或改版后，如果代码不检查状态码，拦截页
+会被解析成「所有型号无货」，界面一片正常却全是错的。本项目曾因此失效过一
+整段时间。
+
+[`api-health.yml`](.github/workflows/api-health.yml) 每天用真实门店与货号
+访问一次接口，确认响应仍可解析；失败时自动提 issue，恢复后自动关闭。
+
+本地执行：
+
+```shell script
+LIVE_CHECK=1 go test -run TestLiveEndpointHealth ./services/
+```
+
 ### 更新机型数据
 新机型发布后，`config/files/products_*.json` 需要重新抓取：
 
