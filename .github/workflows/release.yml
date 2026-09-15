@@ -272,6 +272,24 @@ jobs:
 
           ls -lh dist
 
+      - name: 冒烟测试
+        # 此前 CI 只编译命令行版，一次都没执行过 ——
+        # 能编译不等于能跑起来（比如初始化阶段就 panic）
+        run: |
+          go build -o /tmp/cli-smoke ./cmd/apple-store-cli
+
+          echo "--- --version ---"
+          /tmp/cli-smoke --version
+
+          echo "--- --list-areas ---"
+          /tmp/cli-smoke --list-areas
+
+          # 至少要能列出地区，否则内嵌数据或初始化有问题
+          if [ "$(/tmp/cli-smoke --list-areas | wc -l)" -lt 1 ]; then
+            echo "::error::命令行版无法列出地区"
+            exit 1
+          fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: cli

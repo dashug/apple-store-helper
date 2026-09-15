@@ -1,0 +1,21 @@
+version: 2
+
+updates:
+  # Go 依赖。此前没有任何机制发现上游的安全修复：
+  # fyne、carbon、gjson 都锁在固定版本，出了问题不会有人知道。
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+
+  # 工作流里用到的 action 同样会过期
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
