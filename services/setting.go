@@ -29,6 +29,11 @@ type UserSettings struct {
 	// PollIntervalSeconds 为 0 表示沿用默认间隔（兼容旧配置文件）
 	PollIntervalSeconds int `json:"poll_interval_seconds"`
 
+	// KeepGoingOnHit 为 true 表示命中后继续监听其余项。
+	// 用「继续」而非「暂停」作为字段语义，零值即旧行为（命中即暂停），
+	// 旧配置文件无需迁移。
+	KeepGoingOnHit bool `json:"keep_going_on_hit"`
+
 	// WindowWidth / WindowHeight 为 0 表示使用默认尺寸
 	WindowWidth  int `json:"window_width"`
 	WindowHeight int `json:"window_height"`
