@@ -45,12 +45,13 @@ func (l *stringList) Set(value string) error {
 }
 
 type options struct {
-	area     string
-	stores   stringList
-	products stringList
-	notify   stringList
-	interval int
-	once     bool
+	area      string
+	stores    stringList
+	products  stringList
+	notify    stringList
+	interval  int
+	once      bool
+	keepGoing bool
 
 	listAreas    bool
 	listStores   bool
@@ -98,6 +99,7 @@ func parseFlags() options {
 	flag.Var(&opts.notify, "notify", "通知地址，可重复。支持 Bark / Server酱 / 企业微信 / Telegram / Webhook")
 	flag.IntVar(&opts.interval, "interval", int(services.DefaultInterval/time.Second), "监听间隔秒数")
 	flag.BoolVar(&opts.once, "once", false, "只查一轮就退出，便于配合 cron")
+	flag.BoolVar(&opts.keepGoing, "keep-going", false, "命中后继续监听其余项，默认命中即暂停")
 
 	flag.BoolVar(&opts.listAreas, "list-areas", false, "列出可选地区")
 	flag.BoolVar(&opts.listStores, "list-stores", false, "列出该地区的门店")
@@ -145,6 +147,7 @@ func resolveArea(title string) (model.Area, error) {
 // 把配置文件拷到服务器即可直接跑。
 func configure(opts options, area model.Area) error {
 	services.Listen.SetInterval(time.Duration(opts.interval) * time.Second)
+	services.Listen.SetStopOnHit(!opts.keepGoing)
 	services.Listen.SetNotifyUrls(strings.Join(opts.notify, "\n"))
 
 	if len(opts.stores) > 0 || len(opts.products) > 0 {
@@ -191,7 +194,10 @@ func run(opts options) {
 	}
 
 	services.Listen.SetOnInStock(func(event services.InStockEvent) {
-		log.Printf("★ 有货 %s %s", event.Item.Store.CityStoreName, event.Item.Product.Title)
+		// 逐条列出：多家同时有货时，用户要据此决定去哪一家
+		for _, item := range event.Items {
+			log.Printf("★ 有货 %s %s", item.Store.CityStoreName, item.Product.Title)
+		}
 		log.Printf("  购物袋: %s", event.BagURL)
 	})
 

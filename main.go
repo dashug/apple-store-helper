@@ -61,6 +61,7 @@ func buildUI() fyne.CanvasObject {
 	barkWidget := newBarkWidget()
 	notifyWidget := newNotifyWidget()
 	intervalWidget := newIntervalWidget()
+	keepGoingWidget := newKeepGoingWidget()
 
 	// 地区选择器 (Area Selector)
 	areaWidget := widget.NewRadioGroup(services.Area.ForOptions(), func(value string) {
@@ -98,7 +99,7 @@ func buildUI() fyne.CanvasObject {
 3. 点击“开始”开始监听，检测到有货时会自动打开购物车页面
 `
 
-	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, notifyWidget, intervalWidget)
+	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
 	refreshList()
 
 	// 五行共用一个 FormLayout，否则每行各自计算标签列宽，右侧控件起始位置会参差不齐
@@ -117,7 +118,7 @@ func buildUI() fyne.CanvasObject {
 		container.New(layout.NewFormLayout(),
 			widget.NewLabel("Bark 通知地址:"), barkWidget,
 			widget.NewLabel("其他通知地址:"), notifyWidget,
-			widget.NewLabel("监听间隔:"), intervalWidget,
+			widget.NewLabel("监听间隔:"), container.NewBorder(nil, nil, nil, keepGoingWidget, intervalWidget),
 		),
 
 		// 主操作与次要操作分两行，避免七个按钮挤在一行、窗口缩小时先挤坏
@@ -452,6 +453,22 @@ func newNotifyWidget() *widget.Entry {
 	return notifyWidget
 }
 
+// newKeepGoingWidget 创建「命中后继续监听」开关。
+//
+// 默认命中即暂停（与此前一致）。但盯二十项时，一项命中就全停、其余十九项
+// 也不再监控 —— 命中的那家未必是用户去得了的。
+func newKeepGoingWidget() *widget.Check {
+	keepGoing := widget.NewCheck("命中后继续监听其余项", nil)
+	keepGoing.SetChecked(false)
+
+	keepGoing.OnChanged = func(checked bool) {
+		services.Listen.SetStopOnHit(!checked)
+		saveSettings(nil)
+	}
+
+	return keepGoing
+}
+
 // newBarkWidget 创建 Bark 地址输入框
 // OnChanged 是 Bark 地址的唯一写入源：无论用户手动输入，还是 loadUserSettingsCache
 // 通过 SetText 恢复缓存，监听服务持有的地址都会同步更新
@@ -472,6 +489,7 @@ func saveSettings(settings *services.UserSettings) {
 	current.ListenItems = services.Listen.GetListenItems()
 	current.PollIntervalSeconds = int(services.Listen.GetInterval() / time.Second)
 	current.NotifyUrls = services.Listen.GetNotifyUrls()
+	current.KeepGoingOnHit = !services.Listen.GetStopOnHit()
 
 	// 过小的尺寸不记，避免把异常状态存下来
 	if size := currentWindowSize(); size.Width >= minWindowWidth && size.Height >= minWindowHeight {
@@ -485,7 +503,7 @@ func saveSettings(settings *services.UserSettings) {
 }
 
 // 加载用户设置缓存 (Load user settings cache)
-func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, notifyWidget *widget.Entry, intervalWidget *widget.Select) {
+func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, notifyWidget *widget.Entry, intervalWidget *widget.Select, keepGoingWidget *widget.Check) {
 	settings, err := services.LoadSettings()
 	if err != nil {
 		areaWidget.SetSelected(services.Listen.GetArea().Title)
@@ -498,6 +516,10 @@ func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSele
 	services.Listen.SetListenItems(settings.ListenItems)
 	barkNotifyWidget.SetText(settings.BarkNotifyUrl)
 	notifyWidget.SetText(settings.NotifyUrls)
+
+	services.Listen.SetStopOnHit(!settings.KeepGoingOnHit)
+	keepGoingWidget.Checked = settings.KeepGoingOnHit
+	keepGoingWidget.Refresh()
 
 	// 旧配置文件没有这个字段，此时保持默认间隔。
 	// 直接赋值而不用 SetSelected，避免恢复配置的动作反过来触发一次保存。

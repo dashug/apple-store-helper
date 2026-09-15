@@ -56,8 +56,11 @@ func TestOnInStockReceivesEvent(t *testing.T) {
 	if !fired {
 		t.Fatal("命中时应触发回调")
 	}
-	if event.Item.Store.CityStoreName != "上海-环球港" {
-		t.Errorf("事件里的门店不对: %+v", event.Item.Store)
+	if len(event.Items) != 1 {
+		t.Fatalf("应有 1 项命中，实际 %d", len(event.Items))
+	}
+	if event.Items[0].Store.CityStoreName != "上海-环球港" {
+		t.Errorf("事件里的门店不对: %+v", event.Items[0].Store)
 	}
 	if !strings.Contains(event.Message, "有货") {
 		t.Errorf("提示文案不对: %q", event.Message)

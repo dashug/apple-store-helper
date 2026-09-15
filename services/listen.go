@@ -84,10 +84,11 @@ var Listen = newListenService()
 
 func newListenService() *listenService {
 	return &listenService{
-		items:    map[string]ListenItem{},
-		status:   Pause,
-		area:     model.Areas[0],
-		interval: DefaultInterval,
+		items:     map[string]ListenItem{},
+		status:    Pause,
+		area:      model.Areas[0],
+		interval:  DefaultInterval,
+		stopOnHit: true,
 	}
 }
 
@@ -108,6 +109,10 @@ type listenService struct {
 	// interval 是基础轮询间隔，failures 是连续失败轮次（用于退避）
 	interval time.Duration
 	failures int
+
+	// stopOnHit 决定命中后是否自动暂停。
+	// 盯二十项时一项命中就全停，其余十九项也不再监控，未必是用户想要的。
+	stopOnHit bool
 
 	// lastCheck 是上一轮检查完成的时间。
 	// 界面此前只有「暂停 / 监听中」，看不出程序是否还在正常轮转，
@@ -151,7 +156,12 @@ func (s *listenService) GetStatus() string {
 // 弹窗、打开购物袋、播放提示音都是界面行为，交由调用方处理：
 // GUI 注册自己的实现，命令行注册打印日志的实现，services 本身不碰 GUI。
 type InStockEvent struct {
-	Item    ListenItem
+	// Items 是本轮全部命中项，按门店与型号排序。
+	//
+	// 原先命中第一项就跳出，而 items 是 map、遍历无序 —— 两家店同时有货时
+	// 报哪一家是随机的，同样的数据跑两次可能给出不同答案。发售时用户要据此
+	// 决定去哪家店，这个信息不能丢。
+	Items   []ListenItem
 	Message string
 	BagURL  string
 }
@@ -665,6 +675,10 @@ func (s *listenService) tick() bool {
 
 	skus, failures := s.groupByStore(items)
 
+	// 先把本轮所有项判定完，再统一处理命中。
+	// 原先命中即跳出，同一轮其余项会停留在上一轮的旧状态。
+	var hits []ListenItem
+
 	for key, item := range items {
 		// 查询失败的门店一律标记为「未知」，绝不能当成无货
 		if reason, failed := failures[item.Store.StoreNumber]; failed {
@@ -678,28 +692,11 @@ func (s *listenService) tick() bool {
 		}
 
 		s.UpdateStatus(key, StatusInStock, "")
-		s.SetStatus(Pause)
+		hits = append(hits, item)
+	}
 
-		// 记录这次命中。程序看到的每一轮结果原本都直接丢掉了，
-		// 而「哪家店什么时候出过货」是别处拿不到的信息。
-		RecordInStock(s.GetArea().Title, item)
-
-		bagUrl := fmt.Sprintf("https://www.apple.com/%s/shop/bag", s.GetArea().ShortCode)
-		msg := fmt.Sprintf("%s %s 有货", item.Store.CityStoreName, item.Product.Title)
-
-		// 呈现方式交给调用方：GUI 弹窗并打开购物袋，命令行打印日志。
-		// services 不再直接触碰 GUI，否则无法在无桌面环境运行。
-		s.mu.RLock()
-		onInStock := s.onInStock
-		s.mu.RUnlock()
-
-		if onInStock != nil {
-			onInStock(InStockEvent{Item: item, Message: msg, BagURL: bagUrl})
-		}
-
-		// 推送与界面无关，各形态都需要
-		go s.Notify(Notification{Title: "有货提醒", Content: msg, URL: bagUrl})
-		break
+	if len(hits) > 0 {
+		s.handleHits(hits)
 	}
 
 	s.mu.Lock()
@@ -709,6 +706,68 @@ func (s *listenService) tick() bool {
 	s.notifyChange()
 
 	return len(failures) > 0
+}
+
+// handleHits 处理本轮的全部命中
+func (s *listenService) handleHits(hits []ListenItem) {
+	// 顺序必须确定：map 遍历无序，不排序的话同样的数据每次给出的
+	// 「第一家」都可能不同
+	sort.Slice(hits, func(i, j int) bool {
+		if hits[i].Store.CityStoreName != hits[j].Store.CityStoreName {
+			return hits[i].Store.CityStoreName < hits[j].Store.CityStoreName
+		}
+		return hits[i].Product.Title < hits[j].Product.Title
+	})
+
+	area := s.GetArea()
+	for _, item := range hits {
+		RecordInStock(area.Title, item)
+	}
+
+	if s.GetStopOnHit() {
+		s.SetStatus(Pause)
+	}
+
+	bagUrl := fmt.Sprintf("https://www.apple.com/%s/shop/bag", area.ShortCode)
+	msg := hitMessage(hits)
+
+	s.mu.RLock()
+	onInStock := s.onInStock
+	s.mu.RUnlock()
+
+	if onInStock != nil {
+		onInStock(InStockEvent{Items: hits, Message: msg, BagURL: bagUrl})
+	}
+
+	go s.Notify(Notification{Title: "有货提醒", Content: msg, URL: bagUrl})
+}
+
+// hitMessage 汇总命中文案。多家同时有货时全部列出 ——
+// 用户要据此决定去哪一家，只报一家等于替他做了选择。
+func hitMessage(hits []ListenItem) string {
+	lines := make([]string, 0, len(hits))
+	for _, item := range hits {
+		lines = append(lines, fmt.Sprintf("%s %s", item.Store.CityStoreName, item.Product.Title))
+	}
+
+	if len(hits) == 1 {
+		return lines[0] + " 有货"
+	}
+
+	return fmt.Sprintf("%d 项有货：\n%s", len(hits), strings.Join(lines, "\n"))
+}
+
+// SetStopOnHit 设置命中后是否自动暂停
+func (s *listenService) SetStopOnHit(stop bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.stopOnHit = stop
+}
+
+func (s *listenService) GetStopOnHit() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.stopOnHit
 }
 
 // RunOnce 执行一轮检查并返回本轮是否有门店查询失败。
