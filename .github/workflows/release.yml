@@ -36,6 +36,53 @@ jobs:
           fi
           echo "services 无图形依赖"
 
+  changes:
+    name: 判断改动范围
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 检测是否含代码改动
+        id: detect
+        run: |
+          # tag 推送一律全量构建，与改动内容无关。
+          # 发版不能因为判断失误漏掉产物，这个方向的错误代价远大于多跑十分钟。
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "tag 推送，全量构建"
+            exit 0
+          fi
+
+          base="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$base" ]; then
+            base="${{ github.event.before }}"
+          fi
+
+          # 拿不到比较基准时保守处理，按有代码改动对待
+          if [ -z "$base" ] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "无法确定比较基准，按含代码改动处理"
+            exit 0
+          fi
+
+          changed=$(git diff --name-only "$base" HEAD)
+          echo "本次改动:"
+          echo "$changed" | sed 's/^/  /'
+
+          # 只有这几类文件不影响构建产物。
+          # Icon.png 不在其中：它通过 go:embed 进入二进制，也用于打包图标。
+          if echo "$changed" | grep -vE '\.md$|^screenshot\.png$|^LICENSE$' | grep -q .; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "含代码改动，执行构建"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "仅文档改动，跳过构建"
+          fi
+
   meta:
     name: 解析版本
     runs-on: ubuntu-latest
@@ -62,7 +109,8 @@ jobs:
 
   build-darwin:
     name: 构建 macOS (universal)
-    needs: [test, meta]
+    needs: [test, meta, changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: macos-latest
     env:
       TAG: ${{ needs.meta.outputs.tag }}
@@ -124,7 +172,8 @@ jobs:
 
   build-windows:
     name: 构建 Windows (${{ matrix.arch }})
-    needs: [test, meta]
+    needs: [test, meta, changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     env:
       TAG: ${{ needs.meta.outputs.tag }}
@@ -184,7 +233,8 @@ jobs:
 
   build-cli:
     name: 构建命令行版
-    needs: [test, meta]
+    needs: [test, meta, changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     env:
       TAG: ${{ needs.meta.outputs.tag }}
