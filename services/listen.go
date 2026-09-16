@@ -58,6 +58,16 @@ const (
 	// 固定周期会让多个用户的请求逐渐对齐到同一时刻，反而更容易触发限流。
 	jitterRatio = 0.25
 
+	// storeFailureThreshold 是单个门店连续失败多少轮之后开始跳过它。
+	//
+	// 一家门店坏掉（编号已停用、被单独限流）不该让其余门店陪着降频，
+	// 但也不值得每轮都去撞一次。连续失败到这个次数后就暂停查询它，
+	// 并按下面的退避逐步拉长间隔。
+	storeFailureThreshold = 3
+
+	// storeMaxSkip 是单个门店退避的上限
+	storeMaxSkip = 5 * time.Minute
+
 	// maxConcurrentRequests 限制同时在飞的请求数。
 	// 原先所有门店一次性并发，盯二十家门店就会瞬间打出二十个连接。
 	maxConcurrentRequests = 4
@@ -68,6 +78,9 @@ const (
 
 // pickupBaseURL 是站点根地址，测试中会被替换成本地服务
 var pickupBaseURL = "https://www.apple.com"
+
+// storeSkipBase 是单店退避的基数，测试中会调小以便观察
+var storeSkipBase = 30 * time.Second
 
 // pickupClient 复用连接。
 // 原先每次请求都新建客户端，意味着每轮、每个门店都要重新握手一次 TLS。
@@ -84,11 +97,13 @@ var Listen = newListenService()
 
 func newListenService() *listenService {
 	return &listenService{
-		items:     map[string]ListenItem{},
-		status:    Pause,
-		area:      model.Areas[0],
-		interval:  DefaultInterval,
-		stopOnHit: true,
+		items:          map[string]ListenItem{},
+		status:         Pause,
+		area:           model.Areas[0],
+		interval:       DefaultInterval,
+		stopOnHit:      true,
+		storeFailures:  map[string]int{},
+		storeSkipUntil: map[string]time.Time{},
 	}
 }
 
@@ -106,9 +121,21 @@ type listenService struct {
 	// 根本起不来，无法做 headless 运行。
 	status string
 
-	// interval 是基础轮询间隔，failures 是连续失败轮次（用于退避）
+	// interval 是基础轮询间隔，failures 是连续「整轮全失败」的轮次（用于全局退避）。
+	//
+	// 只有整轮全军覆没才算全局失败：那才说明是限流或接口下线。
+	// 个别门店失败由 storeFailures 单独处理，不能拖慢其余门店。
 	interval time.Duration
 	failures int
+
+	// storeFailures 是各门店连续失败的轮次，
+	// storeSkipUntil 是失败过多的门店暂停查询到什么时候。
+	storeFailures  map[string]int
+	storeSkipUntil map[string]time.Time
+
+	// nextCheck 是下一轮检查的预计时间。
+	// 退避生效时间隔可能拉到几分钟，界面上得让用户看出是在等待而不是卡死。
+	nextCheck time.Time
 
 	// stopOnHit 决定命中后是否自动暂停。
 	// 盯二十项时一项命中就全停，其余十九项也不再监控，未必是用户想要的。
@@ -592,7 +619,10 @@ func (s *listenService) Run() {
 			}
 
 			failed := s.tick()
-			time.Sleep(s.nextDelay(failed))
+
+			delay := s.nextDelay(failed)
+			s.scheduleNext(delay)
+			time.Sleep(delay)
 		}
 	}()
 }
@@ -618,6 +648,10 @@ func (s *listenService) GetInterval() time.Duration {
 //
 // 成功则回到基础间隔；连续失败时指数退避，避免在接口已经不可用或
 // 正在限流我们的时候继续以原频率敲门。无论哪种情况都叠加抖动。
+//
+// 这里的 failed 指的是「整轮全部门店都失败」。个别门店失败不进入
+// 全局退避 —— 否则列表里留一个已停用的门店编号，就能把所有健康门店
+// 的检查频率一路拖到五分钟一轮。
 func (s *listenService) nextDelay(failed bool) time.Duration {
 	s.mu.Lock()
 	if failed {
@@ -654,7 +688,10 @@ func withJitter(d time.Duration) time.Duration {
 	return time.Duration(float64(d) - delta + rand.Float64()*2*delta)
 }
 
-// tick 执行一轮库存检查，返回本轮是否有门店查询失败（用于退避）
+// tick 执行一轮库存检查，返回本轮是否**全部**门店都查询失败（用于全局退避）。
+//
+// 个别门店失败不在这里体现：它由 recordStoreResult 单独计数，
+// 失败到阈值后只跳过那一家，其余门店照常按原间隔查询。
 func (s *listenService) tick() bool {
 	if s.GetStatus() != Running {
 		return false
@@ -673,7 +710,7 @@ func (s *listenService) tick() bool {
 		return false
 	}
 
-	skus, failures := s.groupByStore(items)
+	skus, failures, stats := s.groupByStore(items)
 
 	// 先把本轮所有项判定完，再统一处理命中。
 	// 原先命中即跳出，同一轮其余项会停留在上一轮的旧状态。
@@ -705,7 +742,7 @@ func (s *listenService) tick() bool {
 
 	s.notifyChange()
 
-	return len(failures) > 0
+	return stats.allFailed()
 }
 
 // handleHits 处理本轮的全部命中
@@ -770,10 +807,27 @@ func (s *listenService) GetStopOnHit() bool {
 	return s.stopOnHit
 }
 
-// RunOnce 执行一轮检查并返回本轮是否有门店查询失败。
+// RunOnce 执行一轮检查并返回本轮是否全部门店都查询失败。
 // 供命令行的单次模式使用：配合 cron 时不需要常驻进程。
 func (s *listenService) RunOnce() bool {
 	return s.tick()
+}
+
+// scheduleNext 记录下一轮检查的预计时间
+func (s *listenService) scheduleNext(after time.Duration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.nextCheck = time.Now().Add(after)
+}
+
+// NextCheck 返回下一轮检查的预计时间，零值表示尚未安排。
+//
+// 退避生效时间隔会拉到几分钟，界面上只有「上轮完成时间」的话，
+// 用户看到的就是一个半天不动的时间戳，无从判断是退避还是卡死。
+func (s *listenService) NextCheck() time.Time {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.nextCheck
 }
 
 // LastCheck 返回上一轮检查完成的时间，零值表示尚未完成过任何一轮
@@ -785,9 +839,10 @@ func (s *listenService) LastCheck() carbon.DateTime {
 
 // groupByStore 按门店合并查询，返回各 SKU 的有货情况，
 // 以及查询失败的门店及其原因（门店号 -> 原因）
-func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bool, map[string]string) {
+func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bool, map[string]string, roundStats) {
 	skus := map[string]bool{}
 	failures := map[string]string{}
+	var stats roundStats
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -805,6 +860,12 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 	shortCode := s.GetArea().ShortCode
 
 	for storeNumber, items := range group {
+		// 连续失败过多的门店暂时不查，但要说明原因：
+		// 界面上留一个没有理由的「未知」，用户无从判断是接口挂了还是自己配错了
+		if reason, skip := s.skipReason(storeNumber); skip {
+			failures[storeNumber] = reason
+			continue
+		}
 
 		var uri url.URL
 		q := uri.Query()
@@ -831,8 +892,9 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 
 	count := len(reqs)
 	if count < 1 {
-		return skus, failures
+		return skus, failures, stats
 	}
+	stats.queried = count
 
 	ch := make(chan storeResult, count)
 	sem := make(chan struct{}, maxConcurrentRequests)
@@ -849,9 +911,13 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 
 	for i := 0; i < count; i++ {
 		res := <-ch
+
+		s.recordStoreResult(res.storeNumber, res.err != nil)
+
 		if res.err != nil {
 			log.Printf("查询门店 %s 失败: %v", res.storeNumber, res.err)
 			failures[res.storeNumber] = res.err.Error()
+			stats.failed++
 			continue
 		}
 		for key, v := range res.skus {
@@ -859,7 +925,74 @@ func (s *listenService) groupByStore(items map[string]ListenItem) (map[string]bo
 		}
 	}
 
-	return skus, failures
+	return skus, failures, stats
+}
+
+// roundStats 记录一轮里实际发出了多少次查询、失败了多少次。
+// 被跳过的门店不计入，否则「跳过」会伪装成「失败」再次触发全局退避。
+type roundStats struct {
+	queried int
+	failed  int
+}
+
+// allFailed 表示整轮全军覆没 —— 限流或接口下线才会这样
+func (r roundStats) allFailed() bool {
+	return r.queried > 0 && r.failed == r.queried
+}
+
+// skipReason 返回该门店当前是否处于退避中，以及给用户看的原因
+func (s *listenService) skipReason(storeNumber string) (string, bool) {
+	s.mu.RLock()
+	until, ok := s.storeSkipUntil[storeNumber]
+	failures := s.storeFailures[storeNumber]
+	s.mu.RUnlock()
+
+	if !ok || !time.Now().Before(until) {
+		return "", false
+	}
+
+	return fmt.Sprintf("连续失败 %d 次，暂停查询至 %s",
+		failures, until.Format("15:04:05")), true
+}
+
+// recordStoreResult 记录单个门店的成败。
+//
+// 一次成功就清零：门店恢复后不需要用户干预，也不该留着历史失败次数
+// 继续拉长它的退避。
+func (s *listenService) recordStoreResult(storeNumber string, failed bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if !failed {
+		delete(s.storeFailures, storeNumber)
+		delete(s.storeSkipUntil, storeNumber)
+		return
+	}
+
+	s.storeFailures[storeNumber]++
+
+	if skip := storeSkipDuration(s.storeFailures[storeNumber]); skip > 0 {
+		s.storeSkipUntil[storeNumber] = time.Now().Add(skip)
+	}
+}
+
+// storeSkipDuration 返回单店退避时长，未到阈值时返回 0
+func storeSkipDuration(failures int) time.Duration {
+	if failures < storeFailureThreshold {
+		return 0
+	}
+
+	shift := failures - storeFailureThreshold
+	if shift > 16 {
+		shift = 16
+	}
+
+	d := storeSkipBase * time.Duration(1<<shift)
+	if d > storeMaxSkip || d <= 0 {
+		d = storeMaxSkip
+	}
+
+	return d
 }
 
 // fetchStore 查询单个门店的库存。
