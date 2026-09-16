@@ -31,14 +31,16 @@ jobs:
           go-version: "1.25"
           cache: true
 
-      - name: 安装图形库头文件
+      - name: 安装图形与音频库头文件
         # fyne 在 Linux 上需要 OpenGL / X11 的开发头文件才能编译，
-        # 测试用的是软件渲染，但 CGO 绑定仍要这些头
+        # 测试用的是软件渲染，但 CGO 绑定仍要这些头。
+        # libasound2-dev 是提示音用的 oto 需要的 ALSA 头 —— 少了它
+        # go vet 就会停在 "Package alsa was not found in the pkg-config search path"
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libgl1-mesa-dev xorg-dev libxkbcommon-dev
+            libgl1-mesa-dev xorg-dev libxkbcommon-dev libasound2-dev
 
       - run: go vet ./...
       - run: go test -race -count=1 ./...
