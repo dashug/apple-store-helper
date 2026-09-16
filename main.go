@@ -17,6 +17,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	fynetheme "fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/faiface/beep"
@@ -117,13 +118,23 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			detail.SizeName = fynetheme.SizeNameCaptionText
 			detail.Truncation = fyne.TextTruncateEllipsis
 
+			// 删除不可逆，停用只是暂停查询 —— 两者此前是同宽同色的相邻按钮，
+			// 手一抖丢的是配置。现在删除是一个低调的图标按钮，与停用之间
+			// 隔一条分隔线，真正的防护是点下去之后的确认框。
+			//
+			// 没有用 DangerImportance：那会渲染成实心红块，几十行列表里
+			// 满屏红色，最该被看见的「有货」反而被盖过去了。
+			remove := widget.NewButtonWithIcon("", fynetheme.DeleteIcon(), nil)
+			remove.Importance = widget.LowImportance
+
 			// 按钮套一层 Center：直接放进 Border 的右侧会被拉伸到整行高，
 			// 两行式的行本来就高，拉伸后整行全是按钮
 			return container.NewBorder(nil, nil,
 				container.NewCenter(status),
 				container.NewCenter(container.NewHBox(
 					widget.NewButton("停用", nil),
-					widget.NewButton("删除", nil),
+					widget.NewSeparator(),
+					remove,
 				)),
 				container.NewVBox(store, detail),
 			)
@@ -148,7 +159,7 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			status := items[1].(*fyne.Container).Objects[0].(*canvas.Text)
 			buttons := items[2].(*fyne.Container).Objects[0].(*fyne.Container).Objects
 			toggle := buttons[0].(*widget.Button)
-			remove := buttons[1].(*widget.Button)
+			remove := buttons[2].(*widget.Button) // buttons[1] 是分隔条
 
 			// 有货用绿色、未知用警示色，否则命中的那条混在几十行里不够显眼。
 			// 停用项显示「已停用」而不是旧状态 —— 它不再被查询，旧状态是过期信息。
@@ -181,9 +192,16 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 				saveSettings(nil)
 			}
 
+			name := row.Store.CityStoreName + " " + row.Product.Title
 			remove.OnTapped = func() {
-				services.Listen.Remove(key)
-				saveSettings(nil)
+				dialog.ShowConfirm("删除监听项", "确定删除「"+name+"」？", func(ok bool) {
+					if !ok {
+						return
+					}
+
+					services.Listen.Remove(key)
+					saveSettings(nil)
+				}, view.Window)
 			}
 		},
 	)
@@ -252,11 +270,11 @@ const (
 
 	// 低于此尺寸界面会挤成一团，恢复成一条缝还不如用默认值。
 	//
-	// 高度比旧版大：新布局的左栏里有地区、两个多选列表和几行按钮，
-	// 这些叠起来本身就有六百多点高。TestUIFitsMinimumWindow 盯着这条线 ——
-	// 谁再往界面上加一个固定高度的控件，测试会先红。
+	// 高度略高于旧版：左栏里有地区、两个多选列表和两行按钮。
+	// TestUIFitsMinimumWindow 盯着这条线 —— 谁再往界面上加一个固定高度的
+	// 控件，测试会先红。设置搬进对话框后这里从 620 降回 580。
 	minWindowWidth  = 720
-	minWindowHeight = 620
+	minWindowHeight = 580
 )
 
 // restoreWindowSize 读取上次的窗口尺寸，缺失或过小时回落到默认值

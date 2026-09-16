@@ -41,19 +41,40 @@ func buttonLabels(obj fyne.CanvasObject) []string {
 func TestAllButtonsSurviveLayout(t *testing.T) {
 	isolateSettings(t)
 
-	labels := buttonLabels(buildUI().content)
-	joined := strings.Join(labels, " ")
+	app := buildUI()
+
+	// 设置挂在对话框上，不在主界面控件树里，两边分开点名
+	main := strings.Join(buttonLabels(app.content), " ")
+	settings := strings.Join(buttonLabels(app.settings), " ")
 
 	for _, want := range []string{
 		"开始", "暂停", // 工具栏
-		"添加", "清空", // 左栏主操作
-		"测试通知", "试听提示音", // 折叠的通知设置
-		"有货记录", "打开日志", // 左栏底部
+		"设置", "有货记录", "打开日志", // 工具栏次要操作
+		"添加", "清空当前地区", // 左栏
 		"全选", "全不选", // 门店/型号多选
 	} {
-		if !strings.Contains(joined, want) {
-			t.Errorf("界面上找不到「%s」按钮，实际有：%s", want, joined)
+		if !strings.Contains(main, want) {
+			t.Errorf("主界面上找不到「%s」按钮，实际有：%s", want, main)
 		}
+	}
+
+	for _, want := range []string{"测试通知", "试听提示音"} {
+		if !strings.Contains(settings, want) {
+			t.Errorf("设置里找不到「%s」按钮，实际有：%s", want, settings)
+		}
+	}
+}
+
+// 清空不可逆，确认框必须说清要清掉多少项 ——
+// 只问「确定吗」的确认框等于没问
+func TestCleanConfirmMessageStatesTheCost(t *testing.T) {
+	msg := cleanConfirmMessage(12)
+
+	if !strings.Contains(msg, "12") {
+		t.Errorf("确认文案应说明将清空的项数，实际 %q", msg)
+	}
+	if !strings.Contains(msg, "不可撤销") {
+		t.Errorf("确认文案应说明不可撤销，实际 %q", msg)
 	}
 }
 

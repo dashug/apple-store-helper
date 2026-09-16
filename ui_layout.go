@@ -7,12 +7,14 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	fynetheme "fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/golang-module/carbon"
 
 	"apple-store-helper/common"
 	"apple-store-helper/services"
+	"apple-store-helper/view"
 )
 
 // appName 是界面上显示的软件名。
@@ -86,14 +88,16 @@ func buildUI() ui {
 	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
 	refreshList()
 
-	sidebar := newSidebar(areaWidget, storeSelect, productSelect,
-		barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
+	sidebar := newSidebar(areaWidget, storeSelect, productSelect, barkWidget)
+
+	settings := newSettingsContent(barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
 
 	split := container.NewHSplit(sidebar, container.NewBorder(warning, nil, nil, nil, listenList))
 	split.SetOffset(sidebarRatio)
 
 	return ui{
-		content:       container.NewBorder(newToolbar(), statusBar, nil, nil, split),
+		content:       container.NewBorder(newToolbar(settings), statusBar, nil, nil, split),
+		settings:      settings,
 		refreshStatus: refreshStatus,
 	}
 }
@@ -101,6 +105,10 @@ func buildUI() ui {
 // ui 是组装好的主界面。
 type ui struct {
 	content fyne.CanvasObject
+
+	// settings 是「设置」对话框的内容，单独留一份引用供测试断言 ——
+	// 它挂在对话框上，不在主界面的控件树里
+	settings fyne.CanvasObject
 
 	// refreshStatus 刷新底部状态栏
 	refreshStatus func()
@@ -124,7 +132,7 @@ func (u ui) startStatusTicker() {
 // newToolbar 是顶部工具栏：左边软件名，右边开始/暂停。
 //
 // 开始是主操作，用高重要性（实心蓝底）—— macOS 里一屏只有一个这样的按钮。
-func newToolbar() fyne.CanvasObject {
+func newToolbar(settings fyne.CanvasObject) fyne.CanvasObject {
 	title := canvas.NewText(appName, fynetheme.Color(fynetheme.ColorNameForeground))
 	title.TextSize = fynetheme.Size(fynetheme.SizeNameSubHeadingText)
 	title.TextStyle.Bold = true
@@ -138,9 +146,26 @@ func newToolbar() fyne.CanvasObject {
 		services.Listen.SetStatus(services.Pause)
 	})
 
+	// 有货记录与打开日志挪到这里：它们与「添加」无关，却占着左栏底部
+	// 两行的高度，把门店与型号列表挤到只剩三行可见。
+	// 放在工具栏左侧、与开始/暂停之间隔一个分隔条，也不容易误触。
+	// 保留文字：fyne 没有 tooltip，纯图标按钮等于让用户猜
+	history := newHistoryButton()
+	logs := newLogButton()
+
+	settingsButton := widget.NewButtonWithIcon("设置", fynetheme.SettingsIcon(), func() {
+		d := dialog.NewCustom("通知与设置", "关闭", settings, view.Window)
+		d.Resize(fyne.NewSize(460, 420))
+		d.Show()
+	})
+
 	bar := container.NewBorder(nil, nil,
 		container.NewCenter(title),
-		container.NewHBox(start, pause),
+		container.NewHBox(
+			settingsButton, history, logs,
+			widget.NewSeparator(),
+			start, pause,
+		),
 	)
 
 	return container.NewVBox(container.NewPadded(bar), widget.NewSeparator())
@@ -155,9 +180,6 @@ func newSidebar(
 	storeSelect *multiSelect,
 	productSelect *multiSelect,
 	barkWidget *widget.Entry,
-	notifyWidget *widget.Entry,
-	intervalWidget *widget.Select,
-	keepGoingWidget *widget.Check,
 ) fyne.CanvasObject {
 
 	lists := container.NewVSplit(
@@ -167,27 +189,43 @@ func newSidebar(
 	lists.SetOffset(0.5)
 
 	add := newAddButton(areaWidget, storeSelect, productSelect, barkWidget)
-	clean := newCleanButton()
-
-	settings := widget.NewAccordion(widget.NewAccordionItem("通知与设置",
-		container.NewVBox(
-			sidebarSection("Bark 通知地址", barkWidget),
-			sidebarSection("其他通知地址（每行一个）", notifyWidget),
-			sidebarSection("监听间隔", intervalWidget),
-			keepGoingWidget,
-			container.NewGridWithColumns(2, newTestNotifyButton(), newAlertSoundButton()),
-		),
-	))
 
 	top := sidebarSection("地区", areaWidget)
 
+	// 「添加」独占一行，清空在它下面且明显更轻 ——
+	// 两个同宽的按钮并排时，一个是日常操作、一个会清掉全部配置，
+	// 误触的代价完全不对等
 	bottom := container.NewVBox(
-		container.NewGridWithColumns(2, add, clean),
-		settings,
-		container.NewGridWithColumns(2, newHistoryButton(), newLogButton()),
+		add,
+		newCleanButton(),
 	)
 
 	return container.NewPadded(container.NewBorder(top, bottom, nil, nil, lists))
+}
+
+// newSettingsContent 是通知与监听设置的内容。
+//
+// 此前它是左栏里的一个折叠面板，有两个问题：收起来时新用户根本不知道
+// 能配通知（而通知正是这个工具的核心价值，配不上等于白盯），展开时又会
+// 把界面最小高度顶到 937 —— 1366×768 的笔记本放不下，而且用户点开的
+// 瞬间窗口会被强行撑大。
+//
+// 搬进对话框后两个问题一起消失：工具栏上有个写着「设置」的按钮，
+// 不占左栏高度，也不会撑窗口。
+func newSettingsContent(
+	barkWidget *widget.Entry,
+	notifyWidget *widget.Entry,
+	intervalWidget *widget.Select,
+	keepGoingWidget *widget.Check,
+) fyne.CanvasObject {
+
+	return container.NewVBox(
+		sidebarSection("Bark 通知地址", barkWidget),
+		sidebarSection("其他通知地址（每行一个）", notifyWidget),
+		sidebarSection("监听间隔", intervalWidget),
+		keepGoingWidget,
+		container.NewGridWithColumns(2, newTestNotifyButton(), newAlertSoundButton()),
+	)
 }
 
 // sidebarSection 给一段配置加上小标题，对应 macOS 侧边栏里的分组标签
