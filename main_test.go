@@ -38,7 +38,7 @@ func isolateSettings(t *testing.T) {
 	t.Cleanup(func() { _ = os.Chdir(old) })
 }
 
-func newTestWidgets() (*widget.RadioGroup, *multiSelect, *multiSelect, *widget.Entry) {
+func newTestWidgets() (*widget.Select, *multiSelect, *multiSelect, *widget.Entry) {
 	area := services.Listen.GetArea().Title
 
 	storeSelect := newMultiSelect("搜索门店", 150)
@@ -47,7 +47,7 @@ func newTestWidgets() (*widget.RadioGroup, *multiSelect, *multiSelect, *widget.E
 	productSelect := newMultiSelect("搜索型号", 150)
 	productSelect.SetOptions(services.Product.ByAreaTitleForOptions(area))
 
-	return widget.NewRadioGroup(services.Area.ForOptions(), nil), storeSelect, productSelect, newBarkWidget()
+	return widget.NewSelect(services.Area.ForOptions(), nil), storeSelect, productSelect, newBarkWidget()
 }
 
 // 重启后从缓存恢复的 Bark 地址必须同步到监听服务，

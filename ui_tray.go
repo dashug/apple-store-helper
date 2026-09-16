@@ -29,7 +29,7 @@ func setupSystemTray() bool {
 	desk.SetSystemTrayIcon(trayIcon)
 
 	// fyne 会自动补上「退出」项，这里不重复添加
-	desk.SetSystemTrayMenu(fyne.NewMenu("Apple Store Helper",
+	desk.SetSystemTrayMenu(fyne.NewMenu(appName,
 		fyne.NewMenuItem("显示主窗口", showMainWindow),
 		fyne.NewMenuItemSeparator(),
 		fyne.NewMenuItem("开始监听", func() {

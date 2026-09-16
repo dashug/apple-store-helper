@@ -1,4 +1,4 @@
-# Apple Store 预约助手
+# 取货雷达 · PickupRadar
 
 监控 Apple 直营店的**到店取货**库存，选定的门店一有货就提醒你。
 支持中国大陆、香港、台湾、新加坡、日本、澳大利亚、马来西亚七个地区。
@@ -6,6 +6,10 @@
 当前覆盖机型：iPhone 18 Pro / Pro Max、iPhone Duo、iPhone Air、iPhone 17 / 17e。
 
 ![UI](screenshot.png)
+
+> 本项目与 Apple 公司无关。原名「Apple Store Helper」用的是苹果的商标，
+> 自 v1.10.0 起改名为「取货雷达 / PickupRadar」。配置文件位置未变，升级
+> 后原有的监听列表与通知设置都还在。
 
 ## 重要提示
 * *这不是外挂，不能全自动一劳永逸*
@@ -18,15 +22,15 @@
 
 | 用途 | 下载 |
 | --- | --- |
-| macOS 图形版 | `Apple-Store-Helper-*-macos-universal.zip`（Intel 与 Apple Silicon 通用） |
-| Windows 图形版 | `Apple-Store-Helper-*-windows-amd64.zip`，32 位系统用 `-386` |
-| 服务器长期运行 | `apple-store-cli-*-linux-amd64.zip`（静态二进制，约 3 MB，无需桌面环境） |
-| 其他平台的命令行版 | `apple-store-cli-*` 中对应 `linux-arm64` / `darwin-*` / `windows-amd64` 的包 |
+| macOS 图形版 | `PickupRadar-*-macos-universal.zip`（Intel 与 Apple Silicon 通用） |
+| Windows 图形版 | `PickupRadar-*-windows-amd64.zip`，32 位系统用 `-386` |
+| 服务器长期运行 | `pickup-radar-*-linux-amd64.zip`（静态二进制，约 3 MB，无需桌面环境） |
+| 其他平台的命令行版 | `pickup-radar-*` 中对应 `linux-arm64` / `darwin-*` / `windows-amd64` 的包 |
 
 macOS 首次打开若被拦下（安装包做了 ad-hoc 签名，但下载会带隔离属性）：
 
 ```shell script
-xattr -cr "Apple Store Helper.app"
+xattr -cr "PickupRadar.app"
 ```
 
 各版本的具体变更见 release 页面对应 tag 的说明。
@@ -40,6 +44,11 @@ xattr -cr "Apple Store Helper.app"
 5. 匹配到有货后会自动暂停监听，直到再次点击 `开始`
 
 ## 功能说明
+### 界面
+左栏放配置（地区、门店、型号、通知），右侧整片留给监听列表，顶部工具栏
+只有开始与暂停，底部一条状态栏。窗口拉大时长的是列表 —— 盯十几家店时
+最需要的就是列表高度。左栏中间与两栏之间的分隔条都可以拖动。
+
 ### 查看与操作
 * 监听列表上方可按状态`筛选`（全部 / 有货 / 未知 / 无货 / 等待），只影响显示，
   不影响监听范围；筛掉部分时会标出「N / M 项」
@@ -73,6 +82,9 @@ xattr -cr "Apple Store Helper.app"
 
 * macOS: `~/Library/Application Support/apple-store-helper/`
 * Windows: `%AppData%\apple-store-helper\`
+
+目录名仍是改名前的 `apple-store-helper`：改掉它等于让所有老用户的监听列表、
+通知地址、窗口尺寸凭空消失一次，不值得。
 
 界面上的`打开日志`按钮会直接打开该目录。查询失败的原因、推送失败、
 配置保存失败都会记在里面 —— 反馈问题时附上这个文件会有帮助。
@@ -121,24 +133,24 @@ xattr -cr "Apple Store Helper.app"
 4. 更多内容请参考 `https://bark.day.app/`
 
 ## 命令行版
-`apple-store-cli` 不依赖图形环境，可以在服务器上长期挂着；命中有货时通过
+`pickup-radar` 不依赖图形环境，可以在服务器上长期挂着；命中有货时通过
 配置的通知渠道提醒。静态编译，丢进任何 Linux 机器都能直接跑，不需要安装
 `libGL` / `libX11`。
 
 ```shell script
 # 先看有哪些地区、门店与型号
-apple-store-cli --list-areas
-apple-store-cli --area 中国大陆 --list-stores
-apple-store-cli --area 中国大陆 --list-products
+pickup-radar --list-areas
+pickup-radar --area 中国大陆 --list-stores
+pickup-radar --area 中国大陆 --list-products
 
 # 盯上海两家店的一个型号，命中时推送到 Bark
-apple-store-cli --area 中国大陆 \
+pickup-radar --area 中国大陆 \
   --store 上海-环球港 --store 上海-南京东路 \
   --product "iphone18pro - 黑色 - 256gb" \
   --notify https://api.day.app/你的BarkKey
 
 # 只查一轮就退出，便于配合 cron
-apple-store-cli --area 中国大陆 --store 上海-环球港 \
+pickup-radar --area 中国大陆 --store 上海-环球港 \
   --product "iphone18pro - 黑色 - 256gb" --once
 ```
 
@@ -241,12 +253,12 @@ go install fyne.io/tools/cmd/fyne@latest
 go install github.com/fyne-io/fyne-cross@latest
 
 # 基础打包命令
-fyne-cross darwin -arch=amd64,arm64 -app-id=apple.store.helper -name="Apple Store Helper"
-fyne-cross windows -arch=amd64,386 -app-id=apple.store.helper -name="Apple Store Helper"
+fyne-cross darwin -arch=amd64,arm64 -app-id=com.github.dashug.pickupradar -name="PickupRadar"
+fyne-cross windows -arch=amd64,386 -app-id=com.github.dashug.pickupradar -name="PickupRadar"
 
 # macOS ARM64 版本需要额外处理签名
-xattr -cr "fyne-cross/dist/darwin-arm64/Apple Store Helper.app"
-codesign --force --deep --sign - "fyne-cross/dist/darwin-arm64/Apple Store Helper.app"
+xattr -cr "fyne-cross/dist/darwin-arm64/PickupRadar.app"
+codesign --force --deep --sign - "fyne-cross/dist/darwin-arm64/PickupRadar.app"
 ```
 
 如果提示 `fyne-cross: command not found`，请配置 GO 环境变量  
