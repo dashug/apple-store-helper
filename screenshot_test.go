@@ -103,7 +103,7 @@ func fillSampleItems(t *testing.T) {
 	add("上海-环球港", "iphone18promax - 勃艮第酒红色 - 1tb", services.StatusInStock, "")
 	add("上海-南京东路", "iphone18pro - 黑色 - 256gb", services.StatusUnknown, "接口返回 HTTP 541")
 	add("北京-三里屯", "iphoneduo - 夜空色 - 512gb", services.StatusOutStock, "")
-	add("深圳-益田假日广场", "iphoneair - 云白色 - 256gb", services.StatusOutStock, "")
+	add("广东-深圳益田假日广场", "iphoneair - 云白色 - 256gb", services.StatusOutStock, "")
 
 	done := make(chan struct{})
 	go func() {
