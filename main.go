@@ -38,6 +38,11 @@ func main() {
 	// 监控类工具关掉窗口就退出是反直觉的，收进托盘后可以挂一整天
 	setupSystemTray()
 
+	// 从托盘菜单退出时不会走关窗回调，靠这里把窗口尺寸与分隔条位置记下来
+	view.App.Lifecycle().SetOnStopped(func() {
+		saveSettings(nil)
+	})
+
 	services.Listen.Run()
 	app.startStatusTicker()
 	view.Window.ShowAndRun()
@@ -452,6 +457,14 @@ func saveSettings(settings *services.UserSettings) {
 	if size := currentWindowSize(); size.Width >= minWindowWidth && size.Height >= minWindowHeight {
 		current.WindowWidth = int(size.Width)
 		current.WindowHeight = int(size.Height)
+	}
+
+	// 分隔条位置同理：被拖到极端位置时不记，免得下次打开就是坏的
+	if mainSplit != nil {
+		current.SidebarRatio = splitRatioOrDefault(mainSplit.Offset, current.SidebarRatio)
+	}
+	if sidebarSplit != nil {
+		current.SidebarListsRatio = splitRatioOrDefault(sidebarSplit.Offset, current.SidebarListsRatio)
 	}
 
 	if err := services.SaveSettings(current); err != nil {

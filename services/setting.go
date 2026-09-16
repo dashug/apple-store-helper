@@ -37,6 +37,15 @@ type UserSettings struct {
 	// WindowWidth / WindowHeight 为 0 表示使用默认尺寸
 	WindowWidth  int `json:"window_width"`
 	WindowHeight int `json:"window_height"`
+
+	// SidebarRatio 是左栏与列表之间分隔条的位置，
+	// SidebarListsRatio 是左栏内门店与型号之间分隔条的位置。
+	// 均为 0 表示使用默认值。
+	//
+	// 窗口尺寸一直会被记住，这两条分隔条却不会 —— 拖好了重启又回到默认，
+	// 而「门店多还是型号多」因人而异，正是需要记住的东西。
+	SidebarRatio      float64 `json:"sidebar_ratio"`
+	SidebarListsRatio float64 `json:"sidebar_lists_ratio"`
 }
 
 // SettingsPath 返回配置文件的绝对路径，供界面与命令行提示用户
