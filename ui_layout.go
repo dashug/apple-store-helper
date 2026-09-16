@@ -24,8 +24,15 @@ import (
 const appName = "取货雷达"
 
 const (
-	// sidebarRatio 是左栏初始占比。用户可以拖动分隔条改，会话内有效。
-	sidebarRatio = 0.3
+	// defaultSidebarRatio 是左栏初始占比，defaultListsRatio 是左栏里
+	// 门店与型号的初始分配。用户拖动后的位置会被记住。
+	defaultSidebarRatio = 0.3
+	defaultListsRatio   = 0.5
+
+	// 分隔条被拖到极端位置时，另一侧会窄到没法用。
+	// 读配置时把这种值挡在外面，免得一个坏配置让界面一直是坏的。
+	minSplitRatio = 0.15
+	maxSplitRatio = 0.85
 
 	// sidebarListMinHeight 只是门店/型号列表的下限。
 	// 它们的实际高度由左栏的纵向分隔条分配，窗口拉高时跟着长 ——
@@ -93,7 +100,8 @@ func buildUI() ui {
 	settings := newSettingsContent(barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
 
 	split := container.NewHSplit(sidebar, container.NewBorder(warning, nil, nil, nil, listenList))
-	split.SetOffset(sidebarRatio)
+	split.SetOffset(splitRatioOrDefault(savedSidebarRatio(), defaultSidebarRatio))
+	mainSplit = split
 
 	return ui{
 		content:       container.NewBorder(newToolbar(settings), statusBar, nil, nil, split),
@@ -127,6 +135,43 @@ func (u ui) startStatusTicker() {
 			fyne.Do(u.refreshStatus)
 		}
 	}()
+}
+
+// mainSplit / sidebarSplit 供保存配置时读取分隔条的当前位置。
+//
+// 与 view.Window 一样是包级变量：saveSettings 会被添加、删除、停用、
+// 关窗等多处调用，让每个调用点都拿着界面引用反而更绕。
+var (
+	mainSplit    *container.Split
+	sidebarSplit *container.Split
+)
+
+// splitRatioOrDefault 返回可用的分隔比例。
+// 零值（老配置文件没有这个字段）与越界值都回落到默认。
+func splitRatioOrDefault(v, fallback float64) float64 {
+	if v < minSplitRatio || v > maxSplitRatio {
+		return fallback
+	}
+
+	return v
+}
+
+func savedSidebarRatio() float64 {
+	settings, err := services.LoadSettings()
+	if err != nil {
+		return 0
+	}
+
+	return settings.SidebarRatio
+}
+
+func savedListsRatio() float64 {
+	settings, err := services.LoadSettings()
+	if err != nil {
+		return 0
+	}
+
+	return settings.SidebarListsRatio
 }
 
 // newToolbar 是顶部工具栏：左边软件名，右边开始/暂停。
@@ -186,7 +231,8 @@ func newSidebar(
 		sidebarSection("门店（可多选）", storeSelect.container),
 		sidebarSection("型号（可多选）", productSelect.container),
 	)
-	lists.SetOffset(0.5)
+	lists.SetOffset(splitRatioOrDefault(savedListsRatio(), defaultListsRatio))
+	sidebarSplit = lists
 
 	add := newAddButton(areaWidget, storeSelect, productSelect, barkWidget)
 

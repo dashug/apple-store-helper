@@ -12,8 +12,15 @@ permissions:
 
 jobs:
   test:
-    name: 测试
-    runs-on: macos-latest
+    # 三个平台都跑。此前只在 macOS 上跑测试，却发布 Windows 与 Linux 的包 ——
+    # 界面代码跨平台的差异（字体测量、文件路径、托盘可用性）在 macOS 上
+    # 一个都碰不到，等于把这些平台的回归全交给用户去发现。
+    name: 测试 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -23,10 +30,21 @@ jobs:
           # Go 1.24 起修复，故 CI 统一用较新工具链
           go-version: "1.25"
           cache: true
+
+      - name: 安装图形库头文件
+        # fyne 在 Linux 上需要 OpenGL / X11 的开发头文件才能编译，
+        # 测试用的是软件渲染，但 CGO 绑定仍要这些头
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1-mesa-dev xorg-dev libxkbcommon-dev
+
       - run: go vet ./...
       - run: go test -race -count=1 ./...
 
       - name: 校验 services 不依赖图形库
+        if: matrix.os == 'ubuntu-latest'
         # services 一旦重新引入 fyne，链接出来的二进制在无桌面环境会因为
         # 缺 libGL / libX11 起不来，headless 运行就没了。这里当场拦住。
         run: |
