@@ -41,7 +41,7 @@ func buttonLabels(obj fyne.CanvasObject) []string {
 func TestAllButtonsSurviveLayout(t *testing.T) {
 	isolateSettings(t)
 
-	labels := buttonLabels(buildUI())
+	labels := buttonLabels(buildUI().content)
 	joined := strings.Join(labels, " ")
 
 	for _, want := range []string{
@@ -62,7 +62,7 @@ func TestAllButtonsSurviveLayout(t *testing.T) {
 func TestUIFitsMinimumWindow(t *testing.T) {
 	isolateSettings(t)
 
-	got := buildUI().MinSize()
+	got := buildUI().content.MinSize()
 
 	if got.Width > minWindowWidth {
 		t.Errorf("界面最小宽度 %.0f 超过窗口下限 %d，窗口将无法缩到最小尺寸",

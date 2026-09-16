@@ -38,7 +38,7 @@ const (
 // 窗口拉大时列表并不会跟着变高 —— 而盯十几家店时最需要的恰恰是列表高度。
 //
 // 拆成独立函数是为了让截图生成器复用同一套界面，避免截图与实际界面脱节。
-func buildUI() fyne.CanvasObject {
+func buildUI() ui {
 	defaultArea := services.Listen.GetArea().Title
 
 	// 门店与型号都支持多选，一次可以把「多个门店 × 多个型号」全部加入监听
@@ -92,7 +92,33 @@ func buildUI() fyne.CanvasObject {
 	split := container.NewHSplit(sidebar, container.NewBorder(warning, nil, nil, nil, listenList))
 	split.SetOffset(sidebarRatio)
 
-	return container.NewBorder(newToolbar(), statusBar, nil, nil, split)
+	return ui{
+		content:       container.NewBorder(newToolbar(), statusBar, nil, nil, split),
+		refreshStatus: refreshStatus,
+	}
+}
+
+// ui 是组装好的主界面。
+type ui struct {
+	content fyne.CanvasObject
+
+	// refreshStatus 刷新底部状态栏
+	refreshStatus func()
+}
+
+// startStatusTicker 每秒刷新一次状态栏，让倒计时自己走动。
+//
+// 这件事必须由 main 在应用真正跑起来之后启动，不能放进 buildUI ——
+// 截图生成器和测试也会调 buildUI，在那里起一个永不结束的 goroutine
+// 既会泄漏，也会和调用方并发读写控件：fyne 的测试驱动里 fyne.Do 是
+// 就地同步执行的，并不会排进主循环。CI 的 -race 抓到过这个。
+func (u ui) startStatusTicker() {
+	go func() {
+		ticker := time.NewTicker(time.Second)
+		for range ticker.C {
+			fyne.Do(u.refreshStatus)
+		}
+	}()
 }
 
 // newToolbar 是顶部工具栏：左边软件名，右边开始/暂停。
@@ -189,15 +215,9 @@ func newStatusBar() (fyne.CanvasObject, func()) {
 	}
 	update()
 
-	// 倒计时要自己走，不能只等监听结果来触发刷新：
-	// 退避时两轮之间可能隔几分钟，那期间状态栏一个字都不会变
-	go func() {
-		ticker := time.NewTicker(time.Second)
-		for range ticker.C {
-			fyne.Do(update)
-		}
-	}()
-
+	// 注意：这里不起每秒刷新的 goroutine，由 ui.startStatusTicker 负责。
+	// 倒计时确实需要自己走（退避时两轮之间可能隔几分钟，
+	// 那期间状态栏一个字都不会变），但启动时机不在装配阶段。
 	version := widget.NewLabel(common.VERSION)
 	version.Importance = widget.LowImportance
 	version.SizeName = fynetheme.SizeNameCaptionText
