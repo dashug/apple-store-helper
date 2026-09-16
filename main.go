@@ -29,7 +29,8 @@ func main() {
 	initMP3Player()
 	initFyneApp()
 
-	view.Window.SetContent(buildUI())
+	app := buildUI()
+	view.Window.SetContent(app.content)
 	view.Window.Resize(restoreWindowSize())
 	view.Window.CenterOnScreen()
 
@@ -37,6 +38,7 @@ func main() {
 	setupSystemTray()
 
 	services.Listen.Run()
+	app.startStatusTicker()
 	view.Window.ShowAndRun()
 }
 
