@@ -41,7 +41,7 @@ func TestLiveEndpointHealth(t *testing.T) {
 		item := ListenItem{Store: stores[0], Product: products[0], Area: area.Title}
 		key := item.Store.StoreNumber + "." + item.Product.Code
 
-		skus, errs := svc.groupByStore(map[string]ListenItem{key: item})
+		skus, errs, _ := svc.groupByStore(map[string]ListenItem{key: item})
 
 		if reason, bad := errs[item.Store.StoreNumber]; bad {
 			failures = append(failures,

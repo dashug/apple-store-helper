@@ -26,6 +26,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
+	"github.com/golang-module/carbon"
 )
 
 // main 主函数 (Main function)
@@ -638,17 +639,24 @@ func createControlButtons() (*fyne.Container, func()) {
 	statusLabel := widget.NewLabel("")
 
 	update := func() {
-		text := fmt.Sprintf("%s · %d 项", services.Listen.GetStatus(), services.Listen.ActiveCount())
-		if disabled := services.Listen.DisabledCount(); disabled > 0 {
-			text += fmt.Sprintf("（%d 已停用）", disabled)
-		}
-		if last := services.Listen.LastCheck(); !last.IsZero() {
-			text += " · 上轮 " + last.ToTimeString()
-		}
-
-		statusLabel.SetText(text)
+		statusLabel.SetText(statusText(
+			services.Listen.GetStatus(),
+			services.Listen.ActiveCount(),
+			services.Listen.DisabledCount(),
+			services.Listen.LastCheck(),
+			services.Listen.NextCheck(),
+		))
 	}
 	update()
+
+	// 倒计时要自己走，不能只等监听结果来触发刷新：
+	// 退避时两轮之间可能隔几分钟，那期间状态栏一个字都不会变
+	go func() {
+		ticker := time.NewTicker(time.Second)
+		for range ticker.C {
+			fyne.Do(update)
+		}
+	}()
 
 	return container.NewHBox(
 		widget.NewButton("开始", func() {
@@ -660,6 +668,47 @@ func createControlButtons() (*fyne.Container, func()) {
 		container.NewCenter(widget.NewLabel("状态:")),
 		container.NewCenter(statusLabel),
 	), update
+}
+
+// statusText 拼出状态栏文本。
+//
+// 做成纯函数是为了能直接断言：这行字是用户判断「程序还在不在转」的唯一依据，
+// 出错不会崩，只会安静地误导人。
+func statusText(status string, active, disabled int, last carbon.DateTime, next time.Time) string {
+	text := fmt.Sprintf("%s · %d 项", status, active)
+
+	if disabled > 0 {
+		text += fmt.Sprintf("（%d 已停用）", disabled)
+	}
+
+	if !last.IsZero() {
+		text += " · 上轮 " + last.ToTimeString()
+	}
+
+	// 暂停时没有下一轮，显示倒计时只会误导
+	if status == services.Running && !next.IsZero() {
+		if left := formatCountdown(time.Until(next)); left != "" {
+			text += " · 下一轮 " + left
+		}
+	}
+
+	return text
+}
+
+// formatCountdown 把剩余时间写成中文短串，已到点则返回空串
+func formatCountdown(left time.Duration) string {
+	if left <= 0 {
+		return ""
+	}
+
+	// 向上取整：还剩 0.3 秒时显示「1 秒」比显示「0 秒」诚实
+	secs := int((left + time.Second - 1) / time.Second)
+
+	if secs < 60 {
+		return fmt.Sprintf("%d 秒", secs)
+	}
+
+	return fmt.Sprintf("%d 分 %02d 秒", secs/60, secs%60)
 }
 
 // createVersionLabel 创建版本标签 (Create version label)
