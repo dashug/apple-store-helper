@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 const (
@@ -35,6 +36,16 @@ func LogDir() (string, error) {
 	return filepath.Dir(path), nil
 }
 
+// logFile 是当前打开的日志文件。
+//
+// 进程退出时由操作系统回收，本不必留着引用；但 Windows 上打开着的文件
+// 既删不掉也轮转不了 —— 重复调用 SetupLogging 会一路泄漏句柄，
+// 而这正是三平台测试矩阵在 Windows 上抓到的失败。
+var (
+	logMu   sync.Mutex
+	logFile *os.File
+)
+
 // SetupLogging 让日志同时写入文件。
 //
 // 从访达双击启动 .app 时，stdout 不指向任何用户能看到的地方，程序里
@@ -52,6 +63,10 @@ func SetupLogging() (string, error) {
 		return "", err
 	}
 
+	// 先关掉上一次打开的文件：Windows 上不关就轮转不了，
+	// 重复调用也会一路泄漏句柄
+	CloseLogging()
+
 	rotateIfLarge(path)
 
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
@@ -59,10 +74,32 @@ func SetupLogging() (string, error) {
 		return "", err
 	}
 
+	logMu.Lock()
+	logFile = file
+	logMu.Unlock()
+
 	log.SetOutput(io.MultiWriter(os.Stderr, file))
 	log.SetFlags(log.LstdFlags)
 
 	return path, nil
+}
+
+// CloseLogging 关闭日志文件，并把日志输出退回 stderr。
+//
+// 正常运行时不需要调用 —— 进程退出即回收。它是给测试用的：
+// Windows 上删不掉被打开的文件，临时目录清理会直接失败。
+func CloseLogging() {
+	logMu.Lock()
+	file := logFile
+	logFile = nil
+	logMu.Unlock()
+
+	if file == nil {
+		return
+	}
+
+	log.SetOutput(os.Stderr)
+	_ = file.Close()
 }
 
 // rotateIfLarge 超过上限时轮转一次，保留一份历史。

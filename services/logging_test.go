@@ -23,6 +23,10 @@ func restoreLogOutput(t *testing.T) {
 // 双击启动 .app 时工作目录是 /，写相对路径会直接失败
 func TestSetupLoggingWritesToConfigDir(t *testing.T) {
 	dir := withTempConfigDir(t)
+
+	// 必须注册在 withTempConfigDir 之后：t.Cleanup 后进先出，
+	// 晚注册才会早执行 —— Windows 上不先关掉日志文件，临时目录删不掉
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	path, err := SetupLogging()
@@ -45,6 +49,9 @@ func TestSetupLoggingWritesToConfigDir(t *testing.T) {
 // 写进去的内容要真的落盘 —— 否则用户拿到的是个空文件
 func TestLogOutputReachesFile(t *testing.T) {
 	withTempConfigDir(t)
+
+	// 同上：先关文件，再删临时目录
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	path, err := SetupLogging()
@@ -66,6 +73,9 @@ func TestLogOutputReachesFile(t *testing.T) {
 // 工作目录不可写时也必须能写日志（等同访达启动 .app 的场景）
 func TestSetupLoggingWorksWhenCwdUnwritable(t *testing.T) {
 	dir := t.TempDir()
+
+	// 同上：先关文件，再删临时目录
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	orig := configDirFn
@@ -89,6 +99,9 @@ func TestSetupLoggingWorksWhenCwdUnwritable(t *testing.T) {
 // 追加而非覆盖：上一次运行的记录不应被新一次启动抹掉
 func TestSetupLoggingAppends(t *testing.T) {
 	withTempConfigDir(t)
+
+	// 同上：先关文件，再删临时目录
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	path, err := SetupLogging()
@@ -115,6 +128,10 @@ func TestSetupLoggingAppends(t *testing.T) {
 // 超过上限时轮转，避免无限增长占用用户磁盘
 func TestRotateWhenTooLarge(t *testing.T) {
 	dir := withTempConfigDir(t)
+
+	// 必须注册在 withTempConfigDir 之后：t.Cleanup 后进先出，
+	// 晚注册才会早执行 —— Windows 上不先关掉日志文件，临时目录删不掉
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	path := filepath.Join(dir, settingsDirName, logFileName)
@@ -145,6 +162,10 @@ func TestRotateWhenTooLarge(t *testing.T) {
 // 未超限时不应轮转，否则每次启动都会丢掉上次的记录
 func TestNoRotateWhenSmall(t *testing.T) {
 	dir := withTempConfigDir(t)
+
+	// 必须注册在 withTempConfigDir 之后：t.Cleanup 后进先出，
+	// 晚注册才会早执行 —— Windows 上不先关掉日志文件，临时目录删不掉
+	t.Cleanup(CloseLogging)
 	restoreLogOutput(t)
 
 	path := filepath.Join(dir, settingsDirName, logFileName)
@@ -171,6 +192,10 @@ func TestNoRotateWhenSmall(t *testing.T) {
 
 func TestLogDirIsSettingsDir(t *testing.T) {
 	dir := withTempConfigDir(t)
+
+	// 必须注册在 withTempConfigDir 之后：t.Cleanup 后进先出，
+	// 晚注册才会早执行 —— Windows 上不先关掉日志文件，临时目录删不掉
+	t.Cleanup(CloseLogging)
 
 	got, err := LogDir()
 	if err != nil {
