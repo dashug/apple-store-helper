@@ -1,13 +1,10 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"image/color"
 	"log"
-	"net/url"
 	"runtime"
-	"strings"
 	"sync"
 	"time"
 
@@ -20,13 +17,10 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	fynetheme "fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
-	"github.com/golang-module/carbon"
 )
 
 // main 主函数 (Main function)
@@ -35,7 +29,8 @@ func main() {
 	initMP3Player()
 	initFyneApp()
 
-	view.Window.SetContent(buildUI())
+	app := buildUI()
+	view.Window.SetContent(app.content)
 	view.Window.Resize(restoreWindowSize())
 	view.Window.CenterOnScreen()
 
@@ -43,101 +38,8 @@ func main() {
 	setupSystemTray()
 
 	services.Listen.Run()
+	app.startStatusTicker()
 	view.Window.ShowAndRun()
-}
-
-// buildUI 组装主界面。
-// 拆成独立函数是为了让截图生成器复用同一套界面，避免截图与实际界面脱节。
-func buildUI() fyne.CanvasObject {
-	// 默认地区 (Default Area)
-	defaultArea := services.Listen.GetArea().Title
-
-	// 门店与型号都支持多选，一次可以把「多个门店 × 多个型号」全部加入监听
-	storeSelect := newMultiSelect("搜索门店", 150)
-	storeSelect.SetOptions(services.Store.ByAreaTitleForOptions(defaultArea))
-
-	productSelect := newMultiSelect("搜索型号", 150)
-	productSelect.SetOptions(services.Product.ByAreaTitleForOptions(defaultArea))
-
-	barkWidget := newBarkWidget()
-	notifyWidget := newNotifyWidget()
-	intervalWidget := newIntervalWidget()
-	keepGoingWidget := newKeepGoingWidget()
-
-	// 地区选择器 (Area Selector)
-	areaWidget := widget.NewRadioGroup(services.Area.ForOptions(), func(value string) {
-		// 防止空值或无效值导致崩溃
-		if value == "" {
-			return
-		}
-
-		storeSelect.SetOptions(services.Store.ByAreaTitleForOptions(value))
-		storeSelect.ClearSelection()
-
-		productSelect.SetOptions(services.Product.ByAreaTitleForOptions(value))
-		productSelect.ClearSelection()
-
-		// 只切换地区，不再清空监听列表 ——
-		// 各地区的列表分开保存，切回来即可恢复
-		services.Listen.SetArea(services.Area.GetArea(value))
-	})
-	areaWidget.Horizontal = true
-
-	listenList, warning, refreshList := newListenList()
-	controls, refreshStatus := createControlButtons()
-
-	// 列表与状态栏一起刷新：项数和上轮时间都随监听结果变化
-	services.Listen.SetOnChange(func() {
-		refreshList()
-		fyne.Do(refreshStatus)
-	})
-
-	// 命中有货时的弹窗、打开购物袋、提示音由界面层提供
-	services.Listen.SetOnInStock(handleInStock)
-
-	help := `1. 在 Apple 官网将需要购买的型号加入购物车
-2. 勾选地区、门店与型号（都可多选），点击“添加”批量加入监听列表
-3. 点击“开始”开始监听，检测到有货时会自动打开购物车页面
-`
-
-	loadUserSettingsCache(areaWidget, storeSelect, productSelect, barkWidget, notifyWidget, intervalWidget, keepGoingWidget)
-	refreshList()
-
-	// 五行共用一个 FormLayout，否则每行各自计算标签列宽，右侧控件起始位置会参差不齐
-	form := container.NewVBox(
-		widget.NewLabel(help),
-		container.New(layout.NewFormLayout(),
-			widget.NewLabel("选择地区:"), areaWidget,
-		),
-
-		// 门店与型号并排，否则两个 150px 的多选框会把监听列表挤到只剩两行
-		container.NewGridWithColumns(2,
-			container.NewBorder(widget.NewLabel("选择门店（可多选）:"), nil, nil, nil, storeSelect.container),
-			container.NewBorder(widget.NewLabel("选择型号（可多选）:"), nil, nil, nil, productSelect.container),
-		),
-
-		container.New(layout.NewFormLayout(),
-			widget.NewLabel("Bark 通知地址:"), barkWidget,
-			widget.NewLabel("其他通知地址:"), notifyWidget,
-			widget.NewLabel("监听间隔:"), container.NewBorder(nil, nil, nil, keepGoingWidget, intervalWidget),
-		),
-
-		// 主操作与次要操作分两行，避免七个按钮挤在一行、窗口缩小时先挤坏
-		container.NewBorder(nil, nil,
-			createActionButtons(areaWidget, storeSelect, productSelect, barkWidget),
-			controls,
-		),
-		createSecondaryButtons(),
-		warning,
-	)
-
-	// 列表放在中间，窗口拉大时由它占满剩余空间
-	return container.NewBorder(
-		form,
-		createVersionLabel(),
-		nil, nil,
-		listenList,
-	)
 }
 
 // newListenList 构建监听列表。
@@ -146,6 +48,10 @@ func buildUI() fyne.CanvasObject {
 // 调用，因此行数据需要加锁保护。
 // filterAll 表示不筛选
 const filterAll = "全部"
+
+// filterSelectWidth 固定筛选下拉的宽度：放进表头会被拉伸得很宽，
+// 而它的选项最长也就三个字
+const filterSelectWidth = 120
 
 // filterRows 只影响展示，不影响监听范围 ——
 // 几十行时用户只关心「有货 / 未知」这两类，其余是噪声
@@ -196,18 +102,30 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			return len(rows)
 		},
 		func() fyne.CanvasObject {
-			status := canvas.NewText("［状态］", fynetheme.Color(fynetheme.ColorNameForeground))
+			status := canvas.NewText("● 状态", fynetheme.Color(fynetheme.ColorNameForeground))
 			status.TextStyle.Bold = true
 
-			// 时间、门店、型号合并进同一个 Label。
-			// 拆成多个 Label 排在 HBox 里时，文字变长后不会重新布局，会互相重叠。
+			// 门店一行、型号与详情一行。横向并排的多个 Label 在文字变长后
+			// 不会重新布局、会互相重叠，纵向堆叠没有这个问题；
+			// 两行都开省略号截断，再长也只是截断，不会压到旁边的按钮上。
+			store := widget.NewLabel("门店")
+			store.TextStyle.Bold = true
+			store.Truncation = fyne.TextTruncateEllipsis
+
+			detail := widget.NewLabel("型号")
+			detail.Importance = widget.LowImportance
+			detail.SizeName = fynetheme.SizeNameCaptionText
+			detail.Truncation = fyne.TextTruncateEllipsis
+
+			// 按钮套一层 Center：直接放进 Border 的右侧会被拉伸到整行高，
+			// 两行式的行本来就高，拉伸后整行全是按钮
 			return container.NewBorder(nil, nil,
-				status,
-				container.NewHBox(
+				container.NewCenter(status),
+				container.NewCenter(container.NewHBox(
 					widget.NewButton("停用", nil),
 					widget.NewButton("删除", nil),
-				),
-				widget.NewLabel("详情"),
+				)),
+				container.NewVBox(store, detail),
 			)
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
@@ -222,27 +140,33 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 			// Border 的 Objects 顺序为 [center, left, right]
 			items := obj.(*fyne.Container).Objects
 
-			info := items[0].(*widget.Label)
-			status := items[1].(*canvas.Text)
-			buttons := items[2].(*fyne.Container).Objects
+			lines := items[0].(*fyne.Container).Objects
+			store := lines[0].(*widget.Label)
+			detail := lines[1].(*widget.Label)
+
+			// 左右两侧都套了一层 Center，取内容要多剥一层
+			status := items[1].(*fyne.Container).Objects[0].(*canvas.Text)
+			buttons := items[2].(*fyne.Container).Objects[0].(*fyne.Container).Objects
 			toggle := buttons[0].(*widget.Button)
 			remove := buttons[1].(*widget.Button)
 
 			// 有货用绿色、未知用警示色，否则命中的那条混在几十行里不够显眼。
 			// 停用项显示「已停用」而不是旧状态 —— 它不再被查询，旧状态是过期信息。
 			display := row.DisplayStatus()
-			status.Text = "［" + display + "］"
+			status.Text = "● " + display
 			status.Color = statusColor(display)
 			status.Refresh()
 
-			text := row.Store.CityStoreName + "　" + row.Product.Title
+			store.SetText(row.Store.CityStoreName)
+
+			text := row.Product.Title
 			if row.Detail != "" {
-				text += "　(" + row.Detail + ")"
+				text += "　" + row.Detail
 			}
 			if !row.Time.IsZero() {
 				text += "　" + row.Time.ToTimeString()
 			}
-			info.SetText(text)
+			detail.SetText(text)
 
 			key := row.Key
 			disabled := row.Disabled
@@ -303,8 +227,18 @@ func newListenList() (fyne.CanvasObject, *widget.Label, func()) {
 		refresh()
 	}
 
+	// 右侧内容区的表头：左边标题，右边筛选，中间一条分隔线与列表分开
+	title := widget.NewLabel("监听列表")
+	title.TextStyle.Bold = true
+
+	header := container.NewBorder(nil, nil,
+		title,
+		container.NewHBox(filterHint, container.NewGridWrap(
+			fyne.NewSize(filterSelectWidth, filterSelect.MinSize().Height), filterSelect)),
+	)
+
 	panel := container.NewBorder(
-		container.NewHBox(widget.NewLabel("筛选:"), filterSelect, filterHint),
+		container.NewVBox(header, widget.NewSeparator()),
 		nil, nil, nil,
 		list,
 	)
@@ -316,9 +250,13 @@ const (
 	defaultWindowWidth  = 1000
 	defaultWindowHeight = 800
 
-	// 低于此尺寸界面会挤成一团，恢复成一条缝还不如用默认值
+	// 低于此尺寸界面会挤成一团，恢复成一条缝还不如用默认值。
+	//
+	// 高度比旧版大：新布局的左栏里有地区、两个多选列表和几行按钮，
+	// 这些叠起来本身就有六百多点高。TestUIFitsMinimumWindow 盯着这条线 ——
+	// 谁再往界面上加一个固定高度的控件，测试会先红。
 	minWindowWidth  = 720
-	minWindowHeight = 540
+	minWindowHeight = 620
 )
 
 // restoreWindowSize 读取上次的窗口尺寸，缺失或过小时回落到默认值
@@ -382,7 +320,7 @@ func initMP3Player() {
 func initFyneApp() {
 	view.App = app.NewWithID("apple-store-helper")
 	view.App.Settings().SetTheme(&theme.MyTheme{})
-	view.Window = view.App.NewWindow("Apple Store Helper")
+	view.Window = view.App.NewWindow(appName)
 }
 
 // intervalOptions 轮询间隔的可选项。
@@ -504,7 +442,7 @@ func saveSettings(settings *services.UserSettings) {
 }
 
 // 加载用户设置缓存 (Load user settings cache)
-func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, notifyWidget *widget.Entry, intervalWidget *widget.Select, keepGoingWidget *widget.Check) {
+func loadUserSettingsCache(areaWidget *widget.Select, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry, notifyWidget *widget.Entry, intervalWidget *widget.Select, keepGoingWidget *widget.Check) {
 	settings, err := services.LoadSettings()
 	if err != nil {
 		areaWidget.SetSelected(services.Listen.GetArea().Title)
@@ -529,192 +467,4 @@ func loadUserSettingsCache(areaWidget *widget.RadioGroup, storeSelect *multiSele
 		intervalWidget.Selected = labelFromSeconds(settings.PollIntervalSeconds)
 		intervalWidget.Refresh()
 	}
-}
-
-// 创建动作按钮 (Create action buttons)
-func createActionButtons(areaWidget *widget.RadioGroup, storeSelect *multiSelect, productSelect *multiSelect, barkNotifyWidget *widget.Entry) *fyne.Container {
-	return container.NewHBox(
-		widget.NewButton("添加", func() {
-			stores := storeSelect.Selected()
-			products := productSelect.Selected()
-
-			if len(stores) == 0 || len(products) == 0 {
-				dialog.ShowError(errors.New("请至少勾选一个门店和一个型号"), view.Window)
-				return
-			}
-
-			added, err := services.Listen.AddMany(areaWidget.Selected, stores, products)
-			if err != nil {
-				dialog.ShowError(err, view.Window)
-				return
-			}
-
-			saveSettings(&services.UserSettings{
-				SelectedArea:    areaWidget.Selected,
-				SelectedStore:   stores[0],
-				SelectedProduct: products[0],
-				BarkNotifyUrl:   barkNotifyWidget.Text,
-			})
-
-			// 清空勾选：否则那些勾还留在界面上，不知道算不算数
-			storeSelect.ClearSelection()
-			productSelect.ClearSelection()
-
-			skipped := len(stores)*len(products) - added
-			msg := fmt.Sprintf("已添加 %d 项", added)
-			if skipped > 0 {
-				msg += fmt.Sprintf("，%d 项已在监听中", skipped)
-			}
-			dialog.ShowInformation("添加完成", msg, view.Window)
-		}),
-		widget.NewButton("清空", func() {
-			services.Listen.Clean()
-			if err := services.ClearSettings(); err != nil {
-				log.Println("清除配置失败:", err)
-			}
-		}),
-	)
-}
-
-// createSecondaryButtons 次要操作。
-// 与「添加/清空/开始/暂停」分开，主行不至于挤到窗口一缩小就排不下。
-func createSecondaryButtons() *fyne.Container {
-	return container.NewHBox(
-		widget.NewButton("试听提示音", func() {
-			go alertMp3()
-		}),
-		widget.NewButton("测试通知", func() {
-			if len(services.Listen.NotifyTargets()) == 0 {
-				dialog.ShowInformation("测试通知", "尚未配置任何通知地址", view.Window)
-				return
-			}
-
-			// 放到后台发送，逐条汇报结果 ——
-			// 原先点了没有任何反馈，配错地址要到真正命中有货时才会发现
-			go func() {
-				results := services.Listen.Notify(services.Notification{
-					Title:   "有货提醒（测试）",
-					Content: "此为测试提醒，点击通知将跳转到相关链接",
-					URL:     "https://www.apple.com.cn/shop/bag",
-				})
-
-				var report strings.Builder
-				for _, r := range results {
-					if r.Err != nil {
-						fmt.Fprintf(&report, "✗ %s：%v\n", r.Channel, r.Err)
-					} else {
-						fmt.Fprintf(&report, "✓ %s：已发送\n", r.Channel)
-					}
-				}
-
-				fyne.Do(func() {
-					dialog.ShowInformation("测试通知结果", report.String(), view.Window)
-				})
-			}()
-		}),
-		widget.NewButton("有货记录", func() {
-			showHistoryDialog()
-		}),
-		widget.NewButton("打开日志", func() {
-			dir, err := services.LogDir()
-			if err != nil {
-				dialog.ShowError(err, view.Window)
-				return
-			}
-
-			if err := view.App.OpenURL(&url.URL{Scheme: "file", Path: dir}); err != nil {
-				// 打不开就把路径显示出来，至少用户能自己找过去
-				dialog.ShowInformation("日志位置", dir, view.Window)
-			}
-		}),
-		layout.NewSpacer(),
-	)
-}
-
-// createControlButtons 返回控制按钮与状态显示，以及状态刷新函数。
-//
-// 状态此前只有「暂停 / 监听中」，看不出程序是否还在正常轮转 ——
-// 用户只能盯着列表里的时间列变化来判断。现在直接给出项数与上轮完成时间。
-func createControlButtons() (*fyne.Container, func()) {
-	statusLabel := widget.NewLabel("")
-
-	update := func() {
-		statusLabel.SetText(statusText(
-			services.Listen.GetStatus(),
-			services.Listen.ActiveCount(),
-			services.Listen.DisabledCount(),
-			services.Listen.LastCheck(),
-			services.Listen.NextCheck(),
-		))
-	}
-	update()
-
-	// 倒计时要自己走，不能只等监听结果来触发刷新：
-	// 退避时两轮之间可能隔几分钟，那期间状态栏一个字都不会变
-	go func() {
-		ticker := time.NewTicker(time.Second)
-		for range ticker.C {
-			fyne.Do(update)
-		}
-	}()
-
-	return container.NewHBox(
-		widget.NewButton("开始", func() {
-			services.Listen.SetStatus(services.Running)
-		}),
-		widget.NewButton("暂停", func() {
-			services.Listen.SetStatus(services.Pause)
-		}),
-		container.NewCenter(widget.NewLabel("状态:")),
-		container.NewCenter(statusLabel),
-	), update
-}
-
-// statusText 拼出状态栏文本。
-//
-// 做成纯函数是为了能直接断言：这行字是用户判断「程序还在不在转」的唯一依据，
-// 出错不会崩，只会安静地误导人。
-func statusText(status string, active, disabled int, last carbon.DateTime, next time.Time) string {
-	text := fmt.Sprintf("%s · %d 项", status, active)
-
-	if disabled > 0 {
-		text += fmt.Sprintf("（%d 已停用）", disabled)
-	}
-
-	if !last.IsZero() {
-		text += " · 上轮 " + last.ToTimeString()
-	}
-
-	// 暂停时没有下一轮，显示倒计时只会误导
-	if status == services.Running && !next.IsZero() {
-		if left := formatCountdown(time.Until(next)); left != "" {
-			text += " · 下一轮 " + left
-		}
-	}
-
-	return text
-}
-
-// formatCountdown 把剩余时间写成中文短串，已到点则返回空串
-func formatCountdown(left time.Duration) string {
-	if left <= 0 {
-		return ""
-	}
-
-	// 向上取整：还剩 0.3 秒时显示「1 秒」比显示「0 秒」诚实
-	secs := int((left + time.Second - 1) / time.Second)
-
-	if secs < 60 {
-		return fmt.Sprintf("%d 秒", secs)
-	}
-
-	return fmt.Sprintf("%d 分 %02d 秒", secs/60, secs%60)
-}
-
-// createVersionLabel 创建版本标签 (Create version label)
-func createVersionLabel() *fyne.Container {
-	return container.NewHBox(
-		layout.NewSpacer(),
-		widget.NewLabel("version: "+common.VERSION),
-	)
 }

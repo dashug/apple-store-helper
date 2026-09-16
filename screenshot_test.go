@@ -54,7 +54,7 @@ func TestGenerateScreenshot(t *testing.T) {
 	// 顺序很重要：SetContent 之后再改文字，控件仍按初始（空）文本的尺寸
 	// 摆放，截图里会出现文字被裁切、重叠等实际运行中并不存在的现象 ——
 	// 据此去「修」界面，只会把正确的代码改坏。
-	content := buildUI()
+	content := buildUI().content
 	fillSampleItems(t)
 
 	window.SetContent(content)
