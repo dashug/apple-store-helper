@@ -146,23 +146,23 @@ jobs:
           CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
             CGO_CFLAGS="-arch x86_64" CGO_LDFLAGS="-arch x86_64" \
             go build -o build/ash-amd64 .
-          lipo -create -output "build/Apple Store Helper" build/ash-arm64 build/ash-amd64
-          lipo -info "build/Apple Store Helper"
+          lipo -create -output "build/PickupRadar" build/ash-arm64 build/ash-amd64
+          lipo -info "build/PickupRadar"
 
       - name: 打包并签名 .app
         # darwin 目标下 fyne package 会复用 --executable 指定的二进制，universal 得以保留
         run: |
           fyne package --target darwin \
-            --executable "build/Apple Store Helper" \
-            --name "Apple Store Helper" \
-            --app-id apple.store.helper \
+            --executable "build/PickupRadar" \
+            --name "PickupRadar" \
+            --app-id com.github.dashug.pickupradar \
             --app-version "$SEMVER" \
             --icon Icon.png
-          xattr -cr "Apple Store Helper.app"
-          codesign --force --deep --sign - "Apple Store Helper.app"
-          codesign -dv "Apple Store Helper.app"
-          ditto -c -k --sequesterRsrc --keepParent "Apple Store Helper.app" \
-            "dist/Apple-Store-Helper-${TAG}-macos-universal.zip"
+          xattr -cr "PickupRadar.app"
+          codesign --force --deep --sign - "PickupRadar.app"
+          codesign -dv "PickupRadar.app"
+          ditto -c -k --sequesterRsrc --keepParent "PickupRadar.app" \
+            "dist/PickupRadar-${TAG}-macos-universal.zip"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -218,12 +218,12 @@ jobs:
           mkdir -p dist
           CGO_ENABLED=1 GOARCH=${{ matrix.arch }} CC=${{ matrix.cc }} \
             fyne package --target windows \
-              --name "Apple Store Helper" \
-              --app-id apple.store.helper \
+              --name "PickupRadar" \
+              --app-id com.github.dashug.pickupradar \
               --app-version "$SEMVER" \
               --icon Icon.png
-          file "Apple Store Helper.exe"
-          zip -j "dist/Apple-Store-Helper-${TAG}-windows-${{ matrix.arch }}.zip" "Apple Store Helper.exe"
+          file "PickupRadar.exe"
+          zip -j "dist/PickupRadar-${TAG}-windows-${{ matrix.arch }}.zip" "PickupRadar.exe"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -258,10 +258,10 @@ jobs:
             local os=$1 arch=$2 ext=$3
             CGO_ENABLED=0 GOOS=$os GOARCH=$arch \
               go build -trimpath -ldflags="-s -w" \
-              -o "dist/apple-store-cli$ext" ./cmd/apple-store-cli
+              -o "dist/pickup-radar$ext" ./cmd/pickup-radar
 
-            ( cd dist && zip -q "apple-store-cli-${TAG}-${os}-${arch}.zip" "apple-store-cli$ext" \
-              && rm "apple-store-cli$ext" )
+            ( cd dist && zip -q "pickup-radar-${TAG}-${os}-${arch}.zip" "pickup-radar$ext" \
+              && rm "pickup-radar$ext" )
           }
 
           build linux   amd64 ""
@@ -276,7 +276,7 @@ jobs:
         # 此前 CI 只编译命令行版，一次都没执行过 ——
         # 能编译不等于能跑起来（比如初始化阶段就 panic）
         run: |
-          go build -o /tmp/cli-smoke ./cmd/apple-store-cli
+          go build -o /tmp/cli-smoke ./cmd/pickup-radar
 
           echo "--- --version ---"
           /tmp/cli-smoke --version
@@ -324,14 +324,14 @@ jobs:
           | macOS (Intel + Apple Silicon 通用) | `*-macos-universal.zip` |
           | Windows 64 位 | `*-windows-amd64.zip` |
           | Windows 32 位 | `*-windows-386.zip` |
-          | 命令行版（无需桌面环境） | `apple-store-cli-*.zip` |
+          | 命令行版（无需桌面环境） | `pickup-radar-*.zip` |
 
           ## macOS 首次打开
 
           安装包已做 ad-hoc 签名，但从浏览器下载仍会被隔离属性拦下，解压后执行：
 
           ```shell
-          xattr -cr "Apple Store Helper.app"
+          xattr -cr "PickupRadar.app"
           ```
 
           之后双击即可运行。

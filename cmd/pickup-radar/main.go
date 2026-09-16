@@ -1,15 +1,15 @@
-// apple-store-cli 是 Apple Store 预约助手的命令行形态。
+// pickup-radar 是取货雷达的命令行形态。
 //
 // 它不依赖图形环境，可以在服务器上长期挂着；命中有货时通过配置的
 // 通知渠道（Bark / Server酱 / 企业微信 / Telegram / Webhook）提醒。
 //
 //	# 先看有哪些地区、门店与型号
-//	apple-store-cli --list-areas
-//	apple-store-cli --area 中国大陆 --list-stores
-//	apple-store-cli --area 中国大陆 --list-products
+//	pickup-radar --list-areas
+//	pickup-radar --area 中国大陆 --list-stores
+//	pickup-radar --area 中国大陆 --list-products
 //
 //	# 盯上海两家店的一个型号
-//	apple-store-cli --area 中国大陆 \
+//	pickup-radar --area 中国大陆 \
 //	  --store 上海-环球港 --store 上海-南京东路 \
 //	  --product "iphone18pro - 黑色 - 256gb" \
 //	  --notify https://api.day.app/你的BarkKey
@@ -108,7 +108,7 @@ func parseFlags() options {
 	version := flag.Bool("version", false, "显示版本")
 
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Apple Store 预约助手（命令行）%s\n\n用法:\n", common.VERSION)
+		fmt.Fprintf(flag.CommandLine.Output(), "取货雷达（命令行）%s\n\n用法:\n", common.VERSION)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
