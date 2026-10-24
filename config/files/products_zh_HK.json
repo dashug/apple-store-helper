@@ -84,7 +84,7 @@
         "variantSortOrder": [
           "185",
           "192",
-          "219",
+          "212",
           "2965",
           "2970"
         ]
@@ -117,7 +117,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6L4ZA/A",
             "MG6M4ZA/A",
@@ -137,10 +137,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6L4ZA/A",
@@ -151,6 +151,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6L4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6L4ZA/A",
             "part": "MG6L4ZA/A"
@@ -164,16 +166,14 @@
             "part": "MG6L4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6L4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6t4za_a": {
           "product": "MG6Q4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9599.0,
           "amountAfterTradeIn": 9599.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6Q4ZA/A",
             "MG6P4ZA/A",
@@ -193,10 +193,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6Q4ZA/A",
@@ -207,6 +207,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6Q4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6Q4ZA/A",
             "part": "MG6Q4ZA/A"
@@ -220,16 +222,14 @@
             "part": "MG6Q4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6Q4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6k4za_a": {
           "product": "MG6L4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6L4ZA/A",
             "MG6M4ZA/A",
@@ -249,10 +249,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6L4ZA/A",
@@ -263,6 +263,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6L4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6L4ZA/A",
             "part": "MG6L4ZA/A"
@@ -276,16 +278,14 @@
             "part": "MG6L4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6L4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6p4za_a": {
           "product": "MG6Q4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9599.0,
           "amountAfterTradeIn": 9599.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6Q4ZA/A",
             "MG6P4ZA/A",
@@ -305,10 +305,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6Q4ZA/A",
@@ -319,6 +319,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6Q4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6Q4ZA/A",
             "part": "MG6Q4ZA/A"
@@ -332,16 +334,14 @@
             "part": "MG6Q4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6Q4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6j4za_a": {
           "product": "MG6L4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6L4ZA/A",
             "MG6M4ZA/A",
@@ -361,10 +361,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6L4ZA/A",
@@ -375,6 +375,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6L4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6L4ZA/A",
             "part": "MG6L4ZA/A"
@@ -388,16 +390,14 @@
             "part": "MG6L4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6L4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6n4za_a": {
           "product": "MG6L4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6L4ZA/A",
             "MG6M4ZA/A",
@@ -417,10 +417,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6L4ZA/A",
@@ -431,6 +431,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6L4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6L4ZA/A",
             "part": "MG6L4ZA/A"
@@ -444,16 +446,14 @@
             "part": "MG6L4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6L4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6u4za_a": {
           "product": "MG6Q4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9599.0,
           "amountAfterTradeIn": 9599.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6Q4ZA/A",
             "MG6P4ZA/A",
@@ -473,10 +473,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6Q4ZA/A",
@@ -487,6 +487,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6Q4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6Q4ZA/A",
             "part": "MG6Q4ZA/A"
@@ -500,16 +502,14 @@
             "part": "MG6Q4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6Q4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6v4za_a": {
           "product": "MG6Q4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9599.0,
           "amountAfterTradeIn": 9599.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6Q4ZA/A",
             "MG6P4ZA/A",
@@ -529,10 +529,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6Q4ZA/A",
@@ -543,6 +543,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6Q4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6Q4ZA/A",
             "part": "MG6Q4ZA/A"
@@ -556,16 +558,14 @@
             "part": "MG6Q4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6Q4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6q4za_a": {
           "product": "MG6Q4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9599.0,
           "amountAfterTradeIn": 9599.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6Q4ZA/A",
             "MG6P4ZA/A",
@@ -585,10 +585,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6Q4ZA/A",
@@ -599,6 +599,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6Q4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6Q4ZA/A",
             "part": "MG6Q4ZA/A"
@@ -612,16 +614,14 @@
             "part": "MG6Q4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6Q4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         },
         "mg6m4za_a": {
           "product": "MG6L4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-1294",
+          "threadName": "qtp1735717476 ASPEN_primary-4515",
           "validProducts": [
             "MG6L4ZA/A",
             "MG6M4ZA/A",
@@ -641,10 +641,10 @@
             "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
-            "macProduct": false,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG6L4ZA/A",
@@ -655,6 +655,8 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MG6L4",
+          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MG6L4ZA/A",
             "part": "MG6L4ZA/A"
@@ -668,9 +670,7 @@
             "part": "MG6L4ZA/A"
           },
           "adjustedPrice": {},
-          "fullMrpPrice": {},
-          "basePartNumber": "MG6L4",
-          "refurbProduct": false
+          "fullMrpPrice": {}
         }
       },
       "carrierPromotionData": null
@@ -692,7 +692,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -720,7 +720,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -748,7 +748,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -776,7 +776,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -804,7 +804,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -832,7 +832,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -860,7 +860,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -888,7 +888,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -916,7 +916,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -944,7 +944,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17_MAIN",
-        "threadName": "qtp1768140989 ASPEN_primary-111",
+        "threadName": "qtp1735717476 ASPEN_primary-4515",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -1229,7 +1229,7 @@
         ],
         "variantSortOrder": [
           "110",
-          "219",
+          "212",
           "2970"
         ]
       },
@@ -1261,7 +1261,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRY4ZA/A",
             "MHU34ZA/A",
@@ -1275,14 +1275,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$7,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRY4ZA/A",
@@ -1293,13 +1293,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRY4ZA/A",
-            "part": "MHRY4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRY4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRY4ZA/A",
             "part": "MHRY4ZA/A"
@@ -1307,6 +1303,10 @@
           "currentPrice": {
             "amount": "HK$7,799",
             "raw_amount": "7799.00"
+          },
+          "compoundProduct": {
+            "product": "MHRY4ZA/A",
+            "part": "MHRY4ZA/A"
           },
           "adjustedPrice": {}
         },
@@ -1315,7 +1315,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 5999.0,
           "amountAfterTradeIn": 5999.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRW4ZA/A",
             "MHRX4ZA/A",
@@ -1329,14 +1329,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$5,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRW4ZA/A",
@@ -1347,13 +1347,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRW4ZA/A",
-            "part": "MHRW4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRW4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRW4ZA/A",
             "part": "MHRW4ZA/A"
@@ -1361,6 +1357,10 @@
           "currentPrice": {
             "amount": "HK$5,999",
             "raw_amount": "5999.00"
+          },
+          "compoundProduct": {
+            "product": "MHRW4ZA/A",
+            "part": "MHRW4ZA/A"
           },
           "adjustedPrice": {}
         },
@@ -1369,7 +1369,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRY4ZA/A",
             "MHU34ZA/A",
@@ -1383,14 +1383,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$7,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRY4ZA/A",
@@ -1401,13 +1401,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRY4ZA/A",
-            "part": "MHRY4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRY4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRY4ZA/A",
             "part": "MHRY4ZA/A"
@@ -1415,6 +1411,10 @@
           "currentPrice": {
             "amount": "HK$7,799",
             "raw_amount": "7799.00"
+          },
+          "compoundProduct": {
+            "product": "MHRY4ZA/A",
+            "part": "MHRY4ZA/A"
           },
           "adjustedPrice": {}
         },
@@ -1423,7 +1423,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 5999.0,
           "amountAfterTradeIn": 5999.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRW4ZA/A",
             "MHRX4ZA/A",
@@ -1437,14 +1437,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$5,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRW4ZA/A",
@@ -1455,13 +1455,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRW4ZA/A",
-            "part": "MHRW4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRW4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRW4ZA/A",
             "part": "MHRW4ZA/A"
@@ -1470,6 +1466,10 @@
             "amount": "HK$5,999",
             "raw_amount": "5999.00"
           },
+          "compoundProduct": {
+            "product": "MHRW4ZA/A",
+            "part": "MHRW4ZA/A"
+          },
           "adjustedPrice": {}
         },
         "mhry4za_a": {
@@ -1477,7 +1477,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 7799.0,
           "amountAfterTradeIn": 7799.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRY4ZA/A",
             "MHU34ZA/A",
@@ -1491,14 +1491,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$7,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRY4ZA/A",
@@ -1509,13 +1509,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRY4ZA/A",
-            "part": "MHRY4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRY4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRY4ZA/A",
             "part": "MHRY4ZA/A"
@@ -1524,6 +1520,10 @@
             "amount": "HK$7,799",
             "raw_amount": "7799.00"
           },
+          "compoundProduct": {
+            "product": "MHRY4ZA/A",
+            "part": "MHRY4ZA/A"
+          },
           "adjustedPrice": {}
         },
         "mhrv4za_a": {
@@ -1531,7 +1531,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 5999.0,
           "amountAfterTradeIn": 5999.0,
-          "threadName": "qtp1623990497 ASPEN_primary-19404",
+          "threadName": "qtp371637727 ASPEN_primary-4126",
           "validProducts": [
             "MHRW4ZA/A",
             "MHRX4ZA/A",
@@ -1545,14 +1545,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$5,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "macProduct": false,
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "appleCardMessagingEnabled": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false
+            "watchProduct": false,
+            "macProduct": false,
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MHRW4ZA/A",
@@ -1563,13 +1563,9 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "compoundProduct": {
-            "product": "MHRW4ZA/A",
-            "part": "MHRW4ZA/A"
-          },
-          "fullMrpPrice": {},
           "basePartNumber": "MHRW4",
           "refurbProduct": false,
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MHRW4ZA/A",
             "part": "MHRW4ZA/A"
@@ -1577,6 +1573,10 @@
           "currentPrice": {
             "amount": "HK$5,999",
             "raw_amount": "5999.00"
+          },
+          "compoundProduct": {
+            "product": "MHRW4ZA/A",
+            "part": "MHRW4ZA/A"
           },
           "adjustedPrice": {}
         }
@@ -1600,13 +1600,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "512gb",
@@ -1628,13 +1628,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "256gb",
@@ -1656,13 +1656,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "256gb",
@@ -1684,13 +1684,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "512gb",
@@ -1712,13 +1712,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "256gb",
@@ -1740,13 +1740,13 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE17E_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-19404",
+        "threadName": "qtp1821462977 ASPEN_primary-5663",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "getReady": false,
         "comingSoon": false,
+        "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
         "dimensionCapacity": "512gb",
@@ -1959,7 +1959,7 @@
         "variantSortOrder": [
           "197",
           "205",
-          "233",
+          "206",
           "2815"
         ]
       },
@@ -1996,7 +1996,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11299.0,
           "amountAfterTradeIn": 11299.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2U4ZA/A",
             "MG2V4ZA/A",
@@ -2011,14 +2011,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2U4ZA/A",
@@ -2029,8 +2029,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2U4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2044,14 +2042,16 @@
           "compoundProduct": {
             "product": "MG2U4ZA/A",
             "part": "MG2U4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2m4za_a": {
           "product": "MG2M4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9499.0,
           "amountAfterTradeIn": 9499.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2M4ZA/A",
             "MG2L4ZA/A",
@@ -2066,14 +2066,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$9,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2M4ZA/A",
@@ -2084,8 +2084,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2M4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2099,14 +2097,16 @@
           "compoundProduct": {
             "product": "MG2M4ZA/A",
             "part": "MG2M4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2x4za_a": {
           "product": "MG2Y4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 14799.0,
           "amountAfterTradeIn": 14799.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2Y4ZA/A",
             "MG2W4ZA/A",
@@ -2121,14 +2121,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$14,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2Y4ZA/A",
@@ -2139,8 +2139,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2Y4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2154,14 +2152,16 @@
           "compoundProduct": {
             "product": "MG2Y4ZA/A",
             "part": "MG2Y4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2w4za_a": {
           "product": "MG2Y4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 14799.0,
           "amountAfterTradeIn": 14799.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2Y4ZA/A",
             "MG2W4ZA/A",
@@ -2176,14 +2176,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$14,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2Y4ZA/A",
@@ -2194,8 +2194,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2Y4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2209,14 +2207,16 @@
           "compoundProduct": {
             "product": "MG2Y4ZA/A",
             "part": "MG2Y4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2q4za_a": {
           "product": "MG2U4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11299.0,
           "amountAfterTradeIn": 11299.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2U4ZA/A",
             "MG2V4ZA/A",
@@ -2231,14 +2231,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2U4ZA/A",
@@ -2249,8 +2249,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2U4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2264,14 +2262,16 @@
           "compoundProduct": {
             "product": "MG2U4ZA/A",
             "part": "MG2U4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2n4za_a": {
           "product": "MG2M4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9499.0,
           "amountAfterTradeIn": 9499.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2M4ZA/A",
             "MG2L4ZA/A",
@@ -2286,14 +2286,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$9,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2M4ZA/A",
@@ -2304,8 +2304,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2M4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2319,14 +2317,16 @@
           "compoundProduct": {
             "product": "MG2M4ZA/A",
             "part": "MG2M4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2v4za_a": {
           "product": "MG2U4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11299.0,
           "amountAfterTradeIn": 11299.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2U4ZA/A",
             "MG2V4ZA/A",
@@ -2341,14 +2341,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2U4ZA/A",
@@ -2359,8 +2359,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2U4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2374,14 +2372,16 @@
           "compoundProduct": {
             "product": "MG2U4ZA/A",
             "part": "MG2U4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2t4za_a": {
           "product": "MG2U4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11299.0,
           "amountAfterTradeIn": 11299.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2U4ZA/A",
             "MG2V4ZA/A",
@@ -2396,14 +2396,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2U4ZA/A",
@@ -2414,8 +2414,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2U4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2429,14 +2427,16 @@
           "compoundProduct": {
             "product": "MG2U4ZA/A",
             "part": "MG2U4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2l4za_a": {
           "product": "MG2M4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9499.0,
           "amountAfterTradeIn": 9499.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2M4ZA/A",
             "MG2L4ZA/A",
@@ -2451,14 +2451,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$9,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2M4ZA/A",
@@ -2469,8 +2469,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2M4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2484,14 +2482,16 @@
           "compoundProduct": {
             "product": "MG2M4ZA/A",
             "part": "MG2M4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2p4za_a": {
           "product": "MG2M4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 9499.0,
           "amountAfterTradeIn": 9499.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2M4ZA/A",
             "MG2L4ZA/A",
@@ -2506,14 +2506,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$9,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2M4ZA/A",
@@ -2524,8 +2524,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2M4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2539,14 +2537,16 @@
           "compoundProduct": {
             "product": "MG2M4ZA/A",
             "part": "MG2M4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg304za_a": {
           "product": "MG2Y4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 14799.0,
           "amountAfterTradeIn": 14799.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2Y4ZA/A",
             "MG2W4ZA/A",
@@ -2561,14 +2561,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$14,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2Y4ZA/A",
@@ -2579,8 +2579,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2Y4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2594,14 +2592,16 @@
           "compoundProduct": {
             "product": "MG2Y4ZA/A",
             "part": "MG2Y4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         },
         "mg2y4za_a": {
           "product": "MG2Y4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 14799.0,
           "amountAfterTradeIn": 14799.0,
-          "threadName": "qtp1029638356 ASPEN_primary-5803",
+          "threadName": "qtp1158484171 ASPEN_primary-4544",
           "validProducts": [
             "MG2Y4ZA/A",
             "MG2W4ZA/A",
@@ -2616,14 +2616,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$14,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
-            "appleCardMessagingEnabled": false,
+            "watchProduct": false,
+            "macProduct": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false,
+            "appleCardMessagingEnabled": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MG2Y4ZA/A",
@@ -2634,8 +2634,6 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "basePartNumber": "MG2Y4",
           "refurbProduct": false,
           "priceTargetProduct": {
@@ -2649,7 +2647,9 @@
           "compoundProduct": {
             "product": "MG2Y4ZA/A",
             "part": "MG2Y4ZA/A"
-          }
+          },
+          "fullMrpPrice": {},
+          "adjustedPrice": {}
         }
       },
       "carrierPromotionData": null
@@ -2671,7 +2671,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2699,7 +2699,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2727,7 +2727,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2755,7 +2755,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2783,7 +2783,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2811,7 +2811,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2839,7 +2839,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2867,7 +2867,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2895,7 +2895,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2923,7 +2923,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2951,7 +2951,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -2979,7 +2979,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEAIR_MAIN",
-        "threadName": "qtp1623990497 ASPEN_primary-4622",
+        "threadName": "qtp1158484171 ASPEN_primary-4544",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -3276,9 +3276,9 @@
           "black"
         ],
         "variantSortOrder": [
-          "2830",
-          "2850",
-          "2857",
+          "187",
+          "204",
+          "208",
           "2970"
         ]
       },
@@ -3320,7 +3320,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 10499.0,
           "amountAfterTradeIn": 10499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRP4ZA/A",
             "MJRT4ZA/A",
@@ -3335,14 +3335,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$10,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRP4ZA/A",
@@ -3357,25 +3357,25 @@
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "basePartNumber": "MJRP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$10,499",
             "raw_amount": "10499.00"
-          }
+          },
+          "basePartNumber": "MJRP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt44za_a": {
           "product": "MJT34ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 20999.0,
           "amountAfterTradeIn": 20999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJT34ZA/A",
             "MJT64ZA/A",
@@ -3390,14 +3390,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$20,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJT34ZA/A",
@@ -3412,25 +3412,25 @@
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "basePartNumber": "MJT34",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$20,999",
             "raw_amount": "20999.00"
-          }
+          },
+          "basePartNumber": "MJT34",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxy4za_a": {
           "product": "MJY04ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 16799.0,
           "amountAfterTradeIn": 16799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY04ZA/A",
             "MJY14ZA/A",
@@ -3445,14 +3445,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$16,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY04ZA/A",
@@ -3467,25 +3467,25 @@
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "basePartNumber": "MJY04",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$16,799",
             "raw_amount": "16799.00"
-          }
+          },
+          "basePartNumber": "MJY04",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy44za_a": {
           "product": "MJY54ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 21999.0,
           "amountAfterTradeIn": 21999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY54ZA/A",
             "MJY44ZA/A",
@@ -3500,14 +3500,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$21,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY54ZA/A",
@@ -3522,25 +3522,25 @@
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "basePartNumber": "MJY54",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$21,999",
             "raw_amount": "21999.00"
-          }
+          },
+          "basePartNumber": "MJY54",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt14za_a": {
           "product": "MJRY4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 15799.0,
           "amountAfterTradeIn": 15799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRY4ZA/A",
             "MJT24ZA/A",
@@ -3555,14 +3555,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$15,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRY4ZA/A",
@@ -3577,25 +3577,25 @@
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "basePartNumber": "MJRY4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$15,799",
             "raw_amount": "15799.00"
-          }
+          },
+          "basePartNumber": "MJRY4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxp4za_a": {
           "product": "MJXP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11499.0,
           "amountAfterTradeIn": 11499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXP4ZA/A",
             "MJXN4ZA/A",
@@ -3610,14 +3610,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXP4ZA/A",
@@ -3632,25 +3632,25 @@
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "basePartNumber": "MJXP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$11,499",
             "raw_amount": "11499.00"
-          }
+          },
+          "basePartNumber": "MJXP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy14za_a": {
           "product": "MJY04ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 16799.0,
           "amountAfterTradeIn": 16799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY04ZA/A",
             "MJY14ZA/A",
@@ -3665,14 +3665,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$16,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY04ZA/A",
@@ -3687,25 +3687,25 @@
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "basePartNumber": "MJY04",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$16,799",
             "raw_amount": "16799.00"
-          }
+          },
+          "basePartNumber": "MJY04",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrt4za_a": {
           "product": "MJRP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 10499.0,
           "amountAfterTradeIn": 10499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRP4ZA/A",
             "MJRT4ZA/A",
@@ -3720,14 +3720,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$10,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRP4ZA/A",
@@ -3742,25 +3742,25 @@
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "basePartNumber": "MJRP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$10,499",
             "raw_amount": "10499.00"
-          }
+          },
+          "basePartNumber": "MJRP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt64za_a": {
           "product": "MJT34ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 20999.0,
           "amountAfterTradeIn": 20999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJT34ZA/A",
             "MJT64ZA/A",
@@ -3775,14 +3775,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$20,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJT34ZA/A",
@@ -3797,25 +3797,25 @@
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "basePartNumber": "MJT34",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$20,999",
             "raw_amount": "20999.00"
-          }
+          },
+          "basePartNumber": "MJT34",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxw4za_a": {
           "product": "MJXT4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 13299.0,
           "amountAfterTradeIn": 13299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXT4ZA/A",
             "MJXW4ZA/A",
@@ -3830,14 +3830,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$13,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXT4ZA/A",
@@ -3852,25 +3852,25 @@
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "basePartNumber": "MJXT4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$13,299",
             "raw_amount": "13299.00"
-          }
+          },
+          "basePartNumber": "MJXT4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxq4za_a": {
           "product": "MJXP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11499.0,
           "amountAfterTradeIn": 11499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXP4ZA/A",
             "MJXN4ZA/A",
@@ -3885,14 +3885,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXP4ZA/A",
@@ -3907,25 +3907,25 @@
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "basePartNumber": "MJXP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$11,499",
             "raw_amount": "11499.00"
-          }
+          },
+          "basePartNumber": "MJXP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrw4za_a": {
           "product": "MJRW4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 12299.0,
           "amountAfterTradeIn": 12299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRW4ZA/A",
             "MJRX4ZA/A",
@@ -3940,14 +3940,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$12,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRW4ZA/A",
@@ -3962,25 +3962,25 @@
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "basePartNumber": "MJRW4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$12,299",
             "raw_amount": "12299.00"
-          }
+          },
+          "basePartNumber": "MJRW4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxt4za_a": {
           "product": "MJXT4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 13299.0,
           "amountAfterTradeIn": 13299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXT4ZA/A",
             "MJXW4ZA/A",
@@ -3995,14 +3995,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$13,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXT4ZA/A",
@@ -4017,25 +4017,25 @@
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "basePartNumber": "MJXT4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$13,299",
             "raw_amount": "13299.00"
-          }
+          },
+          "basePartNumber": "MJXT4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrp4za_a": {
           "product": "MJRP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 10499.0,
           "amountAfterTradeIn": 10499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRP4ZA/A",
             "MJRT4ZA/A",
@@ -4050,14 +4050,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$10,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRP4ZA/A",
@@ -4072,25 +4072,25 @@
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "basePartNumber": "MJRP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$10,499",
             "raw_amount": "10499.00"
-          }
+          },
+          "basePartNumber": "MJRP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt24za_a": {
           "product": "MJRY4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 15799.0,
           "amountAfterTradeIn": 15799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRY4ZA/A",
             "MJT24ZA/A",
@@ -4105,14 +4105,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$15,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRY4ZA/A",
@@ -4127,25 +4127,25 @@
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "basePartNumber": "MJRY4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$15,799",
             "raw_amount": "15799.00"
-          }
+          },
+          "basePartNumber": "MJRY4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy54za_a": {
           "product": "MJY54ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 21999.0,
           "amountAfterTradeIn": 21999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY54ZA/A",
             "MJY44ZA/A",
@@ -4160,14 +4160,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$21,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY54ZA/A",
@@ -4182,25 +4182,25 @@
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "basePartNumber": "MJY54",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$21,999",
             "raw_amount": "21999.00"
-          }
+          },
+          "basePartNumber": "MJY54",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxn4za_a": {
           "product": "MJXP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11499.0,
           "amountAfterTradeIn": 11499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXP4ZA/A",
             "MJXN4ZA/A",
@@ -4215,14 +4215,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXP4ZA/A",
@@ -4237,25 +4237,25 @@
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "basePartNumber": "MJXP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$11,499",
             "raw_amount": "11499.00"
-          }
+          },
+          "basePartNumber": "MJXP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy24za_a": {
           "product": "MJY54ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 21999.0,
           "amountAfterTradeIn": 21999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY54ZA/A",
             "MJY44ZA/A",
@@ -4270,14 +4270,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$21,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY54ZA/A",
@@ -4292,25 +4292,25 @@
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "basePartNumber": "MJY54",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$21,999",
             "raw_amount": "21999.00"
-          }
+          },
+          "basePartNumber": "MJY54",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt54za_a": {
           "product": "MJT34ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 20999.0,
           "amountAfterTradeIn": 20999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJT34ZA/A",
             "MJT64ZA/A",
@@ -4325,14 +4325,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$20,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJT34ZA/A",
@@ -4347,25 +4347,25 @@
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "basePartNumber": "MJT34",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$20,999",
             "raw_amount": "20999.00"
-          }
+          },
+          "basePartNumber": "MJT34",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxx4za_a": {
           "product": "MJY04ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 16799.0,
           "amountAfterTradeIn": 16799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY04ZA/A",
             "MJY14ZA/A",
@@ -4380,14 +4380,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$16,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY04ZA/A",
@@ -4402,25 +4402,25 @@
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "basePartNumber": "MJY04",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$16,799",
             "raw_amount": "16799.00"
-          }
+          },
+          "basePartNumber": "MJY04",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy34za_a": {
           "product": "MJY54ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 21999.0,
           "amountAfterTradeIn": 21999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY54ZA/A",
             "MJY44ZA/A",
@@ -4435,14 +4435,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$21,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY54ZA/A",
@@ -4457,25 +4457,25 @@
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "basePartNumber": "MJY54",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY54ZA/A",
             "part": "MJY54ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$21,999",
             "raw_amount": "21999.00"
-          }
+          },
+          "basePartNumber": "MJY54",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrv4za_a": {
           "product": "MJRW4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 12299.0,
           "amountAfterTradeIn": 12299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRW4ZA/A",
             "MJRX4ZA/A",
@@ -4490,14 +4490,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$12,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRW4ZA/A",
@@ -4512,25 +4512,25 @@
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "basePartNumber": "MJRW4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$12,299",
             "raw_amount": "12299.00"
-          }
+          },
+          "basePartNumber": "MJRW4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxu4za_a": {
           "product": "MJXT4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 13299.0,
           "amountAfterTradeIn": 13299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXT4ZA/A",
             "MJXW4ZA/A",
@@ -4545,14 +4545,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$13,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXT4ZA/A",
@@ -4567,25 +4567,25 @@
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "basePartNumber": "MJXT4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$13,299",
             "raw_amount": "13299.00"
-          }
+          },
+          "basePartNumber": "MJXT4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrq4za_a": {
           "product": "MJRP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 10499.0,
           "amountAfterTradeIn": 10499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRP4ZA/A",
             "MJRT4ZA/A",
@@ -4600,14 +4600,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$10,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRP4ZA/A",
@@ -4622,25 +4622,25 @@
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "basePartNumber": "MJRP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRP4ZA/A",
             "part": "MJRP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$10,499",
             "raw_amount": "10499.00"
-          }
+          },
+          "basePartNumber": "MJRP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt34za_a": {
           "product": "MJT34ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 20999.0,
           "amountAfterTradeIn": 20999.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJT34ZA/A",
             "MJT64ZA/A",
@@ -4655,14 +4655,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$20,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJT34ZA/A",
@@ -4677,25 +4677,25 @@
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "basePartNumber": "MJT34",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJT34ZA/A",
             "part": "MJT34ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$20,999",
             "raw_amount": "20999.00"
-          }
+          },
+          "basePartNumber": "MJT34",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxr4za_a": {
           "product": "MJXP4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 11499.0,
           "amountAfterTradeIn": 11499.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXP4ZA/A",
             "MJXN4ZA/A",
@@ -4710,14 +4710,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$11,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXP4ZA/A",
@@ -4732,25 +4732,25 @@
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "basePartNumber": "MJXP4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXP4ZA/A",
             "part": "MJXP4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$11,499",
             "raw_amount": "11499.00"
-          }
+          },
+          "basePartNumber": "MJXP4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjry4za_a": {
           "product": "MJRY4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 15799.0,
           "amountAfterTradeIn": 15799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRY4ZA/A",
             "MJT24ZA/A",
@@ -4765,14 +4765,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$15,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRY4ZA/A",
@@ -4787,25 +4787,25 @@
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "basePartNumber": "MJRY4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$15,799",
             "raw_amount": "15799.00"
-          }
+          },
+          "basePartNumber": "MJRY4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjt04za_a": {
           "product": "MJRY4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 15799.0,
           "amountAfterTradeIn": 15799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRY4ZA/A",
             "MJT24ZA/A",
@@ -4820,14 +4820,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$15,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRY4ZA/A",
@@ -4842,25 +4842,25 @@
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "basePartNumber": "MJRY4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRY4ZA/A",
             "part": "MJRY4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$15,799",
             "raw_amount": "15799.00"
-          }
+          },
+          "basePartNumber": "MJRY4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjy04za_a": {
           "product": "MJY04ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 16799.0,
           "amountAfterTradeIn": 16799.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJY04ZA/A",
             "MJY14ZA/A",
@@ -4875,14 +4875,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$16,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJY04ZA/A",
@@ -4897,25 +4897,25 @@
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "basePartNumber": "MJY04",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJY04ZA/A",
             "part": "MJY04ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$16,799",
             "raw_amount": "16799.00"
-          }
+          },
+          "basePartNumber": "MJY04",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjrx4za_a": {
           "product": "MJRW4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 12299.0,
           "amountAfterTradeIn": 12299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRW4ZA/A",
             "MJRX4ZA/A",
@@ -4930,14 +4930,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$12,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRW4ZA/A",
@@ -4952,25 +4952,25 @@
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "basePartNumber": "MJRW4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$12,299",
             "raw_amount": "12299.00"
-          }
+          },
+          "basePartNumber": "MJRW4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjru4za_a": {
           "product": "MJRW4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 12299.0,
           "amountAfterTradeIn": 12299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJRW4ZA/A",
             "MJRX4ZA/A",
@@ -4985,14 +4985,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$12,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJRW4ZA/A",
@@ -5007,25 +5007,25 @@
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "basePartNumber": "MJRW4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJRW4ZA/A",
             "part": "MJRW4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$12,299",
             "raw_amount": "12299.00"
-          }
+          },
+          "basePartNumber": "MJRW4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         },
         "mjxv4za_a": {
           "product": "MJXT4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 13299.0,
           "amountAfterTradeIn": 13299.0,
-          "threadName": "qtp1243165922 ASPEN_primary-6112",
+          "threadName": "qtp602529144 ASPEN_primary-7112",
           "validProducts": [
             "MJXT4ZA/A",
             "MJXW4ZA/A",
@@ -5040,14 +5040,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$13,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
+            "appleCardMessagingEnabled": false,
+            "macProduct": false,
             "financingDisabledforContractiPhones": false,
             "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
-            "watchProduct": false,
-            "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "watchProduct": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MJXT4ZA/A",
@@ -5062,18 +5062,18 @@
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "basePartNumber": "MJXT4",
-          "refurbProduct": false,
           "priceTargetProduct": {
             "product": "MJXT4ZA/A",
             "part": "MJXT4ZA/A"
           },
-          "adjustedPrice": {},
-          "fullMrpPrice": {},
           "currentPrice": {
             "amount": "HK$13,299",
             "raw_amount": "13299.00"
-          }
+          },
+          "basePartNumber": "MJXT4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {}
         }
       },
       "carrierPromotionData": null
@@ -5095,7 +5095,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5124,7 +5124,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5153,7 +5153,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5182,7 +5182,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5211,7 +5211,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5240,7 +5240,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5269,7 +5269,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5298,7 +5298,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5327,7 +5327,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5356,7 +5356,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5385,7 +5385,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5414,7 +5414,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5443,7 +5443,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5472,7 +5472,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5501,7 +5501,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5530,7 +5530,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5559,7 +5559,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5588,7 +5588,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5617,7 +5617,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5646,7 +5646,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5675,7 +5675,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5704,7 +5704,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5733,7 +5733,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5762,7 +5762,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5791,7 +5791,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5820,7 +5820,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5849,7 +5849,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5878,7 +5878,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5907,7 +5907,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5936,7 +5936,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5965,7 +5965,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -5994,7 +5994,7 @@
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONE18PRO_MAIN",
-        "threadName": "qtp743800558 ASPEN_primary-5778",
+        "threadName": "qtp716154959 ASPEN_primary-6299",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
@@ -6425,7 +6425,7 @@
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 27999.0,
           "amountAfterTradeIn": 27999.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2K4ZA/A",
             "MK2L4ZA/A"
@@ -6438,14 +6438,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$27,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2K4ZA/A",
@@ -6456,6 +6456,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2K4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2K4ZA/A",
             "part": "MK2K4ZA/A"
@@ -6464,21 +6468,17 @@
             "amount": "HK$27,999",
             "raw_amount": "27999.00"
           },
-          "basePartNumber": "MK2K4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2K4ZA/A",
             "part": "MK2K4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2f4za_a": {
           "product": "MK2F4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 19299.0,
           "amountAfterTradeIn": 19299.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2F4ZA/A",
             "MK2G4ZA/A"
@@ -6491,14 +6491,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$19,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2F4ZA/A",
@@ -6509,6 +6509,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2F4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2F4ZA/A",
             "part": "MK2F4ZA/A"
@@ -6517,21 +6521,17 @@
             "amount": "HK$19,299",
             "raw_amount": "19299.00"
           },
-          "basePartNumber": "MK2F4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2F4ZA/A",
             "part": "MK2F4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2j4za_a": {
           "product": "MK2H4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 22799.0,
           "amountAfterTradeIn": 22799.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2H4ZA/A",
             "MK2J4ZA/A"
@@ -6544,14 +6544,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$22,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2H4ZA/A",
@@ -6562,6 +6562,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2H4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2H4ZA/A",
             "part": "MK2H4ZA/A"
@@ -6570,21 +6574,17 @@
             "amount": "HK$22,799",
             "raw_amount": "22799.00"
           },
-          "basePartNumber": "MK2H4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2H4ZA/A",
             "part": "MK2H4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2g4za_a": {
           "product": "MK2F4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 19299.0,
           "amountAfterTradeIn": 19299.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2F4ZA/A",
             "MK2G4ZA/A"
@@ -6597,14 +6597,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$19,299</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2F4ZA/A",
@@ -6615,6 +6615,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2F4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2F4ZA/A",
             "part": "MK2F4ZA/A"
@@ -6623,21 +6627,17 @@
             "amount": "HK$19,299",
             "raw_amount": "19299.00"
           },
-          "basePartNumber": "MK2F4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2F4ZA/A",
             "part": "MK2F4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2e4za_a": {
           "product": "MK2D4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 17499.0,
           "amountAfterTradeIn": 17499.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2D4ZA/A",
             "MK2E4ZA/A"
@@ -6650,14 +6650,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$17,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2D4ZA/A",
@@ -6668,6 +6668,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2D4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2D4ZA/A",
             "part": "MK2D4ZA/A"
@@ -6676,21 +6680,17 @@
             "amount": "HK$17,499",
             "raw_amount": "17499.00"
           },
-          "basePartNumber": "MK2D4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2D4ZA/A",
             "part": "MK2D4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2l4za_a": {
           "product": "MK2K4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 27999.0,
           "amountAfterTradeIn": 27999.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2K4ZA/A",
             "MK2L4ZA/A"
@@ -6703,14 +6703,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$27,999</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2K4ZA/A",
@@ -6721,6 +6721,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2K4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2K4ZA/A",
             "part": "MK2K4ZA/A"
@@ -6729,21 +6733,17 @@
             "amount": "HK$27,999",
             "raw_amount": "27999.00"
           },
-          "basePartNumber": "MK2K4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2K4ZA/A",
             "part": "MK2K4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2h4za_a": {
           "product": "MK2H4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 22799.0,
           "amountAfterTradeIn": 22799.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2H4ZA/A",
             "MK2J4ZA/A"
@@ -6756,14 +6756,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$22,799</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2H4ZA/A",
@@ -6774,6 +6774,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2H4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2H4ZA/A",
             "part": "MK2H4ZA/A"
@@ -6782,21 +6786,17 @@
             "amount": "HK$22,799",
             "raw_amount": "22799.00"
           },
-          "basePartNumber": "MK2H4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2H4ZA/A",
             "part": "MK2H4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         },
         "mk2d4za_a": {
           "product": "MK2D4ZA/A",
           "hideCarrierTextFromSelectors": false,
           "amountBeforeTradeIn": 17499.0,
           "amountAfterTradeIn": 17499.0,
-          "threadName": "qtp472015917 ASPEN_primary-5600",
+          "threadName": "qtp1158484171 ASPEN_primary-6550",
           "validProducts": [
             "MK2D4ZA/A",
             "MK2E4ZA/A"
@@ -6809,14 +6809,14 @@
           "currentDisplayPrice-short": "<span class=\"price-point-acinstallment\"></span> <span class=\"nowrap\">HK$17,499</span>",
           "priceFeeDisclaimer": "",
           "creditOffer": {
-            "financingDisabledforContractiPhones": false,
-            "financingDisabledforiPods": false,
             "showMoreInfoLink": true,
             "financingDisabledForRefurbs": false,
             "financingEnabledforProducts": false,
             "watchProduct": false,
+            "appleCardMessagingEnabled": false,
             "macProduct": false,
-            "appleCardMessagingEnabled": false
+            "financingDisabledforContractiPhones": false,
+            "financingDisabledforiPods": false
           },
           "priceCurrency": "HKD",
           "partNumber": "MK2D4ZA/A",
@@ -6827,6 +6827,10 @@
           "showPayPal": false,
           "showDynamicFinancing": true,
           "chooseDefaultPurchaseOption": false,
+          "basePartNumber": "MK2D4",
+          "refurbProduct": false,
+          "adjustedPrice": {},
+          "fullMrpPrice": {},
           "priceTargetProduct": {
             "product": "MK2D4ZA/A",
             "part": "MK2D4ZA/A"
@@ -6835,14 +6839,10 @@
             "amount": "HK$17,499",
             "raw_amount": "17499.00"
           },
-          "basePartNumber": "MK2D4",
-          "refurbProduct": false,
           "compoundProduct": {
             "product": "MK2D4ZA/A",
             "part": "MK2D4ZA/A"
-          },
-          "adjustedPrice": {},
-          "fullMrpPrice": {}
+          }
         }
       },
       "carrierPromotionData": null
@@ -6860,16 +6860,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -6888,16 +6888,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -6916,16 +6916,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -6944,16 +6944,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -6972,16 +6972,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -7000,16 +7000,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -7028,16 +7028,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -7056,16 +7056,16 @@
         "displayShippingQuote": null,
         "displayPromotion": null,
         "productMessage": null,
-        "energyComplianceKey": null,
+        "energyComplianceKey": "a3720_energy_compliance",
         "showShipLabel": false,
         "footNotes": null,
         "part": "IPHONEDUO_MAIN",
-        "threadName": "qtp1974219375 ASPEN_primary-19132",
+        "threadName": "qtp1391240208 ASPEN_primary-4947",
         "carrierPromotionKey": null,
         "carrierPolicyType": null,
         "carrierPolicyPart": null,
         "carrierpromotion": false,
-        "comingSoon": true,
+        "comingSoon": false,
         "getReady": false,
         "isCarrierDevice": false,
         "isPromotionEnabled": false,
@@ -7159,6 +7159,8 @@
     "selectButtonText": "繼續",
     "labels": null,
     "favoritesEnabled": true,
-    "energyComplianceDictionary": {}
+    "energyComplianceDictionary": {
+      "a3720_energy_compliance": {}
+    }
   }
 ]
